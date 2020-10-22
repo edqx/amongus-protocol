@@ -1,0 +1,22 @@
+{
+    "version": "4.1.0-dev.20201017",
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "noImplicitAny": false,
+        "removeComments": false,
+        "noLib": false,
+        "preserveConstEnums": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "outDir": "./js",
+        "esModuleInterop": true,
+        "moduleResolution": "Node"
+    },
+    "filesGlob": [
+        "./**/*.ts",
+        "!./node_modules/**/*.ts"
+    ],
+    "include": [
+        "./ts",
+    ]
+}
