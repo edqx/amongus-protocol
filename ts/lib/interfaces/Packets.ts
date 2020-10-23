@@ -181,7 +181,7 @@ export interface DataMessage extends Message {
 
 export interface RPC extends Message {
     type: MessageID.RPC;
-    sendernetid: packed;
+    handlerid: packed;
     rpcid: uint8;
 }
 
@@ -335,7 +335,7 @@ export interface RPCCloseDoorsOfType extends RPC {
 export interface RPCRepairSystem extends RPC {
     rpcid: RPCID.RepairSystem;
     systemtype: SystemType;
-    sendernetid: packed;
+    handlerid: packed;
     amount: uint8;
 }
 
@@ -351,21 +351,30 @@ export interface TaskUpdate {
     completed: boolean;
 }
 
-export interface PlayerGameDataUpdate {
-    playerid: uint8;
+export enum PlayerDataFlags {
+    Disconnected = 1 << 0,
+    IsImposter = 1 << 1,
+    IsDead = 1 << 2
+}
+
+export interface PlayerGameData {
+    playerId: uint8;
     name: string;
     colour: ColourID;
     hat: HatID;
     pet: PetID;
     skin: SkinID;
     flags: bitfield;
+    disconnected: boolean;
+    imposter: boolean;
+    dead: boolean;
     num_tasks: uint8;
     tasks: TaskUpdate[];
 }
 
 export interface RPCUpdateGameData extends RPC {
     rpcid: RPCID.UpdateGameData;
-    players: PlayerGameDataUpdate[];
+    players: PlayerGameData[];
 }
 
 export type RPCMessage = RPCPlayAnimation
@@ -409,14 +418,14 @@ export enum PlayerVoteAreaFlags {
 
 export interface MeetingHudPlayerState {
     flags: PlayerVoteAreaFlags;
-    playerid: number;
+    playerId: number;
     votedFor: uint8;
     reported: boolean;
     voted: boolean;
     dead: boolean;
 }
 
-export interface Component {
+export interface ComponentData {
     netid: packed;
     datalen: uint16;
     data: Buffer;
@@ -429,7 +438,7 @@ export interface ObjectSpawn extends Message {
     ownerid: packed;
     flags: bitfield;
     num_components: packed;
-    components: Component[];
+    components: ComponentData[];
 }
 
 export interface ShipStatusSpawn extends ObjectSpawn {
@@ -501,7 +510,6 @@ export type GameDataMessage = DataMessage
     | ReadyMessage
     | ChangeSettingsMessage;
 
-
 export interface Payload extends BasePacket {
     op: PacketID.Reliable | PacketID.Unreliable;
     reliable?: boolean;
@@ -545,6 +553,14 @@ export interface AlterGamePayload extends Payload {
     is_public: boolean;
 }
 
+export interface KickPlayerPayload extends Payload {
+    payloadid: PayloadID.KickPlayer;
+    code: code;
+    clientid: packed;
+    reason?: DisconnectID;
+    message?: string;
+}
+
 export interface RedirectPayload extends Payload {
     payloadid: PayloadID.Redirect;
     ip: string;
@@ -579,13 +595,13 @@ export interface GameListGame {
 
 export interface GameListPayloadClientbound extends Payload {
     bound?: "client";
-    payloadid: PayloadID.GameList;
+    payloadid: PayloadID.GetGameListV2;
     games: GameListGame[];
 }
 
 export interface GameListPayloadServerBound extends Payload {
     bound?: "server";
-    payloadid: PayloadID.GameList;
+    payloadid: PayloadID.GetGameListV2;
     options: Partial<GameOptionsData>;
 }
 
@@ -600,6 +616,7 @@ export type PayloadPacket = HostGamePayload
     | GameDataToPayload
     | JoinedGamePayload
     | EndGamePayload
+    | KickPlayerPayload
     | AlterGamePayload
     | RedirectPayload
     | MasterServerListPayload

@@ -4,36 +4,15 @@ import { Component } from "./Component.js"
 import { BufferReader } from "../../util/BufferReader.js"
 
 import {
-    SystemType
-} from "../../constants/Enums.js"
-
-import {
     float16,
     uint8
 } from "../../interfaces/Types.js"
 
-interface ShipStatusOnSpawn {
+export class VoteBanSystem extends Component {
+    name: "GameData";
+    classname: "VoteBanSystem";
 
-}
-
-interface ShipStatusOnDeserialize {
-
-}
-
-interface SystemStatus {
-    OnSpawn(datalen: number, data: Buffer): any;
-    OnDeserialize(datalen: number, data: Buffer): any;
-}
-
-const Systems = {
-
-}
-
-export class ShipStatus extends Component {
-    name: "ShipStatus";
-    classname: "ShipStatus";
-
-    systems: { [key in SystemType]?: void }
+    num_votes: number;
 
     constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
         super(client, netid);
@@ -42,10 +21,10 @@ export class ShipStatus extends Component {
     }
 
     OnSpawn(datalen: number, data: Buffer): void {
-        
+        return this.OnDeserialize(datalen, data);
     }
 
     OnDeserialize(datalen: number, data: Buffer): void {
-
+        const reader = new BufferReader(data);
     }
 }

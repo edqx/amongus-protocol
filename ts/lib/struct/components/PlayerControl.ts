@@ -1,3 +1,5 @@
+import { AmongusClient } from "../../Client.js"
+
 import { Component } from "./Component.js"
 import { BufferReader } from "../../util/BufferReader.js"
 
@@ -7,39 +9,34 @@ import {
 
 interface PlayerControlOnSpawn {
     isNew: boolean;
-    playerId: uint8;
-}
-
-interface PlayerControlOnDeserialize {
-    playerId: uint8;
 }
 
 export class PlayerControl extends Component {
-    constructor(public netid: number, datalen: number, data: Buffer) {
-        super(netid, datalen, data);
+    name: "Player";
+    classname: "PlayerControl";
+
+    playerId: number;
+
+    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
+        super(client, netid);
 
         this.OnSpawn(datalen, data);
     }
-
+    
     OnSpawn(datalen: number, data: Buffer): PlayerControlOnSpawn {
         const reader = new BufferReader(data);
 
         const isNew = reader.bool();
-        const playerId = reader.uint8();
+        this.playerId = reader.uint8();
 
         return {
-            isNew,
-            playerId
+            isNew
         }
     }
 
-    OnDeserialize(datalen: number, data: Buffer): PlayerControlOnDeserialize {
+    OnDeserialize(datalen: number, data: Buffer): void {
         const reader = new BufferReader(data);
 
-        const playerId = reader.uint8();
-
-        return {
-            playerId
-        }
+        this.playerId = reader.uint8();
     }
 }

@@ -222,10 +222,13 @@ export enum PayloadID {
     GameDataTo = 0x06,
     JoinedGame = 0x07,
     EndGame = 0x08,
+    GetGameList = 0x09,
     AlterGame = 0x0a,
+    KickPlayer = 0x0b,
+    WaitForHost = 0x0c,
     Redirect = 0x0d,
     MasterServerList = 0x0e,
-    GameList = 0x10
+    GetGameListV2 = 0x10
 }
 
 export enum RPCID {

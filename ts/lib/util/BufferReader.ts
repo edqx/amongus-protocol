@@ -283,4 +283,23 @@ export class BufferReader {
 
         return str;
     }
+
+    /**
+     * Create a list of a structure.
+     */
+    list<T>(fn: (struct: BufferReader) => T, length: number): T[] {
+        const items: T[] = [];
+
+        for (let i = 0; i < length; i++) {
+            const reader = this.slice(this.offset);
+
+            const struct: T = fn(reader);
+
+            this.offset += reader.offset;
+
+            items.push(struct);
+        }
+
+        return items;
+    }
 }

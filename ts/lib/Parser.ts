@@ -15,13 +15,14 @@ import {
     GameOptionsData,
     DisconnectReason,
     GameDataMessage,
-    PlayerGameDataUpdate,
+    PlayerGameData,
     TaskUpdate,
     MasterServer,
     GameListGame,
     MeetingHudPlayerState,
     PlayerVoteAreaFlags,
-    Component
+    ComponentData,
+    PlayerDataFlags
 } from "./interfaces/Packets.js"
 
 import { BufferReader } from "./util/BufferReader.js"
@@ -79,6 +80,33 @@ export function parseDisconnect(reader: BufferReader): DisconnectReason {
     }
 
     return data as DisconnectReason;
+}
+
+export function parsePlayerData(reader: BufferReader): PlayerGameData {
+    let player: Partial<PlayerGameData> = {};
+    player.playerId = reader.uint8();
+    player.name = reader.string();
+    player.colour = reader.uint8();
+    player.hat = reader.packed();
+    player.pet = reader.packed();
+    player.skin = reader.packed();
+    player.flags = reader.byte();
+    player.disconnected = (player.flags & PlayerDataFlags.Disconnected) !== 0;
+    player.imposter = (player.flags & PlayerDataFlags.IsImposter) !== 0;
+    player.dead = (player.flags & PlayerDataFlags.IsDead) !== 0;
+    player.num_tasks = reader.uint8();
+
+    player.tasks = reader.list(reader => { 
+        const taskid = reader.packed();
+        const completed = reader.bool();
+
+        return {
+            taskid,
+            completed
+        }
+    }, player.num_tasks);
+
+    return player as PlayerGameData;
 }
 
 export function parsePacket(buffer, bound: "server" | "client" = "client"): Packet {
@@ -153,7 +181,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                     part.data = reader.buffer.slice(reader.offset, part_end);
                                     break;
                                 case MessageID.RPC:
-                                    part.sendernetid = reader.packed();
+                                    part.handlerid = reader.packed();
                                     part.rpcid = reader.uint8();
 
                                     switch (part.rpcid) {
@@ -250,7 +278,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                             break;
                                         case RPCID.RepairSystem:
                                             part.systemtype = reader.uint8();
-                                            part.sendernetid = reader.packed();
+                                            part.handlerid = reader.packed();
                                             part.amount = reader.uint8();
                                             break;
                                         case RPCID.SetTasks:
@@ -262,26 +290,8 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                             part.players = [];
 
                                             while (reader.offset < part_end) {
-                                                let player: Partial<PlayerGameDataUpdate> = {};
-                                                const playerlen = reader.uint16LE();
-                                                player.playerid = reader.uint8();
-                                                player.name = reader.string();
-                                                player.colour = reader.uint8();
-                                                player.hat = reader.packed();
-                                                player.pet = reader.packed();
-                                                player.skin = reader.packed();
-                                                player.flags = reader.byte();
-                                                player.num_tasks = reader.uint8();
-                                                player.tasks = [];
-                                                for (let i = 0; i < player.num_tasks; i++) {
-                                                    let task: Partial<TaskUpdate> = {};
-                                                    task.taskid = reader.packed();
-                                                    task.completed = reader.bool();
-                                                    
-                                                    player.tasks.push(task as TaskUpdate);
-                                                }
-
-                                                part.players.push(player as PlayerGameDataUpdate);
+                                                reader.jump(0x02); // Skip player data length.
+                                                part.players.push(parsePlayerData(reader));
                                             }
                                             break;
                                     }
@@ -294,13 +304,16 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                     part.components = [];
 
                                     for (let i = 0; i < part.num_components; i++) {
-                                        const component: Partial<Component> = {};
+                                        const component: Partial<ComponentData> = {};
                                         component.netid = reader.packed();
                                         component.datalen = reader.uint16LE();
                                         component.type = reader.uint8();
-                                        component.data = reader.buffer.slice(reader.offset, component.datalen);
 
-                                        part.components.push(component as Component);
+                                        component.data = reader.buffer.slice(reader.offset, reader.offset + component.datalen);
+
+                                        reader.jump(component.datalen);
+
+                                        part.components.push(component as ComponentData);
                                     }
                                     break;
                                 case MessageID.Despawn:
@@ -337,6 +350,14 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                         data.reason = reader.uint8();
                         data.show_ad = reader.bool();
                         break;
+                    case PayloadID.KickPlayer:
+                        data.code = reader.int32LE();
+                        data.clientid = reader.packed();
+                        reader.jump(0x01);
+                        const dc = parseDisconnect(reader);
+                        data.reason = dc.reason;
+                        data.message = dc.message;
+                        break;
                     case PayloadID.AlterGame:
                         data.code = reader.int32LE();
                         data.tag = reader.byte();
@@ -362,7 +383,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                             data.servers.push(server as MasterServer);
                         }
                         break;
-                    case PayloadID.GameList:
+                    case PayloadID.GetGameListV2:
                         if (data.bound === "client") {
                             const gamelist_len = reader.uint16LE();
                             reader.jump(0x01);

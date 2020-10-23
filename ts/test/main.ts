@@ -1,11 +1,21 @@
 import { AmongusClient, MasterServers } from "../index.js"
+import { ColourID, SpawnID } from "../lib/constants/Enums.js";
 
 const client = new AmongusClient({
     debug: true
 });
 
-await client.connect(MasterServers.EU[0][0], MasterServers.EU[0][1], "weakeyes");
+const server = MasterServers.NA[0];
 
-await client.join(process.argv[2], {
-    doSpawn: false
+await client.connect(server[0], server[1], "weakeyes");
+
+const game = await client.join(process.argv[2], {
+    doSpawn: true
+});
+
+game.me.on("spawn", player => {
+    game.me.setColour(ColourID.Blue);
+    game.me.setName("weakeyes");
+
+    game.me.chat("Hello");
 });

@@ -8,7 +8,7 @@ import dgram from "dgram"
 import util from "util"
 import { EventEmitter } from "events"
 import { Packet, Payload, PayloadPacket } from "./interfaces/Packets.js"
-import { DisconnectID, LanguageID, MapID, MessageID, PacketID, PayloadID } from "./constants/Enums.js"
+import { DisconnectID, LanguageID, MapID, MessageID, PacketID, PayloadID, SpawnID } from "./constants/Enums.js"
 import { DisconnectMessages } from "./constants/DisconnectMessages.js"
 import { runInThisContext } from "vm"
 import { Code2Int } from "./util/codes.js"
@@ -16,6 +16,11 @@ import { Game } from "./struct/Game.js"
 import { ppid } from "process"
 import { bitfield } from "./interfaces/Types.js"
 import { JoinOptions } from "./interfaces/JoinOptions.js"
+
+import { Player } from "./struct/Player.js"
+import { GameData } from "./struct/GameData.js"
+
+import { Component } from "./struct/components/Component.js"
 
 export declare interface AmongusClient {
     on(event: "packet", listener: (packet: Packet) => void);
@@ -26,6 +31,8 @@ export declare interface AmongusClient {
     off(event: "connected", listener: () => void);
 }
 
+export type AnyObject = Player | GameData;
+
 export class AmongusClient extends EventEmitter {
     options: ClientOptions;
     socket: dgram.Socket;
@@ -34,20 +41,19 @@ export class AmongusClient extends EventEmitter {
     nonce: number;
     username: string;
 
-    objects: Map<number, any>;
+    components: Map<number, Component>;
+    objects: Map<number, AnyObject>;
 
     game: Game;
+    clientid: number;
 
     constructor (options: ClientOptions = {}) {
         super();
 
         this.options = options;
-        this.socket = null;
-        this.ip = null;
-        this.port = null;
         this.nonce = 1;
-        this.username = null;
 
+        this.components = new Map;
         this.objects = new Map;
 
         this.game = null;
@@ -57,6 +63,17 @@ export class AmongusClient extends EventEmitter {
         if (this.options.debug) {
             console.log(...fmt);
         }
+    }
+
+    registerComponents(object: AnyObject) {                          
+        const components = Object.keys(object.components);
+
+        for (let i = 0; i < components.length; i++) {
+            const component = object.components[components[i]];
+
+            this.components.set(component.netid, component);
+        }
+        
     }
 
     _disconnect() {
@@ -117,14 +134,60 @@ export class AmongusClient extends EventEmitter {
                 await this.ack(packet.nonce);
             }
 
-            this.debug("Recieved packet", buffer, util.inspect(packet, false, 10, true));
+            this.debug("Recieved packet", util.inspect(packet, false, 10, true));
 
             switch (packet.op) {
                 case PacketID.Unreliable:
                 case PacketID.Reliable:
                     switch (packet.payloadid) {
                         case PayloadID.JoinedGame:
-                            this.game = new Game(this, packet.code);
+                            this.game = new Game(this, packet.code, packet.hostid, [packet.clientid, ...packet.clients]);
+                            this.clientid = packet.clientid;
+                            break;
+                        case PayloadID.GameData:
+                        case PayloadID.GameDataTo:
+                            if (this.game.code === packet.code) {
+                                for (let i = 0; i < packet.parts.length; i++) {
+                                    const part = packet.parts[i];
+
+                                    switch (part.type) {
+                                        case MessageID.Data:
+                                            const component = this.components.get(part.netid);
+
+                                            if (component) {
+                                                component.OnDeserialize(part.datalen, part.data);
+                                            }
+                                            break;
+                                        case MessageID.Spawn:
+                                            switch (part.spawnid) {
+                                                case SpawnID.GameData:
+                                                    const gamedata = new GameData(this, part.ownerid, part.components);
+
+                                                    this.game.emit("spawn", gamedata);
+                                                    this.emit("spawn", gamedata);
+
+                                                    this.registerComponents(gamedata);
+
+                                                    this.objects.set(part.ownerid, gamedata);
+                                                    break;
+                                                case SpawnID.Player:
+                                                    const playerclient = this.game.clients.get(part.ownerid);
+                                                    const player = new Player(this, part.ownerid, part.components);
+
+                                                    this.game.emit("spawn", player);
+                                                    this.emit("spawn", player);
+                                                    
+                                                    this.registerComponents(player);
+                                                    
+                                                    playerclient.spawn(player);
+                                                    
+                                                    this.objects.set(part.ownerid, player);
+                                                    break;
+                                            }
+                                            break;
+                                    }
+                                }
+                            }
                             break;
                     }
                     break;
@@ -261,11 +324,6 @@ export class AmongusClient extends EventEmitter {
         if (this.game) {
             throw new Error("Join Error: You are already in a game. Please leave or end your current game before playing another.");
         }
-        
-        const join_options: JoinOptions = {
-            doSpawn: true,
-            ...options
-        };
 
         await this.send({
             op: PacketID.Reliable,
@@ -288,7 +346,7 @@ export class AmongusClient extends EventEmitter {
 
                 return await this.join(code);
             } else if (packet.payloadid === PayloadID.JoinedGame) {
-                if (join_options.doSpawn) {
+                if (options.doSpawn ?? true) {
                     await this.send({
                         op: PacketID.Reliable,
                         payloadid: PayloadID.GameData,
@@ -321,7 +379,7 @@ export class AmongusClient extends EventEmitter {
         
         await this.send({
             op: PacketID.Reliable,
-            payloadid: PayloadID.GameList,
+            payloadid: PayloadID.GetGameListV2,
             bound: "server",
             options: {
                 mapID: maps,

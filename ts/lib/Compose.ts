@@ -133,7 +133,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                 
                                 break;
                             case MessageID.RPC:
-                                mwrite.packed(part.sendernetid);
+                                mwrite.packed(part.handlerid);
                                 mwrite.uint8(part.rpcid);
 
                                 switch (part.rpcid) {
@@ -230,7 +230,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                         break;
                                     case RPCID.RepairSystem:
                                         mwrite.uint8(part.systemtype);
-                                        mwrite.packed(part.sendernetid);
+                                        mwrite.packed(part.handlerid);
                                         mwrite.uint8(part.amount);
                                         break;
                                     case RPCID.SetTasks:
@@ -243,7 +243,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                             const player = part.players[i];
 
                                             const pwrite = new BufferWriter;
-                                            pwrite.uint8(player.playerid);
+                                            pwrite.uint8(player.playerId);
                                             pwrite.string(player.name, true);
                                             pwrite.uint8(player.colour);
                                             pwrite.packed(player.hat);
@@ -340,7 +340,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                         bwrite.write(swrite);
                     }
                     break;
-                case PayloadID.GameList:
+                case PayloadID.GetGameListV2:
                     if (packet.bound === "client") {
                         const glwrite = new BufferWriter;
                         

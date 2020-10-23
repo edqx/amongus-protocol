@@ -8,21 +8,24 @@ import {
     uint8
 } from "../../interfaces/Types.js"
 
-interface Vector2 {
-    x: float16;
-    y: float16;
-}
+import {
+    PlayerGameData
+} from "../../interfaces/Packets.js";
 
-export class CustomNetworkTransform extends Component {
-    name: "Player";
-    classname: "CustomNetworkTransform";
+import { parsePlayerData } from "../../Parser.js";
 
-    sequence: number;
-    position: Vector2;
-    velocity: Vector2;
+export class GameData extends Component {
+    name: "GameData";
+    classname: "GameData";
+
+    num_players: number;
+    players: Map<number, PlayerGameData>;
 
     constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
         super(client, netid);
+
+        this.num_players = null;
+        this.players = new Map;
 
         this.OnSpawn(datalen, data);
     }
@@ -32,20 +35,14 @@ export class CustomNetworkTransform extends Component {
     }
 
     OnDeserialize(datalen: number, data: Buffer): void {
-        console.log("MOVEMENT");
-
         const reader = new BufferReader(data);
 
-        this.sequence = reader.uint16LE();
+        this.num_players = reader.packed();
 
-        this.position = {
-            x: reader.uint16LE(),
-            y: reader.uint16LE()
-        }
+        for (let i = 0; i < this.num_players; i++) {
+            const player = parsePlayerData(reader);
 
-        this.velocity = {
-            x: reader.uint16LE(),
-            y: reader.uint16LE()
+            this.players.set(player.playerId, player);
         }
     }
 }
