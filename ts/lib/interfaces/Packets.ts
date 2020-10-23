@@ -141,19 +141,33 @@ export interface HostGamePayloadClientBound extends Payload {
 
 export type HostGamePayload = HostGamePayloadServerBound | HostGamePayloadClientBound;
 
-export interface JoinGamePayloadServerbound extends Payload {
+export interface JoinGamePayloadServerBound extends Payload {
     bound?: "server";
     payloadid: PayloadID.JoinGame;
     code: code;
     mapOwnership: bitfield;
 }
 
-export interface JoinGamePayloadClientbound extends DisconnectReason, Payload {
+
+export interface JoinGamePayloadClientBoundError extends DisconnectReason, Payload {
     bound?: "client";
+    error: true;
     payloadid: PayloadID.JoinGame;
 }
 
-export type JoinGamePayload = JoinGamePayloadServerbound | JoinGamePayloadClientbound;
+export interface JoinGamePayloadClientBoundPlayer extends Payload {
+    bound?: "client";
+    error: false;
+    code: int32;
+    clientid: uint32;
+    hostid: uint32;
+    payloadid: PayloadID.JoinGame;
+}
+
+export type JoinGamePayloadClientBound = JoinGamePayloadClientBoundError
+    | JoinGamePayloadClientBoundPlayer;
+
+export type JoinGamePayload = JoinGamePayloadServerBound | JoinGamePayloadClientBound;
 
 export interface StartGamePayload extends Payload {
     payloadid: PayloadID.StartGame;
@@ -166,6 +180,8 @@ export interface RemoveGamePayload extends Payload {
 
 export interface RemovePlayerPayload extends Payload {
     payloadid: PayloadID.RemovePlayer;
+    code: int32;
+    clientid: uint32;
 }
 
 export interface Message {

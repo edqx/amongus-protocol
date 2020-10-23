@@ -32,8 +32,6 @@ export class CustomNetworkTransform extends Component {
     }
 
     OnDeserialize(datalen: number, data: Buffer): void {
-        console.log("MOVEMENT");
-
         const reader = new BufferReader(data);
 
         this.sequence = reader.uint16LE();

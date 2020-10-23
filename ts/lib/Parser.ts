@@ -142,12 +142,31 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                         break;
                     case PayloadID.JoinGame:
                         if (data.bound === "client") {
-                            const dc = parseDisconnect(reader);
+                            data.error = reader.size !== 18; // For players joining the game.
 
-                            data.reason = dc.reason;
-                            data.message = dc.message;
+                            switch (data.error) { // Couldn't get typings to work with if statements so I have to deal with switch/case..
+                                case true:
+                                    const dc = parseDisconnect(reader);
+    
+                                    data.reason = dc.reason;
+                                    data.message = dc.message;
+                                    break;
+                                case false:
+                                    data.code = reader.int32LE();
+                                    data.clientid = reader.uint32LE();
+                                    data.hostid = reader.uint32LE();
+                                    break;
+                            }
+
+                            if (data.error) {
+                                const dc = parseDisconnect(reader);
+
+                                data.reason = dc.reason;
+                                data.message = dc.message;
+                            }
                         } else if (data.bound === "server") {
-                            data.code
+                            data.code = reader.int32LE();
+                            data.mapOwnership = reader.byte();
                         }
                         break;
                     case PayloadID.StartGame:
@@ -156,6 +175,8 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                     case PayloadID.RemoveGame:
                         break;
                     case PayloadID.RemovePlayer:
+                        data.code = reader.int32LE();
+                        data.clientid = reader.uint32LE();
                         break;
                     case PayloadID.GameData:
                     case PayloadID.GameDataTo:

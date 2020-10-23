@@ -9,7 +9,9 @@ import {
     MessageID,
     PacketID,
     PayloadID,
+    PetID,
     RPCID,
+    SkinID,
     SpawnID
 } from "../constants/Enums.js"
 
@@ -71,6 +73,63 @@ export class PlayerClient extends EventEmitter {
                         handlerid: this.object.components.PlayerControl.netid,
                         rpcid: RPCID.CheckName,
                         name
+                    }
+                ]
+            });
+        }
+    }
+    
+    async setHat(hat: HatID) {
+        if (this.spawned) {
+            await this.client.send({
+                op: PacketID.Reliable,
+                payloadid: PayloadID.GameDataTo,
+                recipient: this.game.hostid,
+                code: this.game.code,
+                parts: [
+                    {
+                        type: MessageID.RPC,
+                        handlerid: this.object.components.PlayerControl.netid,
+                        rpcid: RPCID.SetHat,
+                        hat
+                    }
+                ]
+            });
+        }
+    }
+    
+    async setSkin(skin: SkinID) {
+        if (this.spawned) {
+            await this.client.send({
+                op: PacketID.Reliable,
+                payloadid: PayloadID.GameDataTo,
+                recipient: this.game.hostid,
+                code: this.game.code,
+                parts: [
+                    {
+                        type: MessageID.RPC,
+                        handlerid: this.object.components.PlayerControl.netid,
+                        rpcid: RPCID.SetSkin,
+                        skin: skin
+                    }
+                ]
+            });
+        }
+    }
+    
+    async setPet(pet: PetID) {
+        if (this.spawned) {
+            await this.client.send({
+                op: PacketID.Reliable,
+                payloadid: PayloadID.GameDataTo,
+                recipient: this.game.hostid,
+                code: this.game.code,
+                parts: [
+                    {
+                        type: MessageID.RPC,
+                        handlerid: this.object.components.PlayerControl.netid,
+                        rpcid: RPCID.SetPet,
+                        pet: pet
                     }
                 ]
             });

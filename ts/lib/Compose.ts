@@ -102,11 +102,20 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                         bwrite.int32LE(packet.code);
                         bwrite.byte(packet.mapOwnership);
                     } else if (packet.bound === "client") {
-                        if (packet.reason) {
-                            bwrite.uint8(packet.reason);
-                            if (packet.reason === DisconnectID.Custom) {
-                                bwrite.string(packet.message, true);
-                            }
+                        switch (packet.error) {
+                            case true:
+                                if (packet.reason) {
+                                    bwrite.uint8(packet.reason);
+                                    if (packet.reason === DisconnectID.Custom) {
+                                        bwrite.string(packet.message, true);
+                                    }
+                                }
+                                break;
+                            case false:
+                                bwrite.int32LE(packet.code);
+                                bwrite.int32LE(packet.clientid);
+                                bwrite.int32LE(packet.hostid);
+                                break;
                         }
                     }
                     break;

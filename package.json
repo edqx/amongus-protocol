@@ -2,14 +2,15 @@
   "name": "amongus-protocol",
   "version": "1.0.0",
   "description": "A recreated Among Us protocol implemented in Typescript.",
-  "main": "index.js",
+  "main": "js/index.js",
   "scripts": {
     "build": "tsc -p .",
     "load": "node --loader ts-node/esm",
     "test": "npm run load ts/test/main.ts",
     "parse": "npm run load ts/script/parse.ts",
     "compose": "npm run load ts/script/compose.ts",
-    "view": "npm run load ts/script/view.ts"
+    "view": "npm run load ts/script/view.ts",
+    "postinstall": "npm run build"
   },
   "type": "module",
   "keywords": [],

@@ -21,6 +21,7 @@ import { Player } from "./struct/Player.js"
 import { GameData } from "./struct/GameData.js"
 
 import { Component } from "./struct/components/Component.js"
+import { PlayerClient } from "./struct/PlayerClient.js"
 
 export declare interface AmongusClient {
     on(event: "packet", listener: (packet: Packet) => void);
@@ -41,8 +42,8 @@ export class AmongusClient extends EventEmitter {
     nonce: number;
     username: string;
 
-    components: Map<number, Component>;
-    objects: Map<number, AnyObject>;
+    netobjects: Map<number, Component>;
+    gameobjects: Map<number, AnyObject>;
 
     game: Game;
     clientid: number;
@@ -53,8 +54,8 @@ export class AmongusClient extends EventEmitter {
         this.options = options;
         this.nonce = 1;
 
-        this.components = new Map;
-        this.objects = new Map;
+        this.netobjects = new Map;
+        this.gameobjects = new Map;
 
         this.game = null;
     }
@@ -71,7 +72,7 @@ export class AmongusClient extends EventEmitter {
         for (let i = 0; i < components.length; i++) {
             const component = object.components[components[i]];
 
-            this.components.set(component.netid, component);
+            this.netobjects.set(component.netid, component);
         }
         
     }
@@ -134,63 +135,83 @@ export class AmongusClient extends EventEmitter {
                 await this.ack(packet.nonce);
             }
 
-            this.debug("Recieved packet", util.inspect(packet, false, 10, true));
+            if (packet.bound === "client") {
+                this.debug("Recieved packet", buffer, util.inspect(packet, false, 10, true));
 
-            switch (packet.op) {
-                case PacketID.Unreliable:
-                case PacketID.Reliable:
-                    switch (packet.payloadid) {
-                        case PayloadID.JoinedGame:
-                            this.game = new Game(this, packet.code, packet.hostid, [packet.clientid, ...packet.clients]);
-                            this.clientid = packet.clientid;
-                            break;
-                        case PayloadID.GameData:
-                        case PayloadID.GameDataTo:
-                            if (this.game.code === packet.code) {
-                                for (let i = 0; i < packet.parts.length; i++) {
-                                    const part = packet.parts[i];
+                switch (packet.op) {
+                    case PacketID.Unreliable:
+                    case PacketID.Reliable:
+                        switch (packet.payloadid) {
+                            case PayloadID.JoinGame:
+                                switch (packet.error) {  // Couldn't get typings to work with if statements so I have to deal with switch/case..
+                                    case false:
+                                        if (packet.code === this.game.code) {
+                                            const player = new PlayerClient(this, this.game, packet.clientid);
+                                            this.game.clients.set(player.clientid, player);
+                                        }
+                                        break;
+                                }
+                                break;
+                            case PayloadID.RemovePlayer:
+                                if (packet.code === this.game.code) {
+                                    this.game.clients.delete(packet.clientid);
+                                }
+                                break;
+                            case PayloadID.JoinedGame:
+                                this.game = new Game(this, packet.code, packet.hostid, [packet.clientid, ...packet.clients]);
+                                this.clientid = packet.clientid;
+                                break;
+                            case PayloadID.GameData:
+                            case PayloadID.GameDataTo:
+                                if (this.game.code === packet.code) {
+                                    for (let i = 0; i < packet.parts.length; i++) {
+                                        const part = packet.parts[i];
 
-                                    switch (part.type) {
-                                        case MessageID.Data:
-                                            const component = this.components.get(part.netid);
+                                        switch (part.type) {
+                                            case MessageID.Data:
+                                                const component = this.netobjects.get(part.netid);
 
-                                            if (component) {
-                                                component.OnDeserialize(part.datalen, part.data);
-                                            }
-                                            break;
-                                        case MessageID.Spawn:
-                                            switch (part.spawnid) {
-                                                case SpawnID.GameData:
-                                                    const gamedata = new GameData(this, part.ownerid, part.components);
+                                                if (component) {
+                                                    component.OnDeserialize(part.datalen, part.data);
+                                                }
+                                                break;
+                                            case MessageID.Spawn:
+                                                switch (part.spawnid) {
+                                                    case SpawnID.GameData:
+                                                        const gamedata = new GameData(this, part.ownerid, part.components);
 
-                                                    this.game.emit("spawn", gamedata);
-                                                    this.emit("spawn", gamedata);
+                                                        this.game.emit("spawn", gamedata);
+                                                        this.emit("spawn", gamedata);
 
-                                                    this.registerComponents(gamedata);
+                                                        this.registerComponents(gamedata);
 
-                                                    this.objects.set(part.ownerid, gamedata);
-                                                    break;
-                                                case SpawnID.Player:
-                                                    const playerclient = this.game.clients.get(part.ownerid);
-                                                    const player = new Player(this, part.ownerid, part.components);
+                                                        this.gameobjects.set(part.ownerid, gamedata);
+                                                        break;
+                                                    case SpawnID.Player:
+                                                        const playerclient = this.game.clients.get(part.ownerid);
+                                                        const player = new Player(this, part.ownerid, part.components);
 
-                                                    this.game.emit("spawn", player);
-                                                    this.emit("spawn", player);
-                                                    
-                                                    this.registerComponents(player);
-                                                    
-                                                    playerclient.spawn(player);
-                                                    
-                                                    this.objects.set(part.ownerid, player);
-                                                    break;
-                                            }
-                                            break;
+                                                        this.game.emit("spawn", player);
+                                                        this.emit("spawn", player);
+                                                        
+                                                        this.registerComponents(player);
+                                                        
+                                                        playerclient.spawn(player);
+                                                        
+                                                        this.gameobjects.set(part.ownerid, player);
+                                                        break;
+                                                }
+                                                break;
+                                            case MessageID.Despawn:
+                                                this.netobjects.delete(part.netid);
+                                                break;
+                                        }
                                     }
                                 }
-                            }
-                            break;
-                    }
-                    break;
+                                break;
+                        }
+                        break;
+                }
             }
 
             this.emit("packet", packet);
@@ -251,6 +272,7 @@ export class AmongusClient extends EventEmitter {
     async awaitPayload(filter: (payload: PayloadPacket) => boolean): Promise<PayloadPacket|null> {
         return await this.awaitPacket(packet => {
             return (packet.op === PacketID.Unreliable || packet.op === PacketID.Reliable)
+                && packet.bound === "client"
                 && filter(packet);
         }) as PayloadPacket;
     }
@@ -363,7 +385,7 @@ export class AmongusClient extends EventEmitter {
 
                 return this.game;
             } else if (packet.payloadid === PayloadID.JoinGame) {
-                if (packet.bound === "client") {
+                if (packet.bound === "client" && packet.error) {
                     throw new Error("Join error: " + packet.reason + " (" + packet.message + ")");
                 }
             }
