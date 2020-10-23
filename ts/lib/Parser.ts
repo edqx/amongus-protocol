@@ -17,20 +17,11 @@ import {
     GameDataMessage,
     PlayerGameDataUpdate,
     TaskUpdate,
-    BaseComponent,
-    ShipStatusComponentShipStatusSpawn,
-    MeetingHubComponentMeetingHudSpawn,
-    LobbyComponentLobbyBehaviourSpawn,
-    GameDataComponentGameDataSpawn,
-    GameDataComponentVoteBanSystemSpawn,
-    PlayerComponentPlayerControlSpawn,
-    PlayerComponentPlayerPhysicsSpawn,
-    PlayerComponentCustomNetworkTransformSpawn,
-    HeadQuartersComponentShipStatusSpawn,
-    PlanetMapComponentShipStatusSpawn,
-    AprilShipStatusComponentShipStatusSpawn,
     MasterServer,
-    GameListGame
+    GameListGame,
+    MeetingHudPlayerState,
+    PlayerVoteAreaFlags,
+    Component
 } from "./interfaces/Packets.js"
 
 import { BufferReader } from "./util/BufferReader.js"
@@ -75,7 +66,7 @@ export function parseGameOptions(reader: BufferReader): GameOptionsData {
 }
 
 export function parseDisconnect(reader: BufferReader): DisconnectReason {
-    let data: DisconnectReason;
+    let data: Partial<DisconnectReason> = {};
 
     if (reader.offset < reader.size) {
         data.reason = reader.uint8();
@@ -87,7 +78,7 @@ export function parseDisconnect(reader: BufferReader): DisconnectReason {
         }
     }
 
-    return data;
+    return data as DisconnectReason;
 }
 
 export function parsePacket(buffer, bound: "server" | "client" = "client"): Packet {
@@ -157,18 +148,9 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
 
                             switch (part.type) {
                                 case MessageID.Data:
-                                    part.dataid = reader.uint8();
-
-                                    switch (part.dataid) {
-                                        case DataID.Movement:
-                                            part.sequencePart1 = reader.byte();
-                                            part.sequencePart2 = reader.byte();
-                                            part.x = reader.uint16LE(); // Should be float 16
-                                            part.y = reader.uint16LE(); // Should be float 16
-                                            part.xvel = reader.uint16LE(); // Should be float 16
-                                            part.yvel = reader.uint16LE(); // Should be float 16
-                                            break;
-                                    }
+                                    part.netid = reader.packed();
+                                    part.datalen = part_end - reader.offset;
+                                    part.data = reader.buffer.slice(reader.offset, part_end);
                                     break;
                                 case MessageID.RPC:
                                     part.sendernetid = reader.packed();
@@ -309,189 +291,16 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                     part.ownerid = reader.packed();
                                     part.flags = reader.byte();
                                     part.num_components = reader.packed();
-                                    switch (part.spawnid) {
-                                        case SpawnID.ShipStatus: {
-                                            let ShipStatus: Partial<ShipStatusComponentShipStatusSpawn> = {};
-                                            ShipStatus.netid = reader.packed();
-                                            const ShipStatusLength = reader.uint16LE();
-                                            reader.jump(0x01); // Skip type
-                                            const ShipStatusStart = reader.offset;
-                                            const ShipStatusEnd = ShipStatusStart + ShipStatusLength;
-                                            ShipStatus.name = "ShipStatus";
-                                            ShipStatus.classname = "ShipStatus";
+                                    part.components = [];
 
-                                            part.components = [
-                                                ShipStatus as ShipStatusComponentShipStatusSpawn
-                                            ];
-                                            reader.goto(ShipStatusEnd);
-                                            break;
-                                        }
-                                        case SpawnID.MeetingHub: {
-                                            let MeetingHud: Partial<MeetingHubComponentMeetingHudSpawn> = {};
-                                            MeetingHud.netid = reader.packed();
-                                            const MeetingHudLength = reader.uint16LE();
-                                            reader.jump(0x01); // Skip type
-                                            const MeetingHudStart = reader.offset;
-                                            const MeetingHudEnd = MeetingHudStart + MeetingHudLength;
-                                            MeetingHud.name = "MeetingHub";
-                                            MeetingHud.classname = "MeetingHud";
-                                            MeetingHud.playerStates = [];
+                                    for (let i = 0; i < part.num_components; i++) {
+                                        const component: Partial<Component> = {};
+                                        component.netid = reader.packed();
+                                        component.datalen = reader.uint16LE();
+                                        component.type = reader.uint8();
+                                        component.data = reader.buffer.slice(reader.offset, component.datalen);
 
-                                            // Really this uses the number of players in the game as the length, but the parser
-                                            // doesn't have access to this information, so it reads until the end of the component instead.
-                                            while (reader.offset < MeetingHudEnd) {
-                                                MeetingHud.playerStates.push(reader.uint8());
-                                            }
-
-                                            part.components = [
-                                                MeetingHud as MeetingHubComponentMeetingHudSpawn
-                                            ];
-                                            reader.goto(MeetingHudEnd);
-                                            break;
-                                        }
-                                        case SpawnID.LobbyBehaviour: {
-                                            let LobbyBehaviour: Partial<LobbyComponentLobbyBehaviourSpawn> = {};
-                                            LobbyBehaviour.netid = reader.packed();
-                                            const LobbyBehaviourLength = reader.uint16LE();
-                                            reader.jump(0x01); // Skip type
-                                            const LobbyBehaviourStart = reader.offset;
-                                            const LobbyBehaviourEnd = LobbyBehaviourStart + LobbyBehaviourLength;
-                                            LobbyBehaviour.name = "LobbyBehaviour";
-                                            LobbyBehaviour.classname = "LobbyBehaviour";
-
-                                            part.components = [
-                                                LobbyBehaviour as LobbyComponentLobbyBehaviourSpawn
-                                            ];
-                                            reader.goto(LobbyBehaviourEnd);
-                                            break;
-                                        }
-                                        case SpawnID.GameData: {
-                                            let GameData: Partial<GameDataComponentGameDataSpawn> = {};
-                                            GameData.netid = reader.packed();
-                                            const GameDataLength = reader.uint16LE();
-                                            reader.jump(0x01); // Skip type
-                                            const GameDataStart = reader.offset;
-                                            const GameDataEnd = GameDataStart + GameDataLength;
-                                            GameData.name = "GameData";
-                                            GameData.classname = "GameData";
-                                            reader.goto(GameDataEnd);
-                                            
-                                            let VoteBanSystem: Partial<GameDataComponentVoteBanSystemSpawn> = {};
-                                            VoteBanSystem.netid = reader.packed();
-                                            const VoteBanSystemLength = reader.uint16LE();
-                                            reader.jump(0x01); // Skip type
-                                            const VoteBanSystemStart = reader.offset;
-                                            const VoteBanSystemEnd = VoteBanSystemStart + VoteBanSystemLength;
-                                            VoteBanSystem.name = "GameData";
-                                            VoteBanSystem.classname = "VoteBanSystem";
-                                            reader.goto(VoteBanSystemEnd);
-
-                                            part.components = [
-                                                GameData as GameDataComponentGameDataSpawn,
-                                                VoteBanSystem as GameDataComponentVoteBanSystemSpawn
-                                            ];
-                                            break;
-                                        }
-                                        case SpawnID.Player: {
-                                            let PlayerControl: Partial<PlayerComponentPlayerControlSpawn> = {};
-                                            PlayerControl.netid = reader.packed();
-                                            const PlayerControlLength = reader.uint16LE();
-                                            reader.jump(0x01); // Skip type
-                                            const PlayerControlStart = reader.offset;
-                                            const PlayerControlEnd = PlayerControlStart + PlayerControlLength;
-                                            PlayerControl.name = "Player";
-                                            PlayerControl.classname = "PlayerControl";
-                                            PlayerControl.isNew = reader.bool();
-                                            PlayerControl.playerid = reader.uint8();
-                                            reader.goto(PlayerControlEnd);
-                                            
-                                            let PlayerPhysics: Partial<PlayerComponentPlayerPhysicsSpawn> = {};
-                                            PlayerPhysics.netid = reader.packed();
-                                            const PlayerPhysicsLength = reader.uint16LE();
-                                            reader.jump(0x01); // Skip type
-                                            const PlayerPhysicsStart = reader.offset;
-                                            const PlayerPhysicsEnd = PlayerPhysicsStart + PlayerPhysicsLength;
-                                            PlayerPhysics.name = "Player";
-                                            PlayerPhysics.classname = "PlayerPhysics";
-                                            reader.goto(PlayerPhysicsEnd);
-                                            
-                                            let CustomNetworkTransform: Partial<PlayerComponentCustomNetworkTransformSpawn> = {};
-                                            CustomNetworkTransform.netid = reader.packed();
-                                            const CustomNetworkTransformLength = reader.uint16LE();
-                                            reader.jump(0x01); // Skip type
-                                            const CustomNetworkTransformStart = reader.offset;
-                                            const CustomNetworkTransformEnd = CustomNetworkTransformStart + CustomNetworkTransformLength;
-                                            CustomNetworkTransform.name = "Player";
-                                            CustomNetworkTransform.classname = "CustomNetworkTransform";
-                                            CustomNetworkTransform.sequence = reader.uint16LE();
-
-                                            const interpolate = val => ((val / 255) * 80) - 40;
-
-                                            CustomNetworkTransform.position = [
-                                                interpolate(reader.uint8()),
-                                                interpolate(reader.uint8())
-                                            ];
-                                            CustomNetworkTransform.velocity = [
-                                                interpolate(reader.uint8()),
-                                                interpolate(reader.uint8())
-                                            ];
-                                            reader.goto(CustomNetworkTransformEnd);
-
-                                            part.components = [
-                                                PlayerControl as PlayerComponentPlayerControlSpawn,
-                                                PlayerPhysics as PlayerComponentPlayerPhysicsSpawn,
-                                                CustomNetworkTransform as PlayerComponentCustomNetworkTransformSpawn
-                                            ];
-                                            break;
-                                        }
-                                        case SpawnID.HeadQuarters: {
-                                            let ShipStatus: Partial<HeadQuartersComponentShipStatusSpawn> = {};
-                                            ShipStatus.netid = reader.packed();
-                                            const ShipStatusLength = reader.uint16LE();
-                                            reader.jump(0x01); // Skip type
-                                            const ShipStatusStart = reader.offset;
-                                            const ShipStatusEnd = ShipStatusStart + ShipStatusLength;
-                                            ShipStatus.name = "HeadQuarters";
-                                            ShipStatus.classname = "ShipStatus";
-                                            reader.goto(ShipStatusEnd);
-
-                                            part.components = [
-                                                ShipStatus as HeadQuartersComponentShipStatusSpawn
-                                            ];
-                                            break;
-                                        }
-                                        case SpawnID.PlanetMap: {
-                                            let ShipStatus: Partial<PlanetMapComponentShipStatusSpawn> = {};
-                                            ShipStatus.netid = reader.packed();
-                                            const ShipStatusLength = reader.uint16LE();
-                                            reader.jump(0x01); // Skip type
-                                            const ShipStatusStart = reader.offset;
-                                            const ShipStatusEnd = ShipStatusStart + ShipStatusLength;
-                                            ShipStatus.name = "PlanetMap";
-                                            ShipStatus.classname = "ShipStatus";
-                                            reader.goto(ShipStatusEnd);
-
-                                            part.components = [
-                                                ShipStatus as PlanetMapComponentShipStatusSpawn
-                                            ];
-                                            break;
-                                        }
-                                        case SpawnID.AprilShipStatus: {
-                                            let ShipStatus: Partial<AprilShipStatusComponentShipStatusSpawn> = {};
-                                            ShipStatus.netid = reader.packed();
-                                            const ShipStatusLength = reader.uint16LE();
-                                            reader.jump(0x01); // Skip type
-                                            const ShipStatusStart = reader.offset;
-                                            const ShipStatusEnd = ShipStatusStart + ShipStatusLength;
-                                            ShipStatus.name = "AprilShipStatus";
-                                            ShipStatus.classname = "ShipStatus";
-                                            reader.goto(ShipStatusEnd);
-
-                                            part.components = [
-                                                ShipStatus as AprilShipStatusComponentShipStatusSpawn
-                                            ];
-                                            break;
-                                        }
+                                        part.components.push(component as Component);
                                     }
                                     break;
                                 case MessageID.Despawn:
@@ -515,8 +324,8 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                         break;
                     case PayloadID.JoinedGame:
                         data.code = reader.int32LE();
-                        data.clientid = reader.packed();
-                        data.hostid = reader.packed();
+                        data.clientid = reader.uint32LE();
+                        data.hostid = reader.uint32LE();
                         data.num_clients = reader.packed();
                         data.clients = [];
                         for (let i = 0; i < data.num_clients; i++) {
@@ -585,20 +394,18 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                 break;
             case PacketID.Hello:
                 data.reliable = true;
-                data.nonce = reader.uint8();
+                data.nonce = reader.uint16BE();
                 data.hazelver = reader.byte();
                 data.clientver = reader.int32LE();
                 data.username = reader.string();
                 break;
             case PacketID.Disconnect:
-                if (reader.size > 1) {
-                    data.reason = reader.uint8();
-                
-                    if (data.reason === DisconnectID.Custom) {
-                        data.message = reader.string();
-                    } else {
-                        data.message = DisconnectMessages[data.reason];
-                    }
+                if (data.bound === "client") {
+                    reader.jump(0x04); // Skip unnecessary bytes.
+                    const dc = parseDisconnect(reader);
+
+                    data.reason = dc.reason;
+                    data.message = dc.message;
                 }
                 break;
             case PacketID.Acknowledge:

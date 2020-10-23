@@ -7,4 +7,4 @@ const buff = Buffer.from(bytes.match(/[A-Fa-f0-9]{1,2}/g).map(to_num));
 
 const parsed = parsePacket(buff, "client");
 
-console.log(util.inspect(parsed, false, 10, false));
+console.log(util.inspect(parsed, false, 10, true));

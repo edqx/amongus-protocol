@@ -1,35 +1,40 @@
-import { DataID, DisconnectID, MessageID, PacketID, PayloadID, RPCID } from "./constants/Enums.js";
+import { DataID, DisconnectID, DistanceID, LanguageID, MapID, MessageID, PacketID, PayloadID, RPCID, TaskBarUpdate } from "./constants/Enums.js";
 import { BufferWriter } from "./util/BufferWriter.js";
-export function composeGameOptions(bwrite, options) {
-    bwrite.packed(options.length);
+export function composeGameOptions(options) {
+    options.version = options.version ?? 3;
+    const bwrite = new BufferWriter;
+    bwrite.jump(0x02);
     bwrite.byte(options.version);
-    bwrite.uint8(options.maxPlayers);
-    bwrite.uint32LE(options.language);
-    bwrite.byte(options.mapID);
-    bwrite.floatLE(options.playerSpeed);
-    bwrite.floatLE(options.crewVision);
-    bwrite.floatLE(options.imposterVision);
-    bwrite.floatLE(options.killCooldown);
-    bwrite.uint8(options.commonTasks);
-    bwrite.uint8(options.longTasks);
-    bwrite.uint8(options.shortTasks);
-    bwrite.int32LE(options.emergencies);
-    bwrite.uint8(options.imposterCount);
-    bwrite.byte(options.killDistance);
-    bwrite.int32LE(options.discussionTime);
-    bwrite.int32LE(options.votingTime);
-    bwrite.bool(options.isDefault);
+    bwrite.uint8(options.maxPlayers ?? 10);
+    bwrite.uint32LE(options.language ?? LanguageID.English);
+    bwrite.byte(options.mapID ?? MapID.TheSkeld);
+    bwrite.floatLE(options.playerSpeed ?? 1.0);
+    bwrite.floatLE(options.crewVision ?? 1.0);
+    bwrite.floatLE(options.imposterVision ?? 1.25);
+    bwrite.floatLE(options.killCooldown ?? 25);
+    bwrite.uint8(options.commonTasks ?? 1);
+    bwrite.uint8(options.longTasks ?? 1);
+    bwrite.uint8(options.shortTasks ?? 2);
+    bwrite.int32LE(options.emergencies ?? 1);
+    bwrite.uint8(options.imposterCount ?? 2);
+    bwrite.byte(options.killDistance ?? DistanceID.Medium);
+    bwrite.int32LE(options.discussionTime ?? 15);
+    bwrite.int32LE(options.votingTime ?? 120);
+    bwrite.bool(options.isDefault ?? false);
     if (options.version === 1 || options.version === 2 || options.version === 3) {
-        bwrite.uint8(options.emergencyCooldown);
+        bwrite.uint8(options.emergencyCooldown ?? 15);
     }
     if (options.version === 2 || options.version === 3) {
-        bwrite.bool(options.confirmEjects);
-        bwrite.bool(options.visualTasks);
+        bwrite.bool(options.confirmEjects ?? true);
+        bwrite.bool(options.visualTasks ?? true);
     }
     if (options.version === 3) {
-        bwrite.bool(options.anonymousVoting);
-        bwrite.uint8(options.taskBarUpdates);
+        bwrite.bool(options.anonymousVoting ?? false);
+        bwrite.uint8(options.taskBarUpdates ?? TaskBarUpdate.Always);
     }
+    bwrite.goto(0x00);
+    bwrite.packed(bwrite.size - 2);
+    return bwrite;
 }
 export function composePacket(packet, bound = "server") {
     packet.bound = bound;
@@ -41,19 +46,19 @@ export function composePacket(packet, bound = "server") {
     if (packet.op === PacketID.Unreliable) {
         packet.reliable = false;
     }
-    if (packet.reliable) {
-        bwrite.uint16BE(packet.nonce);
-    }
     switch (packet.op) {
         case PacketID.Unreliable:
         case PacketID.Reliable:
+            if (packet.op === PacketID.Reliable) {
+                bwrite.uint16BE(packet.nonce);
+            }
             const lenpos = bwrite.offset;
             bwrite.jump(0x02); // Jump the length of the payload (will be written later).
             bwrite.uint8(packet.payloadid);
             switch (packet.payloadid) {
                 case PayloadID.HostGame:
                     if (packet.bound === "server") {
-                        composeGameOptions(bwrite, packet.options);
+                        bwrite.write(composeGameOptions(packet.options));
                     }
                     else if (packet.bound === "client") {
                         bwrite.int32LE(packet.code);
@@ -113,7 +118,7 @@ export function composePacket(packet, bound = "server") {
                                         mwrite.uint8(part.taskid);
                                         break;
                                     case RPCID.SyncSettings:
-                                        composeGameOptions(mwrite, part.options);
+                                        bwrite.write(composeGameOptions(part.options));
                                         break;
                                     case RPCID.SetInfected:
                                         mwrite.packed(part.count);
@@ -318,7 +323,7 @@ export function composePacket(packet, bound = "server") {
                     }
                     else if (packet.bound === "server") {
                         bwrite.uint8(0x00);
-                        composeGameOptions(bwrite, packet.options);
+                        bwrite.write(composeGameOptions(packet.options));
                     }
                     break;
             }
@@ -326,22 +331,32 @@ export function composePacket(packet, bound = "server") {
             bwrite.uint16LE(bwrite.buffer.slice(lenpos + 3).byteLength); // Length of the payload (not including the type).
             break;
         case PacketID.Hello:
+            bwrite.uint16BE(packet.nonce);
+            bwrite.byte(packet.hazelver || 0x00);
+            bwrite.int32BE(packet.clientver || 0x46d20203);
             bwrite.string(packet.username, true);
             break;
         case PacketID.Disconnect:
-            if (packet.reason) {
-                bwrite.uint8(packet.reason);
-                if (packet.reason === DisconnectID.Custom) {
-                    bwrite.string(packet.message, true);
+            if (packet.bound === "client") {
+                const dwrite = new BufferWriter;
+                if (packet.reason) {
+                    dwrite.uint8(packet.reason);
+                    if (packet.reason === DisconnectID.Custom && packet.message) {
+                        dwrite.string(packet.message, true);
+                    }
                 }
+                bwrite.uint8(0x01);
+                bwrite.uint16LE(dwrite.size);
+                bwrite.uint8(0x00);
+                bwrite.write(dwrite);
             }
             break;
         case PacketID.Acknowledge:
-            bwrite.uint16LE(packet.nonce);
+            bwrite.uint16BE(packet.nonce);
             bwrite.uint8(0xFF);
             break;
         case PacketID.Ping:
-            // Nonce is already writer.
+            // Nonce is already written.
             break;
     }
     return bwrite.buffer;

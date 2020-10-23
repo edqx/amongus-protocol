@@ -1,4 +1,6 @@
 export class Game {
-    constructor() {
+    constructor(client, code) {
+        this.client = client;
+        this.code = code;
     }
 }

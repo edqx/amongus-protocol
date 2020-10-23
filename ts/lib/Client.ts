@@ -5,15 +5,17 @@ import { parsePacket } from "./Parser.js"
 import { composePacket } from "./Compose.js"
 
 import dgram from "dgram"
+import util from "util"
 import { EventEmitter } from "events"
 import { Packet, Payload, PayloadPacket } from "./interfaces/Packets.js"
-import { DisconnectID, LanguageID, PacketID, PayloadID } from "./constants/Enums.js"
+import { DisconnectID, LanguageID, MapID, MessageID, PacketID, PayloadID } from "./constants/Enums.js"
 import { DisconnectMessages } from "./constants/DisconnectMessages.js"
 import { runInThisContext } from "vm"
 import { Code2Int } from "./util/codes.js"
 import { Game } from "./struct/Game.js"
 import { ppid } from "process"
 import { bitfield } from "./interfaces/Types.js"
+import { JoinOptions } from "./interfaces/JoinOptions.js"
 
 export declare interface AmongusClient {
     on(event: "packet", listener: (packet: Packet) => void);
@@ -115,13 +117,24 @@ export class AmongusClient extends EventEmitter {
                 await this.ack(packet.nonce);
             }
 
-            this.debug("Recieved packet", packet);
+            this.debug("Recieved packet", buffer, util.inspect(packet, false, 10, true));
+
+            switch (packet.op) {
+                case PacketID.Unreliable:
+                case PacketID.Reliable:
+                    switch (packet.payloadid) {
+                        case PayloadID.JoinedGame:
+                            this.game = new Game(this, packet.code);
+                            break;
+                    }
+                    break;
+            }
 
             this.emit("packet", packet);
         });
     }
 
-    async connect(ip: string, port: number, username: string) {
+    async connect(ip: string, port: number, username: string): Promise<boolean|number> {
         if (this.socket) {
             await this.disconnect();
         }
@@ -130,7 +143,11 @@ export class AmongusClient extends EventEmitter {
 
         if (await this.hello(username)) {
             this.emit("connected");
+
+            return true;
         }
+
+        return false;
     }
 
     _send(buffer: Buffer): Promise<void> {
@@ -182,6 +199,7 @@ export class AmongusClient extends EventEmitter {
             case PacketID.Reliable:
             case PacketID.Hello:
             case PacketID.Ping:
+                packet.reliable = true;
                 packet.nonce = nonce;
                 this.nonce++;
                 break;
@@ -194,14 +212,18 @@ export class AmongusClient extends EventEmitter {
         this.debug("Sent packet", composed);
 
         if (packet.reliable) {
-            const interval = setInterval(function () {
+            const interval = setInterval(() => {
                 this._send(composed);
             }, this.options.ackInterval || 1500);
+
+            this.debug("Awaiting acknowledege", nonce);
 
             const ack = await this.awaitPacket(packet => {
                 return packet.op === PacketID.Acknowledge
                     && packet.nonce === nonce;
             });
+            
+            this.debug("Recieved acknowledege", nonce);
 
             clearInterval(interval);
 
@@ -231,15 +253,23 @@ export class AmongusClient extends EventEmitter {
         return false;
     }
 
-    async join(code: string|number) {
+    async join(code: string|number, options: JoinOptions = {}): Promise<Game> {
         if (typeof code === "string") {
             return this.join(Code2Int(code));
         }
 
+        if (this.game) {
+            throw new Error("Join Error: You are already in a game. Please leave or end your current game before playing another.");
+        }
+        
+        const join_options: JoinOptions = {
+            doSpawn: true,
+            ...options
+        };
+
         await this.send({
             op: PacketID.Reliable,
             payloadid: PayloadID.JoinGame,
-            bound: "server",
             code: code,
             mapOwnership: 0x07
         });
@@ -258,23 +288,46 @@ export class AmongusClient extends EventEmitter {
 
                 return await this.join(code);
             } else if (packet.payloadid === PayloadID.JoinedGame) {
+                if (join_options.doSpawn) {
+                    await this.send({
+                        op: PacketID.Reliable,
+                        payloadid: PayloadID.GameData,
+                        code: packet.code,
+                        parts: [
+                            {
+                                type: MessageID.SceneChange,
+                                clientid: packet.clientid,
+                                location: "OnlineGame"
+                            }
+                        ]
+                    });
+                }
 
+                return this.game;
             } else if (packet.payloadid === PayloadID.JoinGame) {
-
+                if (packet.bound === "client") {
+                    throw new Error("Join error: " + packet.reason + " (" + packet.message + ")");
+                }
             }
         } else {
-            return false;
+            return null;
         }
     }
     
-    async search(map: bitfield = 0, imposters: number = 0, language: LanguageID = LanguageID.Any) {
+    async search(maps: bitfield|MapID[] = 0, imposters: number = 0, language: LanguageID = LanguageID.Any) {
+        if (Array.isArray(maps)) {
+            return maps.reduce((val, map) => val + (1 << map), 0);
+        }
+        
         await this.send({
             op: PacketID.Reliable,
             payloadid: PayloadID.GameList,
             bound: "server",
             options: {
-                
+                mapID: maps,
+                imposterCount: imposters,
+                language
             }
-        })
+        });
     }
 }

@@ -20,18 +20,21 @@ export enum DisconnectID {
     GameFull = 0x01,
     GameStarted = 0x02,
     GameNotFound = 0x03,
-    OldCustom = 0x04,
-    OutdatedClient = 0x05,
+    IncorrectVersion = 0x05,
     Banned = 0x06,
     Kicked = 0x07,
     Custom = 0x08,
-    InvalidUsername = 0x09,
+    InvalidName = 0x09,
     Hacking = 0x0a,
-    Force = 0x10,
-    BadConnection = 0x11,
-    GameNotFound2 = 0x12,
-    ServerClosed = 0x13,
-    ServerOverloaded = 0x14
+    Destroy = 0x10,
+    Error = 0x11,
+    IncorrectGame = 0x12,
+    ServerRequest = 0x13,
+    ServerFull = 0x14,
+    FocusLostBackground = 0xcf,
+    IntentionalLeaving = 0xd0,
+    FocusLost = 0xd1,
+    NewConnection = 0xd2
 }
 
 export enum DistanceID {

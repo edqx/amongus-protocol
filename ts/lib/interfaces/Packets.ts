@@ -106,9 +106,17 @@ export interface DisconnectReason {
     message?: string;
 }
 
-export interface DisconnectPacket extends DisconnectReason, Unreliable {
+export interface DisconnectPacketClientBound extends DisconnectReason, Unreliable {
+    bound?: "client",
     op: PacketID.Disconnect;
 }
+
+export interface DisconnectPacketServerBound extends Unreliable {
+    bound?: "server",
+    op: PacketID.Disconnect;
+}
+
+export type DisconnectPacket = DisconnectPacketClientBound | DisconnectPacketServerBound;
 
 export interface AcknowledegePacket extends Unreliable {
     op: PacketID.Acknowledge;
@@ -121,27 +129,27 @@ export interface PingPacket extends Reliable {
 
 export interface HostGamePayloadServerBound extends Payload {
     payloadid: PayloadID.HostGame;
-    bound: "server";
+    bound?: "server";
     options: Partial<GameOptionsData>;
 }
 
 export interface HostGamePayloadClientBound extends Payload {
     payloadid: PayloadID.HostGame;
-    bound: "client";
+    bound?: "client";
     code: code;
 }
 
 export type HostGamePayload = HostGamePayloadServerBound | HostGamePayloadClientBound;
 
 export interface JoinGamePayloadServerbound extends Payload {
-    bound: "server";
+    bound?: "server";
     payloadid: PayloadID.JoinGame;
     code: code;
     mapOwnership: bitfield;
 }
 
 export interface JoinGamePayloadClientbound extends DisconnectReason, Payload {
-    bound: "client";
+    bound?: "client";
     payloadid: PayloadID.JoinGame;
 }
 
@@ -164,22 +172,12 @@ export interface Message {
     type: MessageID;
 }
 
-export interface Data extends Message {
+export interface DataMessage extends Message {
     type: MessageID.Data;
-    dataid: DataID;
+    netid: packed;
+    datalen: uint16;
+    data: Buffer;
 }
-
-export interface DataMovement extends Data {
-    dataid: DataID.Movement;
-    sequencePart1: uint8;
-    sequencePart2: uint8;
-    x: float16;
-    y: float16;
-    xvel: float16;
-    yvel: float16;
-}
-
-export type DataMessage = DataMovement;
 
 export interface RPC extends Message {
     type: MessageID.RPC;
@@ -402,17 +400,6 @@ export type RPCMessage = RPCPlayAnimation
     | RPCSetTasks
     | RPCUpdateGameData;
 
-export interface BaseComponent {
-    netid: packed;
-    name: string;
-    classname: string;
-}
-
-export interface ShipStatusComponentShipStatusSpawn extends BaseComponent {
-    name: "ShipStatus";
-    classname: "ShipStatus";
-}
-
 export enum PlayerVoteAreaFlags {
     VotedFor = 0x0f,
     DidReport = 0x20,
@@ -420,72 +407,21 @@ export enum PlayerVoteAreaFlags {
     IsDead = 0x80
 }
 
-export interface MeetingHubComponentMeetingHudSpawn extends BaseComponent {
-    name: "MeetingHub";
-    classname: "MeetingHud";
-    playerStates: PlayerVoteAreaFlags[];
+export interface MeetingHudPlayerState {
+    flags: PlayerVoteAreaFlags;
+    playerid: number;
+    votedFor: uint8;
+    reported: boolean;
+    voted: boolean;
+    dead: boolean;
 }
 
-export interface LobbyComponentLobbyBehaviourSpawn extends BaseComponent {
-    name: "LobbyBehaviour";
-    classname: "LobbyBehaviour";
+export interface Component {
+    netid: packed;
+    datalen: uint16;
+    data: Buffer;
+    type: uint8;
 }
-
-export interface GameDataComponentGameDataSpawn extends BaseComponent {
-    name: "GameData";
-    classname: "GameData";
-}
-
-export interface GameDataComponentVoteBanSystemSpawn extends BaseComponent {
-    name: "GameData";
-    classname: "VoteBanSystem";
-}
-
-export interface PlayerComponentPlayerControlSpawn extends BaseComponent {
-    name: "Player";
-    classname: "PlayerControl";
-    isNew: boolean;
-    playerid: uint8;
-}
-
-export interface PlayerComponentPlayerPhysicsSpawn extends BaseComponent {
-    name: "Player";
-    classname: "PlayerPhysics";
-}
-
-export interface PlayerComponentCustomNetworkTransformSpawn extends BaseComponent {
-    name: "Player";
-    classname: "CustomNetworkTransform";
-    sequence: uint16;
-    position: vector<float, float>;
-    velocity: vector<float, float>;
-}
-
-export interface HeadQuartersComponentShipStatusSpawn extends BaseComponent {
-    name: "HeadQuarters";
-    classname: "ShipStatus";
-}
-
-export interface PlanetMapComponentShipStatusSpawn extends BaseComponent {
-    name: "PlanetMap";
-    classname: "ShipStatus";
-}
-
-export interface AprilShipStatusComponentShipStatusSpawn extends BaseComponent {
-    name: "AprilShipStatus";
-    classname: "ShipStatus";
-}
-
-export type Component = MeetingHubComponentMeetingHudSpawn
-    | LobbyComponentLobbyBehaviourSpawn
-    | GameDataComponentGameDataSpawn
-    | GameDataComponentVoteBanSystemSpawn
-    | PlayerComponentPlayerControlSpawn
-    | PlayerComponentPlayerPhysicsSpawn
-    | PlayerComponentCustomNetworkTransformSpawn
-    | HeadQuartersComponentShipStatusSpawn
-    | PlanetMapComponentShipStatusSpawn
-    | AprilShipStatusComponentShipStatusSpawn;
 
 export interface ObjectSpawn extends Message {
     type: MessageID.Spawn;
@@ -493,50 +429,39 @@ export interface ObjectSpawn extends Message {
     ownerid: packed;
     flags: bitfield;
     num_components: packed;
+    components: Component[];
 }
 
 export interface ShipStatusSpawn extends ObjectSpawn {
     spawnid: SpawnID.ShipStatus;
-    components: [ShipStatusComponentShipStatusSpawn];
 }
 
 export interface MeetingHubSpawn extends ObjectSpawn {
     spawnid: SpawnID.MeetingHub;
-    components: [MeetingHubComponentMeetingHudSpawn];
 }
 
 export interface LobbySpawn extends ObjectSpawn {
     spawnid: SpawnID.LobbyBehaviour;
-    components: [LobbyComponentLobbyBehaviourSpawn];
 }
 
 export interface GameDataSpawn extends ObjectSpawn {
     spawnid: SpawnID.GameData;
-    components: [GameDataComponentGameDataSpawn, GameDataComponentVoteBanSystemSpawn];
 }
 
 export interface PlayerSpawn extends ObjectSpawn {
     spawnid: SpawnID.Player;
-    components: [
-        PlayerComponentPlayerControlSpawn,
-        PlayerComponentPlayerPhysicsSpawn,
-        PlayerComponentCustomNetworkTransformSpawn
-    ];
 }
 
 export interface HeadQuartersSpawn extends ObjectSpawn {
     spawnid: SpawnID.HeadQuarters;
-    components: [HeadQuartersComponentShipStatusSpawn];
 }
 
 export interface PlanetMapSpawn extends ObjectSpawn {
     spawnid: SpawnID.PlanetMap;
-    components: [PlanetMapComponentShipStatusSpawn];
 }
 
 export interface AprilShipStatusSpawn extends ObjectSpawn {
     spawnid: SpawnID.AprilShipStatus;
-    components: [AprilShipStatusComponentShipStatusSpawn];
 }
 
 export type SpawnMessage = ShipStatusSpawn
@@ -653,13 +578,13 @@ export interface GameListGame {
 }
 
 export interface GameListPayloadClientbound extends Payload {
-    bound: "client";
+    bound?: "client";
     payloadid: PayloadID.GameList;
     games: GameListGame[];
 }
 
 export interface GameListPayloadServerBound extends Payload {
-    bound: "server";
+    bound?: "server";
     payloadid: PayloadID.GameList;
     options: Partial<GameOptionsData>;
 }

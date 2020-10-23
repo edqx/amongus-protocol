@@ -1,0 +1,44 @@
+import { Component } from "./Component.js"
+import { BufferReader } from "../../util/BufferReader.js"
+
+import {
+    SystemType
+} from "../../constants/Enums.js"
+
+import {
+    float16,
+    uint8
+} from "../../interfaces/Types.js"
+
+interface ShipStatusOnSpawn {
+
+}
+
+interface ShipStatusOnDeserialize {
+
+}
+
+interface SystemStatus {
+    OnSpawn(datalen: number, data: Buffer): any;
+    OnDeserialize(datalen: number, data: Buffer): any;
+}
+
+const Systems = {
+
+}
+
+export class ShipStatus extends Component {
+    constructor(public netid: number, datalen: number, data: Buffer) {
+        super(netid, datalen, data);
+
+        this.OnSpawn(datalen, data);
+    }
+
+    OnSpawn(datalen: number, data: Buffer): void {
+
+    }
+
+    OnDeserialize(datalen: number, data: Buffer): void {
+
+    }
+}

@@ -44,29 +44,9 @@ export class BufferReader {
     [util.inspect.custom]() {
         return this.buffer;
     }
-
-    cut(start: number, len?: number): BufferReader {
-        if (typeof len === "undefined") {
-            return this.slice(this.offset, start);
-        }
-
-        return new BufferReader(this.buffer.slice(start, start + len));
-    }
     
     slice(start?: number, len?: number): BufferReader {
-        if (typeof start === "undefined") {
-            return this.slice(this.offset);
-        }
-
-        if (typeof len === "undefined") {
-            return new BufferReader(this.buffer.slice(start));
-        }
-
-        if (start < 0) {
-            return this.slice(this.offset + start, len);
-        }
-
-        return new BufferReader(this.buffer.slice(start, start + len));
+        return new BufferReader(this.buffer.slice(start, len));
     }
     
     /**

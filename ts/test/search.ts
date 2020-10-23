@@ -1,4 +1,4 @@
-import { AmongusClient, MasterServers } from "../index.js"
+import { AmongusClient, MasterServers, MapID } from "../index.js"
 
 const client = new AmongusClient({
     debug: true
@@ -6,6 +6,4 @@ const client = new AmongusClient({
 
 await client.connect(MasterServers.EU[0][0], MasterServers.EU[0][1], "weakeyes");
 
-await client.join(process.argv[2], {
-    doSpawn: false
-});
+await client.search([MapID.TheSkeld]);

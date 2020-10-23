@@ -351,7 +351,7 @@ export function parsePacket(buffer, bound = "client") {
                                             PlayerPhysics.classname = "PlayerPhysics";
                                             reader.goto(PlayerPhysicsEnd);
                                             let CustomNetworkTransform = {};
-                                            PlayerPhysics.netid = reader.packed();
+                                            CustomNetworkTransform.netid = reader.packed();
                                             const CustomNetworkTransformLength = reader.uint16LE();
                                             reader.jump(0x01); // Skip type
                                             const CustomNetworkTransformStart = reader.offset;
@@ -377,7 +377,7 @@ export function parsePacket(buffer, bound = "client") {
                                             break;
                                         }
                                         case SpawnID.HeadQuarters: {
-                                            let ShipStatus;
+                                            let ShipStatus = {};
                                             ShipStatus.netid = reader.packed();
                                             const ShipStatusLength = reader.uint16LE();
                                             reader.jump(0x01); // Skip type
@@ -392,7 +392,7 @@ export function parsePacket(buffer, bound = "client") {
                                             break;
                                         }
                                         case SpawnID.PlanetMap: {
-                                            let ShipStatus;
+                                            let ShipStatus = {};
                                             ShipStatus.netid = reader.packed();
                                             const ShipStatusLength = reader.uint16LE();
                                             reader.jump(0x01); // Skip type
@@ -407,7 +407,7 @@ export function parsePacket(buffer, bound = "client") {
                                             break;
                                         }
                                         case SpawnID.AprilShipStatus: {
-                                            let ShipStatus;
+                                            let ShipStatus = {};
                                             ShipStatus.netid = reader.packed();
                                             const ShipStatusLength = reader.uint16LE();
                                             reader.jump(0x01); // Skip type
@@ -510,17 +510,23 @@ export function parsePacket(buffer, bound = "client") {
                 }
                 break;
             case PacketID.Hello:
-                data.nonce = reader.uint8();
+                data.reliable = true;
+                data.nonce = reader.uint16BE();
+                data.hazelver = reader.byte();
+                data.clientver = reader.int32LE();
                 data.username = reader.string();
                 break;
             case PacketID.Disconnect:
-                if (reader.size > 1) {
-                    data.reason = reader.uint8();
-                    if (data.reason === DisconnectID.Custom) {
-                        data.message = reader.string();
-                    }
-                    else {
-                        data.message = DisconnectMessages[data.reason];
+                if (data.bound === "client") {
+                    reader.jump(0x04); // Skip unnecessary bytes.
+                    if (reader.size > 1) {
+                        data.reason = reader.uint8();
+                        if (data.reason === DisconnectID.Custom) {
+                            data.message = reader.string();
+                        }
+                        else {
+                            data.message = DisconnectMessages[data.reason];
+                        }
                     }
                 }
                 break;
@@ -528,6 +534,7 @@ export function parsePacket(buffer, bound = "client") {
                 data.nonce = reader.uint16BE();
                 break;
             case PacketID.Ping:
+                data.reliable = true;
                 data.nonce = reader.uint16BE();
                 break;
         }
