@@ -1,10 +1,12 @@
 import { AmongusClient } from "../Client.js"
 
-import { Player } from "./Player.js"
+import { Player } from "./objects/Player.js"
 import { Game } from "./Game.js"
+import { CustomNetworkTransform } from "./components/CustomNetworkTransform.js"
 
 import {
     ColourID,
+    DataID,
     HatID,
     MessageID,
     PacketID,
@@ -15,10 +17,9 @@ import {
     SpawnID
 } from "../constants/Enums.js"
 
-import { ComponentData } from "../interfaces/Packets.js"
-
 import { EventEmitter } from "events"
-import { POINT_CONVERSION_HYBRID } from "constants"
+import { float, uint16 } from "../interfaces/Types.js"
+import { BufferWriter } from "../util/BufferWriter.js"
 
 export interface PlayerClient {
     on(event: "spawn", listener: (player: Player) => void);
@@ -41,6 +42,14 @@ export class PlayerClient extends EventEmitter {
         this.emit("spawn", object);
     }
 
+    get PlayerControl() {
+        return this?.object?.components?.PlayerControl;
+    }
+
+    get CustomNetworkTransform() {
+        return this?.object?.components?.CustomNetworkTransform;
+    }
+
     async setColour(colour: ColourID) {
         if (this.spawned) {
             await this.client.send({
@@ -51,7 +60,7 @@ export class PlayerClient extends EventEmitter {
                 parts: [
                     {
                         type: MessageID.RPC,
-                        handlerid: this.object.components.PlayerControl.netid,
+                        handlerid: this.PlayerControl.netid,
                         rpcid: RPCID.CheckColour,
                         colour
                     }
@@ -70,12 +79,17 @@ export class PlayerClient extends EventEmitter {
                 parts: [
                     {
                         type: MessageID.RPC,
-                        handlerid: this.object.components.PlayerControl.netid,
+                        handlerid: this.PlayerControl.netid,
                         rpcid: RPCID.CheckName,
                         name
                     }
                 ]
             });
+
+            await this.client.awaitPacket(packet => packet.bound === "client"
+                && packet.op === PacketID.Reliable
+                && packet.payloadid === PayloadID.GameData
+                && !!packet.parts.find(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetName));
         }
     }
     
@@ -89,7 +103,7 @@ export class PlayerClient extends EventEmitter {
                 parts: [
                     {
                         type: MessageID.RPC,
-                        handlerid: this.object.components.PlayerControl.netid,
+                        handlerid: this.PlayerControl.netid,
                         rpcid: RPCID.SetHat,
                         hat
                     }
@@ -108,7 +122,7 @@ export class PlayerClient extends EventEmitter {
                 parts: [
                     {
                         type: MessageID.RPC,
-                        handlerid: this.object.components.PlayerControl.netid,
+                        handlerid: this.PlayerControl.netid,
                         rpcid: RPCID.SetSkin,
                         skin: skin
                     }
@@ -127,7 +141,7 @@ export class PlayerClient extends EventEmitter {
                 parts: [
                     {
                         type: MessageID.RPC,
-                        handlerid: this.object.components.PlayerControl.netid,
+                        handlerid: this.PlayerControl.netid,
                         rpcid: RPCID.SetPet,
                         pet: pet
                     }
@@ -145,7 +159,7 @@ export class PlayerClient extends EventEmitter {
                 parts: [
                     {
                         type: MessageID.RPC,
-                        handlerid: this.object.components.PlayerControl.netid,
+                        handlerid: this.PlayerControl.netid,
                         rpcid: RPCID.SendChat,
                         text
                     }

@@ -17,6 +17,9 @@ import {
     float16,
     vector
 } from "../interfaces/Types.js"
+ 
+import { getFloat32} from "./Float16.js"
+
 /**
  * Represents a buffer reader.
  */
@@ -217,6 +220,24 @@ export class BufferReader {
         this.offset += 0x04;
 
         return val;
+    }
+
+    /**
+     * Read a Big-Endian 16 bit half-precision float.
+     */
+    float16BE(): float {
+        const val = this.uint16BE();
+
+        return getFloat32(val);
+    }
+
+    /**
+     * Read a Little-Endian 16 bit half-precision float.
+     */
+    float16LE(): float {
+        const val = this.uint16BE();
+
+        return getFloat32(val);
     }
 
     /**

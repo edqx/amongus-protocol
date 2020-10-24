@@ -52,12 +52,12 @@ export function parseGameOptions(reader: BufferReader): GameOptionsData {
     if (options.version === 1 || options.version === 2 || options.version === 3) {
         options.emergencyCooldown = reader.uint8();
     }
-    
+
     if (options.version === 2 || options.version === 3) {
         options.confirmEjects = reader.bool();
         options.visualTasks = reader.bool();
     }
-    
+
     if (options.version === 3) {
         options.anonymousVoting = reader.bool();
         options.taskBarUpdates = reader.uint8();
@@ -177,6 +177,10 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                     case PayloadID.RemovePlayer:
                         data.code = reader.int32LE();
                         data.clientid = reader.uint32LE();
+                        data.hostid = reader.uint32LE();
+                        const dcreason = parseDisconnect(reader);
+                        data.reason = dcreason.reason;
+                        data.message = dcreason.message;
                         break;
                     case PayloadID.GameData:
                     case PayloadID.GameDataTo:

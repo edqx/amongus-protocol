@@ -65,9 +65,9 @@ export function composeGameOptions(options: Partial<GameOptionsData>) {
 export function composePacket(packet: Packet, bound: "server"|"client" = "server"): Buffer {
     packet.bound = bound;
 
-    const bwrite = new BufferWriter;
+    const writer = new BufferWriter;
 
-    bwrite.uint8(packet.op);
+    writer.uint8(packet.op);
     
     if (packet.op === PacketID.Reliable) {
         packet.reliable = true;
@@ -81,56 +81,67 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
         case PacketID.Unreliable:
         case PacketID.Reliable:
             if (packet.op === PacketID.Reliable) {
-                bwrite.uint16BE(packet.nonce);
+                writer.uint16BE(packet.nonce);
             }
             
-            const lenpos = bwrite.offset;
-            bwrite.jump(0x02); // Jump the length of the payload (will be written later).
+            const lenpos = writer.offset;
+            writer.jump(0x02); // Jump the length of the payload (will be written later).
 
-            bwrite.uint8(packet.payloadid);
+            writer.uint8(packet.payloadid);
 
             switch (packet.payloadid) {
                 case PayloadID.HostGame:
                     if (packet.bound === "server") {
-                        bwrite.write(composeGameOptions(packet.options));
+                        writer.write(composeGameOptions(packet.options));
                     } else if (packet.bound === "client") {
-                        bwrite.int32LE(packet.code);
+                        writer.int32LE(packet.code);
                     }
                     break;
                 case PayloadID.JoinGame:
                     if (packet.bound === "server") {
-                        bwrite.int32LE(packet.code);
-                        bwrite.byte(packet.mapOwnership);
+                        writer.int32LE(packet.code);
+                        writer.byte(packet.mapOwnership);
                     } else if (packet.bound === "client") {
-                        switch (packet.error) {
+                        switch (packet.error) { // Typings don't work for if statements for some reason??
                             case true:
                                 if (packet.reason) {
-                                    bwrite.uint8(packet.reason);
+                                    writer.uint8(packet.reason);
                                     if (packet.reason === DisconnectID.Custom) {
-                                        bwrite.string(packet.message, true);
+                                        writer.string(packet.message, true);
                                     }
                                 }
                                 break;
                             case false:
-                                bwrite.int32LE(packet.code);
-                                bwrite.int32LE(packet.clientid);
-                                bwrite.int32LE(packet.hostid);
+                                writer.int32LE(packet.code);
+                                writer.int32LE(packet.clientid);
+                                writer.int32LE(packet.hostid);
                                 break;
                         }
                     }
                     break;
                 case PayloadID.StartGame:
-                    bwrite.int32LE(packet.code);
+                    writer.int32LE(packet.code);
                     break;
                 case PayloadID.RemoveGame:
                     break;
                 case PayloadID.RemovePlayer:
+                    writer.int32LE(packet.code);
+                    writer.uint32LE(packet.clientid);
+                    writer.uint32LE(packet.hostid);
+                    if (typeof packet.reason !== "undefined") {
+                        writer.uint8(packet.reason);
+
+                        if (packet.reason === DisconnectID.Custom) {
+                            writer.string(packet.message, true);
+                        }
+                    }
                     break;
                 case PayloadID.GameData:
                 case PayloadID.GameDataTo:
-                    bwrite.int32LE(packet.code);
+                    writer.int32LE(packet.code);
+
                     if (packet.payloadid === PayloadID.GameDataTo) {
-                        bwrite.packed(packet.recipient);
+                        writer.packed(packet.recipient);
                     }
 
                     for (let i = 0; i < packet.parts.length; i++) {
@@ -139,7 +150,8 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
 
                         switch (part.type) {
                             case MessageID.Data:
-                                
+                                mwrite.packed(part.netid);
+                                mwrite.write(part.data);
                                 break;
                             case MessageID.RPC:
                                 mwrite.packed(part.handlerid);
@@ -153,7 +165,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                         mwrite.uint8(part.taskid);
                                         break;
                                     case RPCID.SyncSettings:
-                                        bwrite.write(composeGameOptions(part.options));
+                                        writer.write(composeGameOptions(part.options));
                                         break;
                                     case RPCID.SetInfected:
                                         mwrite.packed(part.count);
@@ -303,38 +315,37 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                 break;
                         }
 
-                        bwrite.uint16LE(mwrite.size);
-                        bwrite.uint8(part.type);
-                        bwrite.write(mwrite);
+                        writer.uint16LE(mwrite.size);
+                        writer.uint8(part.type);
+                        writer.write(mwrite);
                     }
                     break;
                 case PayloadID.JoinedGame:
-                    bwrite.int32LE(packet.code);
-                    bwrite.uint32LE(packet.clientid);
-                    bwrite.uint32LE(packet.hostid);
-                    bwrite.packed(packet.num_clients);
+                    writer.int32LE(packet.code);
+                    writer.uint32LE(packet.clientid);
+                    writer.uint32LE(packet.hostid);
+                    writer.packed(packet.num_clients);
                     for (let i = 0; i < packet.num_clients; i++) {
-                        bwrite.packed(packet.clients[i]);
-                        break;
+                        writer.packed(packet.clients[i]);
                     }
                     break;
                 case PayloadID.EndGame:
-                    bwrite.int32LE(packet.code);
-                    bwrite.uint8(packet.reason);
-                    bwrite.bool(packet.show_ad);
+                    writer.int32LE(packet.code);
+                    writer.uint8(packet.reason);
+                    writer.bool(packet.show_ad);
                     break;
                 case PayloadID.AlterGame:
-                    bwrite.int32LE(packet.code);
-                    bwrite.byte(packet.tag);
-                    bwrite.bool(packet.is_public);
+                    writer.int32LE(packet.code);
+                    writer.byte(packet.tag);
+                    writer.bool(packet.is_public);
                     break;
                 case PayloadID.Redirect:
-                    bwrite.bytes(packet.ip.split(".").map(val => parseInt(val)));
-                    bwrite.uint16LE(packet.port);
+                    writer.bytes(packet.ip.split(".").map(val => parseInt(val)));
+                    writer.uint16LE(packet.port);
                     break;
                 case PayloadID.MasterServerList:
-                    bwrite.uint8(0x01);
-                    bwrite.uint8(packet.num_servers);
+                    writer.uint8(0x01);
+                    writer.uint8(packet.num_servers);
                     
                     for (let i = 0; i < packet.servers.length; i++) {
                         const server = packet.servers[i];
@@ -345,8 +356,8 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                         swrite.uint16LE(server.port);
                         swrite.uint16LE(server.num_players);
 
-                        bwrite.uint16LE(swrite.size);
-                        bwrite.write(swrite);
+                        writer.uint16LE(swrite.size);
+                        writer.write(swrite);
                     }
                     break;
                 case PayloadID.GetGameListV2:
@@ -372,24 +383,24 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                             glwrite.write(gwrite);
                         }
 
-                        bwrite.uint16LE(glwrite.size);
-                        bwrite.uint8(0x00);
-                        bwrite.write(glwrite);
+                        writer.uint16LE(glwrite.size);
+                        writer.uint8(0x00);
+                        writer.write(glwrite);
                     } else if (packet.bound === "server") {
-                        bwrite.uint8(0x00);
-                        bwrite.write(composeGameOptions(packet.options));
+                        writer.uint8(0x00);
+                        writer.write(composeGameOptions(packet.options));
                     }
                     break;
             }
             
-            bwrite.goto(lenpos);
-            bwrite.uint16LE(bwrite.buffer.slice(lenpos + 3).byteLength); // Length of the payload (not including the type).
+            writer.goto(lenpos);
+            writer.uint16LE(writer.buffer.slice(lenpos + 3).byteLength); // Length of the payload (not including the type).
             break;
         case PacketID.Hello:
-            bwrite.uint16BE(packet.nonce);
-            bwrite.byte(packet.hazelver || 0x00);
-            bwrite.int32BE(packet.clientver || 0x46d20203);
-            bwrite.string(packet.username, true);
+            writer.uint16BE(packet.nonce);
+            writer.byte(packet.hazelver || 0x00);
+            writer.int32BE(packet.clientver || 0x46d20203);
+            writer.string(packet.username, true);
             break;
         case PacketID.Disconnect:
             if (packet.bound === "client") {
@@ -400,20 +411,20 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                         dwrite.string(packet.message, true);
                     }
                 }
-                bwrite.uint8(0x01);
-                bwrite.uint16LE(dwrite.size);
-                bwrite.uint8(0x00);
-                bwrite.write(dwrite);
+                writer.uint8(0x01);
+                writer.uint16LE(dwrite.size);
+                writer.uint8(0x00);
+                writer.write(dwrite);
             }
             break;
         case PacketID.Acknowledge:
-            bwrite.uint16BE(packet.nonce);
-            bwrite.uint8(0xFF);
+            writer.uint16BE(packet.nonce);
+            writer.uint8(0xFF);
             break;
         case PacketID.Ping:
-            // Nonce is already written.
+            writer.uint16BE(packet.nonce);
             break;
     }
 
-    return bwrite.buffer;
+    return writer.buffer;
 }

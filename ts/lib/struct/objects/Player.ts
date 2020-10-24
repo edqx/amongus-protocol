@@ -1,14 +1,14 @@
-import { AmongusClient } from "../Client.js"
+import { AmongusClient } from "../../Client.js"
 
 import { Object } from "./Object.js"
 
-import { CustomNetworkTransform } from "./components/CustomNetworkTransform.js"
-import { GameData } from "./components/GameData.js"
-import { MeetingHud } from "./components/MeetingHud.js"
-import { PlayerControl } from "./components/PlayerControl.js"
-import { PlayerPhysics } from "./components/PlayerPhysics.js"
-import { ShipStatus } from "./components/ShipStatus.js"
-import { VoteBanSystem } from "./components/VoteBanSystem.js"
+import { CustomNetworkTransform } from "../components/CustomNetworkTransform.js"
+import { GameData } from "../components/GameData.js"
+import { MeetingHud } from "../components/MeetingHud.js"
+import { PlayerControl } from "../components/PlayerControl.js"
+import { PlayerPhysics } from "../components/PlayerPhysics.js"
+import { ShipStatus } from "../components/ShipStatus.js"
+import { VoteBanSystem } from "../components/VoteBanSystem.js"
 
 import {
     ColourID,
@@ -18,10 +18,12 @@ import {
     PayloadID,
     RPCID,
     SpawnID
-} from "../constants/Enums.js"
+} from "../../constants/Enums.js"
 
-import { ComponentData } from "../interfaces/Packets.js"
-import { Game } from "./Game.js"
+import { ComponentData } from "../../interfaces/Packets.js"
+import { Game } from "../Game.js"
+
+import { PlayerClient } from "../PlayerClient.js"
 
 interface PlayerComponents {
     PlayerControl: PlayerControl,

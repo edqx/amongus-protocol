@@ -1,9 +1,7 @@
 import { AmongusClient } from "../Client.js"
 
-import { Object } from "./Object.js"
-
-import { GameData as GameDataComponent } from "./components/GameData.js"
-import { VoteBanSystem } from "./components/VoteBanSystem.js"
+import { GameData as GameDataObject } from "./objects/GameData.js"
+import { Game } from "./Game.js"
 
 import {
     ColourID,
@@ -11,28 +9,40 @@ import {
     MessageID,
     PacketID,
     PayloadID,
+    PetID,
     RPCID,
+    SkinID,
     SpawnID
 } from "../constants/Enums.js"
 
-import { ComponentData } from "../interfaces/Packets.js"
-import { Game } from "./Game.js"
+import { EventEmitter } from "events"
 
-interface GameDataComponents {
-    GameData: GameDataComponent,
-    VoteBanSystem: VoteBanSystem
+export interface GameData {
+    on(event: "spawn", listener: (gamedata: GameDataObject) => void);
 }
 
-export class GameData extends Object {
-    spawnid: SpawnID.Player;
-    components: GameDataComponents;
+export class GameData extends EventEmitter {
+    spawned: boolean;
+    object: GameDataObject;
 
-    constructor (client: AmongusClient, ownerid: number, components: ComponentData[]) {
-        super(client, ownerid);
+    constructor (private client: AmongusClient, public game: Game) {
+        super();
 
-        this.components = {
-            GameData: new GameDataComponent(client, components[0].netid, components[0].datalen, components[0].data),
-            VoteBanSystem: new VoteBanSystem(client, components[1].netid, components[1].datalen, components[1].data),
-        }
+        this.spawned = false;
+    }
+
+    spawn(object: GameDataObject) {
+        this.object = object;
+        this.spawned = true;
+        
+        this.emit("spawn", object);
+    }
+
+    get GameData() {
+        return this?.object?.components?.GameData;
+    }
+
+    get VoteBanSystem() {
+        return this?.object?.components.VoteBanSystem;
     }
 }

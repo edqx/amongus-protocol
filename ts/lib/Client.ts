@@ -11,17 +11,18 @@ import { Packet, Payload, PayloadPacket } from "./interfaces/Packets.js"
 import { DisconnectID, LanguageID, MapID, MessageID, PacketID, PayloadID, SpawnID } from "./constants/Enums.js"
 import { DisconnectMessages } from "./constants/DisconnectMessages.js"
 import { runInThisContext } from "vm"
-import { Code2Int } from "./util/codes.js"
+import { Code2Int } from "./util/Codes.js"
 import { Game } from "./struct/Game.js"
 import { ppid } from "process"
 import { bitfield } from "./interfaces/Types.js"
 import { JoinOptions } from "./interfaces/JoinOptions.js"
 
-import { Player } from "./struct/Player.js"
-import { GameData } from "./struct/GameData.js"
+import { Player } from "./struct/objects/Player.js"
+import { GameData as GameDataObject } from "./struct/objects/GameData.js"
 
 import { Component } from "./struct/components/Component.js"
 import { PlayerClient } from "./struct/PlayerClient.js"
+import { GameData } from "./struct/GameData.js"
 
 export declare interface AmongusClient {
     on(event: "packet", listener: (packet: Packet) => void);
@@ -32,7 +33,7 @@ export declare interface AmongusClient {
     off(event: "connected", listener: () => void);
 }
 
-export type AnyObject = Player | GameData;
+export type AnyObject = Player | GameDataObject;
 
 export class AmongusClient extends EventEmitter {
     options: ClientOptions;
@@ -41,9 +42,6 @@ export class AmongusClient extends EventEmitter {
     port: number;
     nonce: number;
     username: string;
-
-    netobjects: Map<number, Component>;
-    gameobjects: Map<number, AnyObject>;
 
     game: Game;
     clientid: number;
@@ -54,9 +52,6 @@ export class AmongusClient extends EventEmitter {
         this.options = options;
         this.nonce = 1;
 
-        this.netobjects = new Map;
-        this.gameobjects = new Map;
-
         this.game = null;
     }
 
@@ -64,17 +59,6 @@ export class AmongusClient extends EventEmitter {
         if (this.options.debug) {
             console.log(...fmt);
         }
-    }
-
-    registerComponents(object: AnyObject) {                          
-        const components = Object.keys(object.components);
-
-        for (let i = 0; i < components.length; i++) {
-            const component = object.components[components[i]];
-
-            this.netobjects.set(component.netid, component);
-        }
-        
     }
 
     _disconnect() {
@@ -169,7 +153,7 @@ export class AmongusClient extends EventEmitter {
 
                                         switch (part.type) {
                                             case MessageID.Data:
-                                                const component = this.netobjects.get(part.netid);
+                                                const component = this.game.components.get(part.netid);
 
                                                 if (component) {
                                                     component.OnDeserialize(part.datalen, part.data);
@@ -178,14 +162,17 @@ export class AmongusClient extends EventEmitter {
                                             case MessageID.Spawn:
                                                 switch (part.spawnid) {
                                                     case SpawnID.GameData:
-                                                        const gamedata = new GameData(this, part.ownerid, part.components);
+                                                        const gamedata = this.game.GameData;
+                                                        const gamedataobject = new GameDataObject(this, part.ownerid, part.components);
 
-                                                        this.game.emit("spawn", gamedata);
-                                                        this.emit("spawn", gamedata);
+                                                        this.game.emit("spawn", gamedataobject);
+                                                        this.emit("spawn", gamedataobject);
 
-                                                        this.registerComponents(gamedata);
+                                                        this.game.registerComponents(gamedataobject);
 
-                                                        this.gameobjects.set(part.ownerid, gamedata);
+                                                        gamedata.spawn(gamedataobject);
+
+                                                        this.game.gameobjects.set(part.ownerid, gamedataobject);
                                                         break;
                                                     case SpawnID.Player:
                                                         const playerclient = this.game.clients.get(part.ownerid);
@@ -194,16 +181,16 @@ export class AmongusClient extends EventEmitter {
                                                         this.game.emit("spawn", player);
                                                         this.emit("spawn", player);
                                                         
-                                                        this.registerComponents(player);
+                                                        this.game.registerComponents(player);
                                                         
                                                         playerclient.spawn(player);
                                                         
-                                                        this.gameobjects.set(part.ownerid, player);
+                                                        this.game.gameobjects.set(part.ownerid, player);
                                                         break;
                                                 }
                                                 break;
                                             case MessageID.Despawn:
-                                                this.netobjects.delete(part.netid);
+                                                this.game.components.delete(part.netid);
                                                 break;
                                         }
                                     }

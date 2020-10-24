@@ -178,10 +178,11 @@ export interface RemoveGamePayload extends Payload {
     payloadid: PayloadID.RemoveGame;
 }
 
-export interface RemovePlayerPayload extends Payload {
+export interface RemovePlayerPayload extends DisconnectReason, Payload {
     payloadid: PayloadID.RemovePlayer;
     code: int32;
     clientid: uint32;
+    hostid: uint32;
 }
 
 export interface Message {
@@ -190,6 +191,7 @@ export interface Message {
 
 export interface DataMessage extends Message {
     type: MessageID.Data;
+    datatype: DataID;
     netid: packed;
     datalen: uint16;
     data: Buffer;

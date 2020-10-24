@@ -20,6 +20,8 @@ import {
     vector
 } from "../interfaces/Types.js"
 
+import { getFloat16 } from "./Float16.js";
+
 /**
  * Represents a buffer writer.
  */
@@ -278,6 +280,20 @@ export class BufferWriter {
         this.offset += 0x04;
 
         return this;
+    }
+
+    /**
+     * Write a Big-Endian 16 bit half-precision float.
+     */
+    float16BE(val: float): BufferWriter {
+        return this.uint16BE(getFloat16(val));
+    }
+
+    /**
+     * Write a Little-Endian 16 bit half-precision float.
+     */
+    float16LE(val: float): BufferWriter {
+        return this.uint16LE(getFloat16(val));
     }
 
     /**

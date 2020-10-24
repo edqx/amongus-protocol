@@ -13,6 +13,10 @@ interface Vector2 {
     y: float16;
 }
 
+export interface CustomNetworkTransform extends Component {
+    on(event: "move", listener: (transform: CustomNetworkTransform) => void);
+}
+
 export class CustomNetworkTransform extends Component {
     name: "Player";
     classname: "CustomNetworkTransform";
@@ -24,6 +28,8 @@ export class CustomNetworkTransform extends Component {
     constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
         super(client, netid);
 
+        this.sequence = null;
+
         this.OnSpawn(datalen, data);
     }
 
@@ -34,7 +40,13 @@ export class CustomNetworkTransform extends Component {
     OnDeserialize(datalen: number, data: Buffer): void {
         const reader = new BufferReader(data);
 
-        this.sequence = reader.uint16LE();
+        const sequence = reader.uint16LE();
+
+        if (this.sequence !== null && sequence < this.sequence) {
+            return;
+        }
+
+        this.sequence = sequence;
 
         this.position = {
             x: reader.uint16LE(),
@@ -45,5 +57,7 @@ export class CustomNetworkTransform extends Component {
             x: reader.uint16LE(),
             y: reader.uint16LE()
         }
+
+        this.emit("move", this);
     }
 }
