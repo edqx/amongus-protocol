@@ -33,16 +33,26 @@ export interface PlayerClient {
     on(event: "spawn", listener: (player: Player) => void);
     on(event: "taskComplete", listener: (task: PlayerTaskState) => void);
     on(event: "setTasks", listener: (tasks: Map<TaskID, PlayerTaskState>) => void);
+    on(event: "vote", listener: (suspect: PlayerClient) => void);
+    on(event: "kicked", listener: (banned: boolean) => void);
+    on(event: "murder", listener: (target: PlayerClient) => void);
+    on(event: "murdered", listener: (murderer: PlayerClient) => void);
 }
 
 export class PlayerClient extends EventEmitter {
     spawned: boolean;
     object: Player;
 
+    removed: boolean;
+    dead: boolean;
+
     constructor (private client: AmongusClient, public game: Game, public clientid: number) {
         super();
 
         this.spawned = false;
+        this.removed = false;
+
+        this.dead = false;
     }
 
     spawn(object: Player) {
@@ -64,8 +74,8 @@ export class PlayerClient extends EventEmitter {
         });
     }
 
-    get infected() {
-        return this.game.imposters.find(imposter => imposter.PlayerControl.playerId === this.PlayerControl.playerId);
+    get imposter() {
+        return !!this.game.imposters.find(imposter => imposter.PlayerControl.playerId === this.PlayerControl.playerId);
     }
 
     get PlayerControl() {
@@ -88,8 +98,24 @@ export class PlayerClient extends EventEmitter {
         return this.PlayerData?.name;
     }
 
-    async setColour(colour: ColourID) {
-        if (this.spawned) {
+    async kick(ban: boolean = false) {
+        if (!this.removed) {
+            await this.client.send({
+                op: PacketID.Reliable,
+                payloadid: PayloadID.KickPlayer,
+                bound: "server",
+                clientid: this.clientid,
+                banned: ban
+            });
+        }
+    }
+
+    async ban() {
+        return this.kick(true);
+    }
+
+    async murder(target: PlayerClient) {
+        if (this.spawned && !this.removed) {
             await this.client.send({
                 op: PacketID.Reliable,
                 payloadid: PayloadID.GameDataTo,
@@ -99,187 +125,59 @@ export class PlayerClient extends EventEmitter {
                     {
                         type: MessageID.RPC,
                         handlerid: this.PlayerControl.netid,
-                        rpcid: RPCID.CheckColour,
-                        colour
+                        rpcid: RPCID.MurderPlayer,
+                        targetnetid: target.PlayerControl.netid
                     }
                 ]
             });
         }
     }
-    
+
     async setName(name: string) {
-        if (this.spawned) {
-            await this.client.send({
-                op: PacketID.Reliable,
-                payloadid: PayloadID.GameDataTo,
-                recipient: this.game.hostid,
-                code: this.game.code,
-                parts: [
-                    {
-                        type: MessageID.RPC,
-                        handlerid: this.PlayerControl.netid,
-                        rpcid: RPCID.CheckName,
-                        name
-                    }
-                ]
-            });
-
-            await this.client.awaitPacket(packet => packet.bound === "client"
-                && packet.op === PacketID.Reliable
-                && packet.payloadid === PayloadID.GameData
-                && !!packet.parts.find(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetName));
+        if (this.spawned && !this.removed) {
+            await this.PlayerControl.setName(name);
         }
     }
-    
+
+    async setColour(colour: ColourID) {
+        if (this.spawned && !this.removed) {
+            await this.PlayerControl.setColour(colour);
+        }
+    }
+
     async setHat(hat: HatID) {
-        if (this.spawned) {
-            this.PlayerData.hat = hat;
-
-            await this.client.send({
-                op: PacketID.Reliable,
-                payloadid: PayloadID.GameDataTo,
-                recipient: this.game.hostid,
-                code: this.game.code,
-                parts: [
-                    {
-                        type: MessageID.RPC,
-                        handlerid: this.PlayerControl.netid,
-                        rpcid: RPCID.SetHat,
-                        hat
-                    },
-                    {
-                        type: MessageID.RPC,
-                        handlerid: this.game.GameData.GameData.netid,
-                        rpcid: RPCID.UpdateGameData,
-                        players: [
-                            this.PlayerData.toJSON()
-                        ]
-                    }
-                ]
-            });
+        if (this.spawned && !this.removed) {
+            await this.PlayerControl.setHat(hat);
         }
     }
-    
+
     async setSkin(skin: SkinID) {
-        if (this.spawned) {
-            this.PlayerData.skin = skin;
-
-            await this.client.send({
-                op: PacketID.Reliable,
-                payloadid: PayloadID.GameDataTo,
-                recipient: this.game.hostid,
-                code: this.game.code,
-                parts: [
-                    {
-                        type: MessageID.RPC,
-                        handlerid: this.PlayerControl.netid,
-                        rpcid: RPCID.SetSkin,
-                        skin: skin
-                    },
-                    {
-                        type: MessageID.RPC,
-                        handlerid: this.game.GameData.GameData.netid,
-                        rpcid: RPCID.UpdateGameData,
-                        players: [
-                            this.PlayerData.toJSON()
-                        ]
-                    }
-                ]
-            });
+        if (this.spawned && !this.removed) {
+            await this.PlayerControl.setSkin(skin);
         }
     }
-    
-    async setPet(pet: PetID) {
-        if (this.spawned) {
-            this.PlayerData.pet = pet;
 
-            await this.client.send({
-                op: PacketID.Reliable,
-                payloadid: PayloadID.GameDataTo,
-                recipient: this.game.hostid,
-                code: this.game.code,
-                parts: [
-                    {
-                        type: MessageID.RPC,
-                        handlerid: this.PlayerControl.netid,
-                        rpcid: RPCID.SetPet,
-                        pet: pet
-                    },
-                    {
-                        type: MessageID.RPC,
-                        handlerid: this.game.GameData.GameData.netid,
-                        rpcid: RPCID.UpdateGameData,
-                        players: [
-                            this.PlayerData.toJSON()
-                        ]
-                    }
-                ]
-            });
+    async setPet(pet: PetID) {
+        if (this.spawned && !this.removed) {
+            await this.PlayerControl.setPet(pet);
         }
     }
 
     async chat(text: string) {
-        if (this.spawned) {
-            await this.client.send({
-                op: PacketID.Reliable,
-                payloadid: PayloadID.GameData,
-                code: this.game.code,
-                parts: [
-                    {
-                        type: MessageID.RPC,
-                        handlerid: this.PlayerControl.netid,
-                        rpcid: RPCID.SendChat,
-                        text
-                    }
-                ]
-            });
+        if (this.spawned && !this.removed) {
+            await this.PlayerControl.chat(text);
         }
     }
 
     async move(position: Vector2, velocity: Vector2) {
-        const nettransform = this.CustomNetworkTransform;
-
-        const data = new BufferWriter;
-        nettransform.sequence++;
-        data.uint8(nettransform.sequence);
-        data.uint8(0x00);
-        data.uint16LE(UnlerpValue(position.x, -40, 40) * 65535);
-        data.uint16LE(UnlerpValue(position.y, -40, 40) * 65535);
-        data.uint16LE(UnlerpValue(velocity.x, -40, 40) * 65535);
-        data.uint16LE(UnlerpValue(velocity.x, -40, 40) * 65535);
-        
-        await this.client.send({
-            op: PacketID.Unreliable,
-            payloadid: PayloadID.GameData,
-            code: this.game.code,
-            parts: [
-                {
-                    type: MessageID.Data,
-                    datatype: DataID.Movement,
-                    netid: nettransform.netid,
-                    datalen: data.size,
-                    data: data.buffer
-                }
-            ]
-        });
+        if (this.spawned && !this.removed) {
+            await this.CustomNetworkTransform.move(position, velocity);
+        }
     }
 
     async snapTo(position: Vector2) {
-        const nettransform = this.CustomNetworkTransform;
-
-        await this.client.send({
-            op: PacketID.Reliable,
-            payloadid: PayloadID.GameData,
-            code: this.game.code,
-            parts: [
-                {
-                    type: MessageID.RPC,
-                    handlerid: nettransform.netid,
-                    rpcid: RPCID.SnapTo,
-                    x: UnlerpValue(position.x, -40, 40) * 65535,
-                    y: UnlerpValue(position.y, -40, 40) * 65535
-                }
-            ]
-        });
+        if (this.spawned && !this.removed) {
+            await this.CustomNetworkTransform.snapTo(position);
+        }
     }
 }

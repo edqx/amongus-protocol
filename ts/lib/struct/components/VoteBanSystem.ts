@@ -7,6 +7,7 @@ import {
     float16,
     uint8
 } from "../../interfaces/Types.js"
+import { Game } from "../Game.js";
 
 export class VoteBanSystem extends Component {
     name: "GameData";
@@ -14,8 +15,8 @@ export class VoteBanSystem extends Component {
 
     num_votes: number;
 
-    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
-        super(client, netid);
+    constructor(client: AmongusClient, game: Game, netid: number, datalen: number, data: Buffer) {
+        super(client, game, netid);
 
         this.OnSpawn(datalen, data);
     }

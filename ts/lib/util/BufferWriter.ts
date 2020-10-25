@@ -343,14 +343,15 @@ export class BufferWriter {
      * Write a string with an unknown length
      */
     string(string: string, preflen: boolean = false) {
-        if (this.options.dynamic) this.expand((preflen ? 1 : 0) + string.length);
         if (preflen) {
-            this.uint8(string.length);
+            this.packed(string.length);
         }
+        
+        if (this.options.dynamic) this.expand(string.length);
 
         this.buffer.write(string, this.offset, "utf8");
 
-        this.offset += (preflen ? 1 : 0) + string.length - 1;
+        this.offset += string.length - 1;
 
         return this;
     }

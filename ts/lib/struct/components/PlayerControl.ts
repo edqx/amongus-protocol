@@ -7,6 +7,19 @@ import {
     uint8
 } from "../../interfaces/Types.js"
 
+import {
+    ColourID,
+    HatID,
+    MessageID,
+    PacketID,
+    PayloadID,
+    PetID,
+    RPCID,
+    SkinID
+} from "../../../index.js";
+
+import { Game } from "../Game.js";
+
 interface PlayerControlOnSpawn {
     isNew: boolean;
 }
@@ -15,10 +28,10 @@ export class PlayerControl extends Component {
     name: "Player";
     classname: "PlayerControl";
 
-    playerId: number;
+    playerId: uint8;
 
-    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
-        super(client, netid);
+    constructor(client: AmongusClient, game: Game, netid: number, datalen: number, data: Buffer) {
+        super(client, game, netid);
 
         this.OnSpawn(datalen, data);
     }
@@ -38,5 +51,117 @@ export class PlayerControl extends Component {
         const reader = new BufferReader(data);
 
         this.playerId = reader.uint8();
+    }
+    
+
+    async setColour(colour: ColourID) {
+        await this.client.send({
+            op: PacketID.Reliable,
+            payloadid: PayloadID.GameDataTo,
+            recipient: this.game.hostid,
+            code: this.game.code,
+            parts: [
+                {
+                    type: MessageID.RPC,
+                    handlerid: this.netid,
+                    rpcid: RPCID.CheckColour,
+                    colour
+                }
+            ]
+        });
+        
+        await this.client.awaitPacket(packet => packet.bound === "client"
+            && packet.op === PacketID.Reliable
+            && packet.payloadid === PayloadID.GameData
+            && !!packet.parts.find(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetColour));
+    }
+    
+    async setName(name: string) {
+        await this.client.send({
+            op: PacketID.Reliable,
+            payloadid: PayloadID.GameDataTo,
+            recipient: this.game.hostid,
+            code: this.game.code,
+            parts: [
+                {
+                    type: MessageID.RPC,
+                    handlerid: this.netid,
+                    rpcid: RPCID.CheckName,
+                    name
+                }
+            ]
+        });
+
+        await this.client.awaitPacket(packet => packet.bound === "client"
+            && packet.op === PacketID.Reliable
+            && packet.payloadid === PayloadID.GameData
+            && !!packet.parts.find(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetName));
+    }
+    
+    async setHat(hat: HatID) {
+        await this.client.send({
+            op: PacketID.Reliable,
+            payloadid: PayloadID.GameDataTo,
+            recipient: this.game.hostid,
+            code: this.game.code,
+            parts: [
+                {
+                    type: MessageID.RPC,
+                    handlerid: this.netid,
+                    rpcid: RPCID.SetHat,
+                    hat
+                }
+            ]
+        });
+    }
+    
+    async setSkin(skin: SkinID) {
+        await this.client.send({
+            op: PacketID.Reliable,
+            payloadid: PayloadID.GameDataTo,
+            recipient: this.game.hostid,
+            code: this.game.code,
+            parts: [
+                {
+                    type: MessageID.RPC,
+                    handlerid: this.netid,
+                    rpcid: RPCID.SetSkin,
+                    skin: skin
+                }
+            ]
+        });
+    }
+    
+    async setPet(pet: PetID) {
+        await this.client.send({
+            op: PacketID.Reliable,
+            payloadid: PayloadID.GameDataTo,
+            recipient: this.game.hostid,
+            code: this.game.code,
+            parts: [
+                {
+                    type: MessageID.RPC,
+                    handlerid: this.netid,
+                    rpcid: RPCID.SetPet,
+                    pet: pet
+                }
+            ]
+        });
+    }
+
+    async chat(text: string) {
+        await this.client.send({
+            op: PacketID.Reliable,
+            payloadid: PayloadID.GameData,
+            code: this.game.code,
+            parts: [
+                {
+                    type: MessageID.RPC,
+                    handlerid: this.netid,
+                    rpcid: RPCID.SendChat,
+                    text
+                }
+            ]
+        });
     }
 }

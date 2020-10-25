@@ -12,6 +12,8 @@ import {
     uint8
 } from "../../interfaces/Types.js"
 
+import { Game } from "../Game.js"
+
 interface ShipStatusOnSpawn {
 
 }
@@ -35,8 +37,8 @@ export class ShipStatus extends Component {
 
     systems: { [key in SystemType]?: void }
 
-    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
-        super(client, netid);
+    constructor(client: AmongusClient, game: Game, netid: number, datalen: number, data: Buffer) {
+        super(client, game, netid);
 
         this.OnSpawn(datalen, data);
     }

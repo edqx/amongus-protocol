@@ -291,7 +291,7 @@ export class BufferReader {
         }
 
         if (!length) {
-            const len = this.uint8();
+            const len = this.packed();
 
             return this.string(len);
         }

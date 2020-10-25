@@ -35,13 +35,13 @@ export class Player extends Object {
     spawnid: SpawnID.Player;
     components: PlayerComponents;
 
-    constructor (client: AmongusClient, ownerid: number, components: ComponentData[]) {
-        super(client, ownerid);
+    constructor (client: AmongusClient, game: Game, ownerid: number, components: ComponentData[]) {
+        super(client, game, ownerid);
 
         this.components = {
-            PlayerControl: new PlayerControl(client, components[0].netid, components[0].datalen, components[0].data),
-            PlayerPhysics: new PlayerPhysics(client, components[1].netid, components[1].datalen, components[1].data),
-            CustomNetworkTransform: new CustomNetworkTransform(client, components[2].netid, components[2].datalen, components[2].data)
+            PlayerControl: new PlayerControl(client, game, components[0].netid, components[0].datalen, components[0].data),
+            PlayerPhysics: new PlayerPhysics(client, game, components[1].netid, components[1].datalen, components[1].data),
+            CustomNetworkTransform: new CustomNetworkTransform(client, game, components[2].netid, components[2].datalen, components[2].data)
         }
     }
 }

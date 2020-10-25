@@ -139,8 +139,10 @@ export class AmongusClient extends EventEmitter {
                                 switch (packet.error) {  // Couldn't get typings to work with if statements so I have to deal with switch/case..
                                     case false:
                                         if (packet.code === this.game.code) {
-                                            const player = new PlayerClient(this, this.game, packet.clientid);
-                                            this.game.clients.set(player.clientid, player);
+                                            const client = new PlayerClient(this, this.game, packet.clientid);
+
+                                            this.game.clients.set(client.clientid, client);
+                                            this.game.emit("playerJoin", client);
                                         }
                                         break;
                                 }
@@ -166,19 +168,35 @@ export class AmongusClient extends EventEmitter {
                                 break;
                             case PayloadID.EndGame:
                                 if (packet.code === this.game.code) {
-                                    this.game.emit("end");
+                                    this.game.emit("finish");
 
                                     this.game.started = false;
                                 }
                                 break;
                             case PayloadID.RemovePlayer:
                                 if (packet.code === this.game.code) {
-                                    this.game.clients.delete(packet.clientid);
+                                    const client = this.game.clients.get(packet.clientid);
+                                    
+                                    if (client) {
+                                        client.removed = true;
+
+                                        this.game.clients.delete(packet.clientid);
+                                        this.game.emit("playerLeave", client);
+                                    }
                                 }
                                 break;
                             case PayloadID.JoinedGame:
                                 this.game = new Game(this, packet.code, packet.hostid, [packet.clientid, ...packet.clients]);
                                 this.clientid = packet.clientid;
+                                break;
+                            case PayloadID.KickPlayer:
+                                if (packet.code === this.game.code) {
+                                    const client = this.game.clients.get(packet.clientid);
+
+                                    if (client) {
+                                        client.emit("kicked", packet.banned);
+                                    }
+                                }
                                 break;
                             case PayloadID.GameData:
                             case PayloadID.GameDataTo:
@@ -201,13 +219,55 @@ export class AmongusClient extends EventEmitter {
                                                         break;
                                                     case RPCID.CompleteTask:
                                                         break;
+                                                    case RPCID.MurderPlayer: {
+                                                        const client = this.game.getPlayerByNetID(part.targetnetid);
+                                                        const murderer = this.game.getPlayerByNetID(part.handlerid);
+                                                        
+                                                        if (client && murderer) {
+                                                            client.dead = true;
+
+                                                            this.game.emit("murder", murderer, client);
+                                                            client.emit("murdered", murderer);
+                                                            murderer.emit("murder", client);
+                                                        }
+                                                        break;
+                                                    }
+                                                    case RPCID.StartMeeting:
+                                                        if (part.targetid === 0xFF) {
+                                                            this.game.emit("meeting", true, null);
+                                                        } else {
+                                                            const target = this.game.getPlayer(part.targetid);
+
+                                                            this.game.emit("meeting", false, target);
+                                                        }
+                                                        break;
                                                     case RPCID.SetStartCounter:
                                                         if (this.game.startCounterSeq === null || part.sequence > this.game.startCounterSeq) {
                                                             this.game.startCount = part.time;
-                                                            this.game.emit("count", this.game.startCount);
+                                                            this.game.emit("startCount", this.game.startCount);
                                                         }
                                                         break;
+                                                    case RPCID.VotingComplete:
+                                                        if (part.tie) {
+                                                            this.game.emit("votingComplete", false, true, null);
+                                                        } else if (part.exiled === 0xFF) {
+                                                            this.game.emit("votingComplete", true, false, null);
+                                                        } else {
+                                                            this.game.emit("votingComplete", false, false, this.game.getPlayer(part.exiled));
+                                                        }
+                                                        break;
+                                                    case RPCID.CastVote: {
+                                                        const client = this.game.getPlayer(part.voterid);
+                                                        const suspect = this.game.getPlayer(part.suspectid);
+
+                                                        this.game.emit("vote", client, suspect);
+                                                        client.emit("vote", suspect);
+                                                        break;
+                                                    }
                                                     case RPCID.SetTasks:
+                                                        break;
+                                                    case RPCID.UpdateGameData:
+                                                        this.game.GameData.GameData.UpdatePlayers(part.players);
                                                         break;
                                                 }
                                                 break;
@@ -215,7 +275,7 @@ export class AmongusClient extends EventEmitter {
                                                 switch (part.spawnid) {
                                                     case SpawnID.GameData:
                                                         const gamedata = this.game.GameData;
-                                                        const gamedataobject = new GameDataObject(this, part.ownerid, part.components);
+                                                        const gamedataobject = new GameDataObject(this, this.game, part.ownerid, part.components);
 
                                                         this.game.emit("spawn", gamedataobject);
 
@@ -227,7 +287,7 @@ export class AmongusClient extends EventEmitter {
                                                         break;
                                                     case SpawnID.Player:
                                                         const playerclient = this.game.clients.get(part.ownerid);
-                                                        const player = new Player(this, part.ownerid, part.components);
+                                                        const player = new Player(this, this.game, part.ownerid, part.components);
 
                                                         this.game.emit("spawn", player);
                                                         

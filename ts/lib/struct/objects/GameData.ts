@@ -27,12 +27,12 @@ export class GameData extends Object {
     spawnid: SpawnID.Player;
     components: GameDataComponents;
 
-    constructor (client: AmongusClient, ownerid: number, components: ComponentData[]) {
-        super(client, ownerid);
+    constructor (client: AmongusClient, game: Game, ownerid: number, components: ComponentData[]) {
+        super(client, game, ownerid);
 
         this.components = {
-            GameData: new GameDataComponent(client, components[0].netid, components[0].datalen, components[0].data),
-            VoteBanSystem: new VoteBanSystem(client, components[1].netid, components[1].datalen, components[1].data),
+            GameData: new GameDataComponent(client, game, components[0].netid, components[0].datalen, components[0].data),
+            VoteBanSystem: new VoteBanSystem(client, game, components[1].netid, components[1].datalen, components[1].data),
         }
     }
 }

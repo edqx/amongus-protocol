@@ -1,7 +1,9 @@
 import { AmongusClient } from "../../Client.js"
 
 import { Component } from "./Component.js"
+
 import { BufferReader } from "../../util/BufferReader.js"
+import { BufferWriter } from "../../util/BufferWriter.js";
 
 import {
     float16,
@@ -9,7 +11,17 @@ import {
     Vector2
 } from "../../interfaces/Types.js"
 
-import { LerpValue } from "../../util/Lerp.js";
+import { LerpValue, UnlerpValue } from "../../util/Lerp.js";
+
+import { Game } from "../Game.js";
+
+import {
+    DataID,
+    MessageID,
+    PacketID,
+    PayloadID,
+    RPCID
+} from "../../../index.js";
 
 export interface CustomNetworkTransform extends Component {
     on(event: "move", listener: (transform: CustomNetworkTransform) => void);
@@ -23,8 +35,8 @@ export class CustomNetworkTransform extends Component {
     position: Vector2;
     velocity: Vector2;
 
-    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
-        super(client, netid);
+    constructor(client: AmongusClient, game: Game, netid: number, datalen: number, data: Buffer) {
+        super(client, game, netid);
 
         this.sequence = null;
 
@@ -59,5 +71,48 @@ export class CustomNetworkTransform extends Component {
         }
 
         this.emit("move", this);
+    }
+
+    async move(position: Vector2, velocity: Vector2) {
+        const data = new BufferWriter;
+        this.sequence++;
+        data.uint8(this.sequence);
+        data.uint8(0x00);
+        data.uint16LE(UnlerpValue(position.x, -40, 40) * 65535);
+        data.uint16LE(UnlerpValue(position.y, -40, 40) * 65535);
+        data.uint16LE(UnlerpValue(velocity.x, -40, 40) * 65535);
+        data.uint16LE(UnlerpValue(velocity.x, -40, 40) * 65535);
+        
+        await this.client.send({
+            op: PacketID.Unreliable,
+            payloadid: PayloadID.GameData,
+            code: this.game.code,
+            parts: [
+                {
+                    type: MessageID.Data,
+                    datatype: DataID.Movement,
+                    netid: this.netid,
+                    datalen: data.size,
+                    data: data.buffer
+                }
+            ]
+        });
+    }
+
+    async snapTo(position: Vector2) {
+        await this.client.send({
+            op: PacketID.Reliable,
+            payloadid: PayloadID.GameData,
+            code: this.game.code,
+            parts: [
+                {
+                    type: MessageID.RPC,
+                    handlerid: this.netid,
+                    rpcid: RPCID.SnapTo,
+                    x: position.x,
+                    y: position.y
+                }
+            ]
+        });
     }
 }

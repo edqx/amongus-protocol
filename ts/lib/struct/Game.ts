@@ -5,19 +5,25 @@ import {
     AnyObject
 } from "../Client.js";
 import { MessageID, PacketID, PayloadID, RPCID, TaskID } from "../constants/Enums.js";
-import { PlayerTaskState } from "../interfaces/Packets.js";
 
 import { Component } from "./components/Component.js";
+import { PlayerControl } from "./components/PlayerControl.js";
 
 import { GameData } from "./GameData.js";
 import { PlayerClient } from "./PlayerClient.js";
 
 export interface Game {
     on(event: "spawn", listener: (object: AnyObject) => void);
-    on(event: "count", listener: (count: number) => void);
+    on(event: "playerJoin", listener: (client: PlayerClient) => void);
+    on(event: "playerLeave", listener: (client: PlayerClient) => void);
+    on(event: "startCount", listener: (count: number) => void);
     on(event: "start", listener: () => void);
-    on(event: "end", listener: () => void);
+    on(event: "finish", listener: () => void);
     on(event: "setImposters", listener: (imposters: PlayerClient[]) => void);
+    on(event: "vote", listener: (voter: PlayerClient, suspect: PlayerClient) => void);
+    on(event: "votingComplete", listener: (skipped: boolean, tie: boolean, exiled: PlayerClient) => void);
+    on(event: "murder", listener: (murderer: PlayerClient, target: PlayerClient) => void);
+    on(event: "meeting", listener: (emergency: boolean, target: PlayerControl) => void);
 }
 
 export class Game extends EventEmitter {
@@ -100,7 +106,7 @@ export class Game extends EventEmitter {
 
     findPlayer(username: string) {
         for (let [clientid, client] of this.clients) {
-            if (!client.spawned) continue;
+            if (!client.spawned || client.removed) continue;
 
             const playerData = this.GameData.GameData.players.get(client.PlayerControl.playerId);
             
@@ -114,9 +120,21 @@ export class Game extends EventEmitter {
 
     getPlayer(playerid: number) {
         for (let [clientid, client] of this.clients) {
-            if (!client.spawned) continue;
+            if (!client.spawned || client.removed) continue;
 
             if (client.PlayerControl.playerId === playerid) {
+                return client;
+            }
+        }
+
+        return null;
+    }
+
+    getPlayerByNetID(netid: number) {
+        for (let [clientid, client] of this.clients) {
+            if (!client.spawned || client.removed) continue;
+
+            if (client.PlayerControl.netid === netid) {
                 return client;
             }
         }

@@ -1,3 +1,4 @@
+import { write } from "fs";
 import {
     DataID,
     DisconnectID,
@@ -18,6 +19,7 @@ import {
 } from "./interfaces/Packets.js";
 
 import { BufferWriter } from "./util/BufferWriter.js";
+import { UnlerpValue } from "./util/Lerp.js";
 
 export function composeGameOptions(options: Partial<GameOptionsData>) {
     options.version = options.version ?? 3;
@@ -201,7 +203,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                         mwrite.string(part.text, true);
                                         break;
                                     case RPCID.StartMeeting:
-                                        mwrite.uint8(part.player);
+                                        mwrite.uint8(part.targetid);
                                         break;
                                     case RPCID.SetScanner:
                                         mwrite.bool(part.scanning);
@@ -219,15 +221,15 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                         mwrite.int8(part.time);
                                         break;
                                     case RPCID.EnterVent:
-                                        mwrite.packed(part.sequence);
-                                        mwrite.packed(part.vent);
+                                        mwrite.byte(part.sequence);
+                                        mwrite.packed(part.ventid);
                                         break;
                                     case RPCID.ExitVent:
-                                        mwrite.packed(part.vent);
+                                        mwrite.packed(part.ventid);
                                         break;
                                     case RPCID.SnapTo:
-                                        mwrite.floatLE(part.x);
-                                        mwrite.floatLE(part.y);
+                                        mwrite.uint16LE(UnlerpValue(part.x, -40, 40) * 65535);
+                                        mwrite.uint16LE(UnlerpValue(part.y, -40, 40) * 65535);
                                         break;
                                     case RPCID.Close:
                                         break;
@@ -238,7 +240,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                         mwrite.bool(part.tie);
                                         break;
                                     case RPCID.CastVote:
-                                        mwrite.uint8(part.playerid);
+                                        mwrite.uint8(part.voterid);
                                         mwrite.uint8(part.suspectid);
                                         break;
                                     case RPCID.ClearVote:
@@ -338,6 +340,16 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                     writer.int32LE(packet.code);
                     writer.byte(packet.tag);
                     writer.bool(packet.is_public);
+                    break;
+                case PayloadID.KickPlayer:
+                    if (packet.bound === "client") {
+                        writer.int32LE(packet.code);
+                        writer.packed(packet.clientid);
+                        writer.bool(packet.banned);
+                    } else if (packet.bound === "server") {
+                        writer.packed(packet.clientid);
+                        writer.bool(packet.banned);
+                    }
                     break;
                 case PayloadID.Redirect:
                     writer.bytes(packet.ip.split(".").map(val => parseInt(val)));

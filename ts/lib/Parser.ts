@@ -26,6 +26,7 @@ import {
 } from "./interfaces/Packets.js"
 
 import { BufferReader } from "./util/BufferReader.js"
+import { LerpValue } from "./util/Lerp.js";
 
 export function parseGameOptions(reader: BufferReader): GameOptionsData {
     let options: Partial<GameOptionsData> = {};
@@ -253,7 +254,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                             part.text = reader.string();
                                             break;
                                         case RPCID.StartMeeting:
-                                            part.player = reader.uint8();
+                                            part.targetid = reader.uint8();
                                             break;
                                         case RPCID.SetScanner:
                                             part.scanning = reader.bool();
@@ -271,15 +272,15 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                             part.time = reader.int8();
                                             break;
                                         case RPCID.EnterVent:
-                                            part.sequence = reader.packed();
-                                            part.vent = reader.packed();
+                                            part.sequence = reader.byte();
+                                            part.ventid = reader.packed();
                                             break;
                                         case RPCID.ExitVent:
-                                            part.vent = reader.packed();
+                                            part.ventid = reader.packed();
                                             break;
                                         case RPCID.SnapTo:
-                                            part.x = reader.floatLE();
-                                            part.y = reader.floatLE();
+                                            part.x = LerpValue(reader.uint16LE() / 65535, -40, 40);
+                                            part.y = LerpValue(reader.uint16LE() / 65535, -40, 40);
                                             break;
                                         case RPCID.Close:
                                             break;
@@ -290,7 +291,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                             part.tie = reader.bool();
                                             break;
                                         case RPCID.CastVote:
-                                            part.playerid = reader.uint8();
+                                            part.voterid = reader.uint8();
                                             part.suspectid = reader.uint8();
                                             break;
                                         case RPCID.ClearVote:
@@ -375,18 +376,20 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                         data.reason = reader.uint8();
                         data.show_ad = reader.bool();
                         break;
-                    case PayloadID.KickPlayer:
-                        data.code = reader.int32LE();
-                        data.clientid = reader.packed();
-                        reader.jump(0x01);
-                        const dc = parseDisconnect(reader);
-                        data.reason = dc.reason;
-                        data.message = dc.message;
-                        break;
                     case PayloadID.AlterGame:
                         data.code = reader.int32LE();
                         data.tag = reader.byte();
                         data.is_public = reader.bool();
+                        break;
+                    case PayloadID.KickPlayer:
+                        if (data.bound === "client") {
+                            data.code = reader.int32LE();
+                            data.clientid = reader.packed();
+                            data.banned = reader.bool();
+                        } else if (data.bound === "server") {
+                            data.clientid = reader.packed();
+                            data.banned = reader.bool();
+                        }
                         break;
                     case PayloadID.Redirect:
                         data.ip = reader.bytes(0x04).join(".");

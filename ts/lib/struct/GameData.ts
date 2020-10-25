@@ -38,6 +38,18 @@ export class GameData extends EventEmitter {
         this.emit("spawn", object);
     }
 
+    awaitSpawn() {
+        return new Promise<void>(resolve => {
+            if (this.spawned) {
+                return resolve();
+            }
+
+            this.once("spawn", () => {
+                resolve();
+            });
+        });
+    }
+
     get GameData() {
         return this?.object?.components?.GameData;
     }

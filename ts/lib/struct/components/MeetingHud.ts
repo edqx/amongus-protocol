@@ -13,14 +13,16 @@ import {
     PlayerVoteAreaFlags
 } from "../../interfaces/Packets.js";
 
+import { Game } from "../Game.js";
+
 export class MeetingHud extends Component {
     name: "MeetingHub";
     classname: "MeetingHud";
 
     states: { [key: number]: MeetingHudPlayerState };
 
-    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
-        super(client, netid);
+    constructor(client: AmongusClient, game: Game, netid: number, datalen: number, data: Buffer) {
+        super(client, game, netid);
 
         this.OnSpawn(datalen, data);
     }

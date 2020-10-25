@@ -275,7 +275,7 @@ export interface RPCSendChat extends RPC {
 
 export interface RPCStartMeeting extends RPC {
     rpcid: RPCID.StartMeeting;
-    player: uint8 | 0xff;
+    targetid: uint8 | 0xff;
 }
 
 export interface RPCSetScanner extends RPC {
@@ -304,12 +304,12 @@ export interface RPCSetStartCounter extends RPC {
 export interface RPCEnterVent extends RPC {
     rpcid: RPCID.EnterVent;
     sequence: packed;
-    vent: packed;
+    ventid: packed;
 }
 
 export interface RPCExitVent extends RPC {
     rpcid: RPCID.ExitVent;
-    vent: packed;
+    ventid: packed;
 }
 
 export interface RPCSnapTo extends RPC {
@@ -332,7 +332,7 @@ export interface RPCVotingComplete extends RPC {
 
 export interface RPCCastVote extends RPC {
     rpcid: RPCID.CastVote;
-    playerid: uint8;
+    voterid: uint8;
     suspectid: uint8;
 }
 
@@ -571,13 +571,22 @@ export interface AlterGamePayload extends Payload {
     is_public: boolean;
 }
 
-export interface KickPlayerPayload extends Payload {
+export interface KickPlayerPayloadServerBound extends Payload {
     payloadid: PayloadID.KickPlayer;
+    bound: "server";
+    clientid: packed;
+    banned: boolean;
+}
+
+export interface KickPlayerPayloadClientBound extends Payload {
+    payloadid: PayloadID.KickPlayer;
+    bound: "client";
     code: code;
     clientid: packed;
-    reason?: DisconnectID;
-    message?: string;
+    banned: boolean;
 }
+
+export type KickPlayerPayload = KickPlayerPayloadServerBound | KickPlayerPayloadClientBound;
 
 export interface RedirectPayload extends Payload {
     payloadid: PayloadID.Redirect;

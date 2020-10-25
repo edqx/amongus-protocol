@@ -7,12 +7,14 @@ import {
     uint8
 } from "../../interfaces/Types.js"
 
+import { Game } from "../Game.js";
+
 export class PlayerPhysics extends Component {
     name: "Player";
     classname: "PlayerPhysics";
 
-    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
-        super(client, netid);
+    constructor(client: AmongusClient, game: Game, netid: number, datalen: number, data: Buffer) {
+        super(client, game, netid);
 
         this.OnSpawn(datalen, data);
     }
