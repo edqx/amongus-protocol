@@ -18,3 +18,8 @@ export type packed = number;
 export type code = int32;
 
 export type vector<A, B> = [A, B];
+
+export interface Vector2 {
+    x: float16;
+    y: float16;
+}

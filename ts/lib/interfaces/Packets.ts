@@ -364,7 +364,7 @@ export interface RPCSetTasks extends RPC {
     tasks: uint8[];
 }
 
-export interface TaskUpdate {
+export interface PlayerTaskState {
     taskid: TaskID;
     completed: boolean;
 }
@@ -375,7 +375,7 @@ export enum PlayerDataFlags {
     IsDead = 1 << 2
 }
 
-export interface PlayerGameData {
+export interface ParsedPlayerGameData {
     playerId: uint8;
     name: string;
     colour: ColourID;
@@ -387,12 +387,12 @@ export interface PlayerGameData {
     imposter: boolean;
     dead: boolean;
     num_tasks: uint8;
-    tasks: TaskUpdate[];
+    tasks: PlayerTaskState[];
 }
 
 export interface RPCUpdateGameData extends RPC {
     rpcid: RPCID.UpdateGameData;
-    players: PlayerGameData[];
+    players: ParsedPlayerGameData[];
 }
 
 export type RPCMessage = RPCPlayAnimation

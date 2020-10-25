@@ -6,7 +6,7 @@ export class Component extends EventEmitter {
     name: string;
     classname: string;
     
-    constructor(private client: AmongusClient, public netid: number) {
+    constructor(public client: AmongusClient, public netid: number) {
         super();
     }
 

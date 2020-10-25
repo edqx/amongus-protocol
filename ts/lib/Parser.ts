@@ -15,8 +15,8 @@ import {
     GameOptionsData,
     DisconnectReason,
     GameDataMessage,
-    PlayerGameData,
-    TaskUpdate,
+    ParsedPlayerGameData,
+    PlayerTaskState,
     MasterServer,
     GameListGame,
     MeetingHudPlayerState,
@@ -49,16 +49,16 @@ export function parseGameOptions(reader: BufferReader): GameOptionsData {
     options.votingTime = reader.int32LE();
     options.isDefault = reader.bool();
 
-    if (options.version === 1 || options.version === 2 || options.version === 3) {
+    if (options.version === 1 || options.version === 2 || options.version === 3 && reader.offset < reader.size) {
         options.emergencyCooldown = reader.uint8();
     }
 
-    if (options.version === 2 || options.version === 3) {
+    if (options.version === 2 || options.version === 3 && reader.offset < reader.size - 1) {
         options.confirmEjects = reader.bool();
         options.visualTasks = reader.bool();
     }
 
-    if (options.version === 3) {
+    if (options.version === 3 && reader.offset < reader.size - 1) {
         options.anonymousVoting = reader.bool();
         options.taskBarUpdates = reader.uint8();
     }
@@ -82,8 +82,8 @@ export function parseDisconnect(reader: BufferReader): DisconnectReason {
     return data as DisconnectReason;
 }
 
-export function parsePlayerData(reader: BufferReader): PlayerGameData {
-    let player: Partial<PlayerGameData> = {};
+export function parsePlayerData(reader: BufferReader): ParsedPlayerGameData {
+    let player: Partial<ParsedPlayerGameData> = {};
     player.playerId = reader.uint8();
     player.name = reader.string();
     player.colour = reader.uint8();
@@ -106,7 +106,7 @@ export function parsePlayerData(reader: BufferReader): PlayerGameData {
         }
     }, player.num_tasks);
 
-    return player as PlayerGameData;
+    return player as ParsedPlayerGameData;
 }
 
 export function parsePacket(buffer, bound: "server" | "client" = "client"): Packet {

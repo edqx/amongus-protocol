@@ -7,6 +7,7 @@
     "build": "tsc -p .",
     "load": "node --loader ts-node/esm",
     "test": "npm run load ts/test/main.ts",
+    "cmd": "npm run load ts/test/cmdline.ts",
     "parse": "npm run load ts/script/parse.ts",
     "compose": "npm run load ts/script/compose.ts",
     "view": "npm run load ts/script/view.ts",

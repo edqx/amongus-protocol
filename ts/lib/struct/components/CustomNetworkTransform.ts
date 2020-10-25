@@ -5,13 +5,11 @@ import { BufferReader } from "../../util/BufferReader.js"
 
 import {
     float16,
-    uint8
+    uint8,
+    Vector2
 } from "../../interfaces/Types.js"
 
-interface Vector2 {
-    x: float16;
-    y: float16;
-}
+import { LerpValue } from "../../util/Lerp.js";
 
 export interface CustomNetworkTransform extends Component {
     on(event: "move", listener: (transform: CustomNetworkTransform) => void);
@@ -40,7 +38,7 @@ export class CustomNetworkTransform extends Component {
     OnDeserialize(datalen: number, data: Buffer): void {
         const reader = new BufferReader(data);
 
-        const sequence = reader.uint16LE();
+        const sequence = reader.byte();
 
         if (this.sequence !== null && sequence < this.sequence) {
             return;
@@ -48,14 +46,16 @@ export class CustomNetworkTransform extends Component {
 
         this.sequence = sequence;
 
+        reader.jump(0x01);
+
         this.position = {
-            x: reader.uint16LE(),
-            y: reader.uint16LE()
+            x: LerpValue(reader.uint16LE() / 65535, -40, 40),
+            y: LerpValue(reader.uint16LE() / 65535, -40, 40)
         }
 
         this.velocity = {
-            x: reader.uint16LE(),
-            y: reader.uint16LE()
+            x: LerpValue(reader.uint16LE() / 65535, -40, 40),
+            y: LerpValue(reader.uint16LE() / 65535, -40, 40)
         }
 
         this.emit("move", this);

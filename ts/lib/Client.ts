@@ -7,8 +7,8 @@ import { composePacket } from "./Compose.js"
 import dgram from "dgram"
 import util from "util"
 import { EventEmitter } from "events"
-import { Packet, Payload, PayloadPacket } from "./interfaces/Packets.js"
-import { DisconnectID, LanguageID, MapID, MessageID, PacketID, PayloadID, SpawnID } from "./constants/Enums.js"
+import { Packet, Payload, PayloadPacket, PlayerVoteAreaFlags } from "./interfaces/Packets.js"
+import { DisconnectID, LanguageID, MapID, MessageID, PacketID, PayloadID, RPCID, SpawnID } from "./constants/Enums.js"
 import { DisconnectMessages } from "./constants/DisconnectMessages.js"
 import { runInThisContext } from "vm"
 import { Code2Int } from "./util/Codes.js"
@@ -23,6 +23,7 @@ import { GameData as GameDataObject } from "./struct/objects/GameData.js"
 import { Component } from "./struct/components/Component.js"
 import { PlayerClient } from "./struct/PlayerClient.js"
 import { GameData } from "./struct/GameData.js"
+import { PlayerControl } from "./struct/components/PlayerControl.js"
 
 export declare interface AmongusClient {
     on(event: "packet", listener: (packet: Packet) => void);
@@ -59,6 +60,14 @@ export class AmongusClient extends EventEmitter {
         if (this.options.debug) {
             console.log(...fmt);
         }
+    }
+
+    isMe(id: number) {
+        if (this.clientid === id || (this.game.me.spawned && this.game.me.PlayerControl.playerId === id)) {
+            return true;
+        }
+
+        return false;
     }
 
     _disconnect() {
@@ -136,6 +145,32 @@ export class AmongusClient extends EventEmitter {
                                         break;
                                 }
                                 break;
+                            case PayloadID.StartGame:
+                                if (packet.code === this.game.code) {
+                                    this.game.emit("start");
+
+                                    this.game.started = true;
+
+                                    await this.send({
+                                        op: PacketID.Reliable,
+                                        payloadid: PayloadID.GameData,
+                                        code: this.game.code,
+                                        parts: [
+                                            {
+                                                type: MessageID.Ready,
+                                                clientid: this.clientid
+                                            }
+                                        ]
+                                    });
+                                }
+                                break;
+                            case PayloadID.EndGame:
+                                if (packet.code === this.game.code) {
+                                    this.game.emit("end");
+
+                                    this.game.started = false;
+                                }
+                                break;
                             case PayloadID.RemovePlayer:
                                 if (packet.code === this.game.code) {
                                     this.game.clients.delete(packet.clientid);
@@ -159,6 +194,23 @@ export class AmongusClient extends EventEmitter {
                                                     component.OnDeserialize(part.datalen, part.data);
                                                 }
                                                 break;
+                                            case MessageID.RPC:
+                                                switch (part.rpcid) {
+                                                    case RPCID.SetInfected:
+                                                        this.game.setImposters(part.infected);
+                                                        break;
+                                                    case RPCID.CompleteTask:
+                                                        break;
+                                                    case RPCID.SetStartCounter:
+                                                        if (this.game.startCounterSeq === null || part.sequence > this.game.startCounterSeq) {
+                                                            this.game.startCount = part.time;
+                                                            this.game.emit("count", this.game.startCount);
+                                                        }
+                                                        break;
+                                                    case RPCID.SetTasks:
+                                                        break;
+                                                }
+                                                break;
                                             case MessageID.Spawn:
                                                 switch (part.spawnid) {
                                                     case SpawnID.GameData:
@@ -166,7 +218,6 @@ export class AmongusClient extends EventEmitter {
                                                         const gamedataobject = new GameDataObject(this, part.ownerid, part.components);
 
                                                         this.game.emit("spawn", gamedataobject);
-                                                        this.emit("spawn", gamedataobject);
 
                                                         this.game.registerComponents(gamedataobject);
 
@@ -179,7 +230,6 @@ export class AmongusClient extends EventEmitter {
                                                         const player = new Player(this, part.ownerid, part.components);
 
                                                         this.game.emit("spawn", player);
-                                                        this.emit("spawn", player);
                                                         
                                                         this.game.registerComponents(player);
                                                         

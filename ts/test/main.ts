@@ -7,12 +7,13 @@ import {
     SkinID,
     SpawnID
 } from "../index.js"
+import { PlayerClient } from "../lib/struct/PlayerClient.js";
 
 const client = new AmongusClient({
-    debug: true
+    debug: false
 });
 
-const server = MasterServers.NA[0];
+const server = MasterServers.EU[0];
 
 await client.connect(server[0], server[1], "weakeyes");
 
@@ -20,14 +21,11 @@ const game = await client.join(process.argv[2], {
     doSpawn: true
 });
 
-const loop = "poo head ".split("")
-
 game.me.on("spawn", async player => {
-    await game.me.setName(loop.join(""));
+    game.me.setColour(ColourID.Red);
+    game.me.setName("strong eyes");
 
-    setInterval(async () => {
-        loop.push(loop.shift());
-
-        await game.me.setName(loop.join(""));
-    }, 100);
+    game.on("setImposters", imposters => {
+        
+    });
 });
