@@ -18,12 +18,13 @@ import { bitfield } from "./interfaces/Types.js"
 import { JoinOptions } from "./interfaces/JoinOptions.js"
 
 import { Player } from "./struct/objects/Player.js"
-import { GameData as GameDataObject } from "./struct/objects/GameData.js"
+import { GameData } from "./struct/objects/GameData.js"
 
 import { Component } from "./struct/components/Component.js"
 import { PlayerClient } from "./struct/PlayerClient.js"
-import { GameData } from "./struct/GameData.js"
 import { PlayerControl } from "./struct/components/PlayerControl.js"
+import { MeetingHud } from "./struct/components/MeetingHud.js"
+import { LobbyBehaviour } from "./struct/objects/LobbyBehaviour.js"
 
 export declare interface AmongusClient {
     on(event: "packet", listener: (packet: Packet) => void);
@@ -34,7 +35,7 @@ export declare interface AmongusClient {
     off(event: "connected", listener: () => void);
 }
 
-export type AnyObject = Player | GameDataObject;
+export type AnyObject = Player | GameData;
 
 export class AmongusClient extends EventEmitter {
     options: ClientOptions;
@@ -63,7 +64,7 @@ export class AmongusClient extends EventEmitter {
     }
 
     isMe(id: number) {
-        if (this.clientid === id || (this.game.me.spawned && this.game.me.PlayerControl.playerId === id)) {
+        if (this.clientid === id || (this.game.me.Player && this.game.me.Player.PlayerControl.playerId === id)) {
             return true;
         }
 
@@ -139,7 +140,7 @@ export class AmongusClient extends EventEmitter {
                                 switch (packet.error) {  // Couldn't get typings to work with if statements so I have to deal with switch/case..
                                     case false:
                                         if (packet.code === this.game.code) {
-                                            const client = new PlayerClient(this, this.game, packet.clientid);
+                                            const client = new PlayerClient(this, packet.clientid);
 
                                             this.game.clients.set(client.clientid, client);
                                             this.game.emit("playerJoin", client);
@@ -206,7 +207,7 @@ export class AmongusClient extends EventEmitter {
 
                                         switch (part.type) {
                                             case MessageID.Data:
-                                                const component = this.game.components.get(part.netid);
+                                                const component = this.game.netcomponents.get(part.netid);
 
                                                 if (component) {
                                                     component.OnDeserialize(part.datalen, part.data);
@@ -265,6 +266,11 @@ export class AmongusClient extends EventEmitter {
                                                         break;
                                                     }
                                                     case RPCID.SetTasks:
+                                                        const client = this.game.getPlayer(part.playerid);
+
+                                                        if (client) {
+                                                            client._setTasks(part.tasks);
+                                                        }
                                                         break;
                                                     case RPCID.UpdateGameData:
                                                         this.game.GameData.GameData.UpdatePlayers(part.players);
@@ -273,34 +279,36 @@ export class AmongusClient extends EventEmitter {
                                                 break;
                                             case MessageID.Spawn:
                                                 switch (part.spawnid) {
+                                                    case SpawnID.ShipStatus:
+                                                        // new ShipStatus(this, this.game, part.components);
+                                                        break;
+                                                    case SpawnID.MeetingHub:
+                                                        // new MeetingHub(this, this.game, part.components);
+                                                        break;
+                                                    case SpawnID.LobbyBehaviour:
+                                                        new LobbyBehaviour(this, this.game, part.components)
+                                                        break;
                                                     case SpawnID.GameData:
-                                                        const gamedata = this.game.GameData;
-                                                        const gamedataobject = new GameDataObject(this, this.game, part.ownerid, part.components);
-
-                                                        this.game.emit("spawn", gamedataobject);
-
-                                                        this.game.registerComponents(gamedataobject);
-
-                                                        gamedata.spawn(gamedataobject);
-
-                                                        this.game.gameobjects.set(part.ownerid, gamedataobject);
+                                                        new GameData(this, this.game, part.components);
                                                         break;
                                                     case SpawnID.Player:
                                                         const playerclient = this.game.clients.get(part.ownerid);
-                                                        const player = new Player(this, this.game, part.ownerid, part.components);
 
-                                                        this.game.emit("spawn", player);
-                                                        
-                                                        this.game.registerComponents(player);
-                                                        
-                                                        playerclient.spawn(player);
-                                                        
-                                                        this.game.gameobjects.set(part.ownerid, player);
+                                                        new Player(this, playerclient, part.components);
+                                                        break;
+                                                    case SpawnID.HeadQuarters:
+                                                        // new HeadQuarters(this, this.game, part.components);
+                                                        break;
+                                                    case SpawnID.PlanetMap:
+                                                        // new PlanetMap(this, this.game, part.components);
+                                                        break;
+                                                    case SpawnID.AprilShipStatus:
+                                                        // new AprilShipStatus(this, this.game, part.components);
                                                         break;
                                                 }
                                                 break;
                                             case MessageID.Despawn:
-                                                this.game.components.delete(part.netid);
+                                                this.game.netcomponents.delete(part.netid);
                                                 break;
                                         }
                                     }
@@ -457,7 +465,7 @@ export class AmongusClient extends EventEmitter {
             this.awaitPayload(p => p.payloadid === PayloadID.JoinGame)
         ]);
 
-        if (packet && (packet.op === PacketID.Reliable) || (packet.op === PacketID.Unreliable)) {
+        if (packet && (packet.op === PacketID.Reliable || packet.op === PacketID.Unreliable)) {
             if (packet.payloadid === PayloadID.Redirect) {
                 await this.disconnect();
 

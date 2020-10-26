@@ -292,7 +292,7 @@ export class BufferReader {
 
         if (!length) {
             const len = this.packed();
-
+            
             return this.string(len);
         }
 

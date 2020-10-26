@@ -37,8 +37,8 @@ export class ShipStatus extends Component {
 
     systems: { [key in SystemType]?: void }
 
-    constructor(client: AmongusClient, game: Game, netid: number, datalen: number, data: Buffer) {
-        super(client, game, netid);
+    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
+        super(client, netid);
 
         this.OnSpawn(datalen, data);
     }

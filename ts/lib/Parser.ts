@@ -406,7 +406,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                             server.name = reader.string();
                             server.ip = reader.bytes(0x04).join(".");
                             server.port = reader.uint16LE();
-                            server.num_players = reader.uint16LE();
+                            server.num_players = reader.packed();
 
                             data.servers.push(server as MasterServer);
                         }

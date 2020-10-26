@@ -21,8 +21,8 @@ export class MeetingHud extends Component {
 
     states: { [key: number]: MeetingHudPlayerState };
 
-    constructor(client: AmongusClient, game: Game, netid: number, datalen: number, data: Buffer) {
-        super(client, game, netid);
+    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
+        super(client, netid);
 
         this.OnSpawn(datalen, data);
     }

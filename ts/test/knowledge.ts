@@ -7,13 +7,14 @@ import {
     SkinID,
     SpawnID
 } from "../index.js"
+import { GameData } from "../lib/struct/objects/GameData.js";
 import { PlayerClient } from "../lib/struct/PlayerClient.js";
 
 const client = new AmongusClient({
     debug: false
 });
 
-const server = MasterServers.EU[0];
+const server = MasterServers.NA[0];
 
 await client.connect(server[0], server[1], "weakeyes");
 
@@ -46,8 +47,10 @@ game.me.on("spawn", async player => {
     game.me.setName("strong eyes");
 });
 
-await game.GameData.awaitSpawn();
-
-game.GameData.GameData.on("playerData", playerData => {
-    console.log(playerData);
+game.on("spawn", object => {
+    if (object instanceof GameData) {
+        object.GameData.on("playerData", playerData => {
+            
+        });
+    }
 });

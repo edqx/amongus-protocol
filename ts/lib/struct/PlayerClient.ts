@@ -18,53 +18,49 @@ import {
     TaskID
 } from "../constants/Enums.js"
 
-import { EventEmitter } from "events"
 import {
     float,
     uint16,
+    uint8,
     Vector2
 } from "../interfaces/Types.js"
+
 import { BufferWriter } from "../util/BufferWriter.js"
 
 import { UnlerpValue } from "../util/Lerp.js"
 import { PlayerTaskState } from "../interfaces/Packets.js"
+import { GameObject } from "./objects/GameObject.js"
 
 export interface PlayerClient {
     on(event: "spawn", listener: (player: Player) => void);
     on(event: "taskComplete", listener: (task: PlayerTaskState) => void);
-    on(event: "setTasks", listener: (tasks: Map<TaskID, PlayerTaskState>) => void);
+    on(event: "setTasks", listener: (tasks: TaskID[]) => void);
     on(event: "vote", listener: (suspect: PlayerClient) => void);
     on(event: "kicked", listener: (banned: boolean) => void);
     on(event: "murder", listener: (target: PlayerClient) => void);
     on(event: "murdered", listener: (murderer: PlayerClient) => void);
 }
 
-export class PlayerClient extends EventEmitter {
-    spawned: boolean;
-    object: Player;
+export class PlayerClient extends GameObject {
+    children: Player[];
 
     removed: boolean;
     dead: boolean;
 
-    constructor (private client: AmongusClient, public game: Game, public clientid: number) {
-        super();
+    tasks: TaskID[];
 
-        this.spawned = false;
+    constructor (protected client: AmongusClient, public clientid: number) {
+        super(client, client);
+
         this.removed = false;
-
         this.dead = false;
-    }
 
-    spawn(object: Player) {
-        this.object = object;
-        this.spawned = true;
-        
-        this.emit("spawn", object);
+        this.tasks = [];
     }
 
     awaitSpawn() {
         return new Promise<void>(resolve => {
-            if (this.spawned) {
+            if (this.Player) {
                 return resolve();
             }
 
@@ -74,24 +70,22 @@ export class PlayerClient extends EventEmitter {
         });
     }
 
+    addChild(object: GameObject) {
+        super.addChild(object);
+        
+        if (object instanceof Player) this.emit("spawn", object);
+    }
+
     get imposter() {
-        return !!this.game.imposters.find(imposter => imposter.PlayerControl.playerId === this.PlayerControl.playerId);
+        return !!this.client.game.imposters.find(imposter => imposter.Player.PlayerControl.playerId === this.Player.PlayerControl.playerId);
     }
 
-    get PlayerControl() {
-        return this?.object?.components?.PlayerControl;
-    }
-
-    get PlayerPhysics() {
-        return this?.object?.components?.PlayerPhysics;
-    }
-
-    get CustomNetworkTransform() {
-        return this?.object?.components?.CustomNetworkTransform;
+    get Player() {
+        return this.children[0];
     }
 
     get PlayerData() {
-        return this.game.GameData.GameData.players.get(this.PlayerControl.playerId);
+        return this.client.game.GameData.GameData.players.get(this.Player.PlayerControl.playerId);
     }
 
     get name() {
@@ -115,69 +109,82 @@ export class PlayerClient extends EventEmitter {
     }
 
     async murder(target: PlayerClient) {
-        if (this.spawned && !this.removed) {
-            await this.client.send({
-                op: PacketID.Reliable,
-                payloadid: PayloadID.GameDataTo,
-                recipient: this.game.hostid,
-                code: this.game.code,
-                parts: [
-                    {
-                        type: MessageID.RPC,
-                        handlerid: this.PlayerControl.netid,
-                        rpcid: RPCID.MurderPlayer,
-                        targetnetid: target.PlayerControl.netid
-                    }
-                ]
-            });
+        if (this.Player && !this.removed) {
+            this.Player.PlayerControl.murderPlayer(target.Player.PlayerControl.playerId);
         }
     }
 
+    _setTasks(tasks: TaskID[]) {
+        this.tasks = tasks;
+
+        this.emit("setTasks", this.tasks);
+    }
+
+    async setTasks(tasks: TaskID[]) {
+        this._setTasks(tasks);
+
+        await this.client.send({
+            op: PacketID.Reliable,
+            payloadid: PayloadID.GameData,
+            code: this.client.game.code,
+            parts: [
+                {
+                    type: MessageID.RPC,
+                    handlerid: this.client.game.GameData.GameData.netid,
+                    rpcid: RPCID.SetTasks,
+                    playerid: this.Player.PlayerControl.playerId,
+                    num_tasks: tasks.length,
+                    tasks
+                }
+            ]
+        });
+    }
+
     async setName(name: string) {
-        if (this.spawned && !this.removed) {
-            await this.PlayerControl.setName(name);
+        if (this.Player && !this.removed) {
+            await this.Player.PlayerControl.setName(name);
         }
     }
 
     async setColour(colour: ColourID) {
-        if (this.spawned && !this.removed) {
-            await this.PlayerControl.setColour(colour);
+        if (this.Player && !this.removed) {
+            await this.Player.PlayerControl.setColour(colour);
         }
     }
 
     async setHat(hat: HatID) {
-        if (this.spawned && !this.removed) {
-            await this.PlayerControl.setHat(hat);
+        if (this.Player && !this.removed) {
+            await this.Player.PlayerControl.setHat(hat);
         }
     }
 
     async setSkin(skin: SkinID) {
-        if (this.spawned && !this.removed) {
-            await this.PlayerControl.setSkin(skin);
+        if (this.Player && !this.removed) {
+            await this.Player.PlayerControl.setSkin(skin);
         }
     }
 
     async setPet(pet: PetID) {
-        if (this.spawned && !this.removed) {
-            await this.PlayerControl.setPet(pet);
+        if (this.Player && !this.removed) {
+            await this.Player.PlayerControl.setPet(pet);
         }
     }
 
     async chat(text: string) {
-        if (this.spawned && !this.removed) {
-            await this.PlayerControl.chat(text);
+        if (this.Player && !this.removed) {
+            await this.Player.PlayerControl.chat(text);
         }
     }
 
     async move(position: Vector2, velocity: Vector2) {
-        if (this.spawned && !this.removed) {
-            await this.CustomNetworkTransform.move(position, velocity);
+        if (this.Player && !this.removed) {
+            await this.Player.CustomNetworkTransform.move(position, velocity);
         }
     }
 
     async snapTo(position: Vector2) {
-        if (this.spawned && !this.removed) {
-            await this.CustomNetworkTransform.snapTo(position);
+        if (this.Player && !this.removed) {
+            await this.Player.CustomNetworkTransform.snapTo(position);
         }
     }
 }

@@ -30,8 +30,8 @@ export class PlayerControl extends Component {
 
     playerId: uint8;
 
-    constructor(client: AmongusClient, game: Game, netid: number, datalen: number, data: Buffer) {
-        super(client, game, netid);
+    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
+        super(client, netid);
 
         this.OnSpawn(datalen, data);
     }
@@ -52,14 +52,30 @@ export class PlayerControl extends Component {
 
         this.playerId = reader.uint8();
     }
-    
+
+    async murderPlayer(playerid: number) {
+        await this.client.send({
+            op: PacketID.Reliable,
+            payloadid: PayloadID.GameDataTo,
+            recipient: this.client.game.hostid,
+            code: this.client.game.code,
+            parts: [
+                {
+                    type: MessageID.RPC,
+                    handlerid: this.netid,
+                    rpcid: RPCID.MurderPlayer,
+                    targetnetid: playerid
+                }
+            ]
+        });
+    }
 
     async setColour(colour: ColourID) {
         await this.client.send({
             op: PacketID.Reliable,
             payloadid: PayloadID.GameDataTo,
-            recipient: this.game.hostid,
-            code: this.game.code,
+            recipient: this.client.game.hostid,
+            code: this.client.game.code,
             parts: [
                 {
                     type: MessageID.RPC,
@@ -80,8 +96,8 @@ export class PlayerControl extends Component {
         await this.client.send({
             op: PacketID.Reliable,
             payloadid: PayloadID.GameDataTo,
-            recipient: this.game.hostid,
-            code: this.game.code,
+            recipient: this.client.game.hostid,
+            code: this.client.game.code,
             parts: [
                 {
                     type: MessageID.RPC,
@@ -102,8 +118,8 @@ export class PlayerControl extends Component {
         await this.client.send({
             op: PacketID.Reliable,
             payloadid: PayloadID.GameDataTo,
-            recipient: this.game.hostid,
-            code: this.game.code,
+            recipient: this.client.game.hostid,
+            code: this.client.game.code,
             parts: [
                 {
                     type: MessageID.RPC,
@@ -119,8 +135,8 @@ export class PlayerControl extends Component {
         await this.client.send({
             op: PacketID.Reliable,
             payloadid: PayloadID.GameDataTo,
-            recipient: this.game.hostid,
-            code: this.game.code,
+            recipient: this.client.game.hostid,
+            code: this.client.game.code,
             parts: [
                 {
                     type: MessageID.RPC,
@@ -136,8 +152,8 @@ export class PlayerControl extends Component {
         await this.client.send({
             op: PacketID.Reliable,
             payloadid: PayloadID.GameDataTo,
-            recipient: this.game.hostid,
-            code: this.game.code,
+            recipient: this.client.game.hostid,
+            code: this.client.game.code,
             parts: [
                 {
                     type: MessageID.RPC,
@@ -153,7 +169,7 @@ export class PlayerControl extends Component {
         await this.client.send({
             op: PacketID.Reliable,
             payloadid: PayloadID.GameData,
-            code: this.game.code,
+            code: this.client.game.code,
             parts: [
                 {
                     type: MessageID.RPC,

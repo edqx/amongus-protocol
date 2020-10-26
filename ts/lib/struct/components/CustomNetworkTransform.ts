@@ -35,8 +35,8 @@ export class CustomNetworkTransform extends Component {
     position: Vector2;
     velocity: Vector2;
 
-    constructor(client: AmongusClient, game: Game, netid: number, datalen: number, data: Buffer) {
-        super(client, game, netid);
+    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
+        super(client, netid);
 
         this.sequence = null;
 
@@ -86,7 +86,7 @@ export class CustomNetworkTransform extends Component {
         await this.client.send({
             op: PacketID.Unreliable,
             payloadid: PayloadID.GameData,
-            code: this.game.code,
+            code: this.client.game.code,
             parts: [
                 {
                     type: MessageID.Data,
@@ -103,7 +103,7 @@ export class CustomNetworkTransform extends Component {
         await this.client.send({
             op: PacketID.Reliable,
             payloadid: PayloadID.GameData,
-            code: this.game.code,
+            code: this.client.game.code,
             parts: [
                 {
                     type: MessageID.RPC,

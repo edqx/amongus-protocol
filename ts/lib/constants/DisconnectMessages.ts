@@ -7,7 +7,7 @@ export const DisconnectMessages = {
     0x06: "You were banned from the room. You cannot rejoin that room.",
     0x07: "You were kicked from the room. You can rejoin if the room hasn't started.",
     0x09: "Server refused username",
-    0x0a: "You were banned for hacking.",
+    0x0a: "You were banned for hacking. Please stop.",
     0x0c: "You disconnected from the host. If this happens often, check your WiFi strength.",
     0x0d: "Could not find the game you're looking for.",
     0x0e: "The server stopped this game. Possibly due to inactivity.",

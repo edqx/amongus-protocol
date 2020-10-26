@@ -4,28 +4,26 @@ import { Component } from "./Component.js"
 import { BufferReader } from "../../util/BufferReader.js"
 
 import {
-    float16,
     uint8
 } from "../../interfaces/Types.js"
+
 import { Game } from "../Game.js";
 
-export class VoteBanSystem extends Component {
-    name: "GameData";
-    classname: "VoteBanSystem";
-
-    num_votes: number;
+export class LobbyBehaviour extends Component {
+    name: "LobbyBehaviour";
+    classname: "LobbyBehaviour";
 
     constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
         super(client, netid);
 
         this.OnSpawn(datalen, data);
     }
-
+    
     OnSpawn(datalen: number, data: Buffer): void {
-        return this.OnDeserialize(datalen, data);
+
     }
 
     OnDeserialize(datalen: number, data: Buffer): void {
-        const reader = new BufferReader(data);
+
     }
 }
