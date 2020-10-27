@@ -353,7 +353,6 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                     part.clientid = reader.packed();
                                     break;
                                 case MessageID.ChangeSettings:
-                                    part;
                                     break;
                             }
 

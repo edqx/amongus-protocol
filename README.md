@@ -1,6 +1,8 @@
 # AmongUs-Protocol (WIP)
 ### This protocol is not finished, please avoid using this for any projects, either find a more developed and mature one, or use this one with caution and know that everything is subject to change.
 
+![Alt text](asset/logo.png "Amongus Protocol")
+
 See the [wiki](https://github.com/edqx/amongus-protocol/wiki) for more information on the protocol.
 
 An implementation of the Among Us protocol made in Typescript
