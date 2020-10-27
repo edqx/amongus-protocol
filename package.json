@@ -7,6 +7,8 @@
     "build": "tsc -p .",
     "load": "node --loader ts-node/esm",
     "test": "npm run load ts/test/main.ts",
+    "test:search": "npm run load ts/test/search.ts",
+    "test:knowledge": "npm run load ts/test/knowledge.ts",
     "cmd": "npm run load ts/test/cmdline.ts",
     "parse": "npm run load ts/script/parse.ts",
     "compose": "npm run load ts/script/compose.ts",
@@ -19,7 +21,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^14.11.10",
-    "ts-node": "^9.0.0",
+    "ts-node": "github:TypeStrong/ts-node#master",
     "typescript": "^4.1.0-dev.20201017"
   }
 }

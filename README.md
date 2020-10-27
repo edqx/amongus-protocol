@@ -1,5 +1,5 @@
 # AmongUs-Protocol (WIP)
-### This protocol is not finished, please avoid using this for any projects, either find a more developed and mature one, or use this one with caution and know that everything is subject to change.
+### This protocol is not finished, please avoid using this for any projects, use with caution and know that everything is subject to change.
 
 ![Alt text](asset/logo.png "Amongus Protocol")
 
@@ -19,6 +19,12 @@ Data gathered from
 * [Il2CppDumper](https://github.com/Perfare/Il2CppDumper)
 * Impostor Discord server
 * Helpful members
+
+## Install
+With NPM:
+`npm install --save amongus-protocol`
+Or clone with Git:
+`git clone https://github.com/edqx/amongus-protocol`
 
 ## Notes
 This repository is licensed under the MIT license, I am not responsible for anything you do using this library.

@@ -7,7 +7,7 @@ import { composePacket } from "./Compose.js"
 import dgram from "dgram"
 import util from "util"
 import { EventEmitter } from "events"
-import { Packet, Payload, PayloadPacket, PlayerVoteAreaFlags } from "./interfaces/Packets.js"
+import { GameListGame, Packet, Payload, PayloadPacket, PlayerVoteAreaFlags } from "./interfaces/Packets.js"
 import { DisconnectID, LanguageID, MapID, MessageID, PacketID, PayloadID, RPCID, SpawnID } from "./constants/Enums.js"
 import { DisconnectMessages } from "./constants/DisconnectMessages.js"
 import { runInThisContext } from "vm"
@@ -61,14 +61,6 @@ export class AmongusClient extends EventEmitter {
         if (this.options.debug) {
             console.log(...fmt);
         }
-    }
-
-    isMe(id: number) {
-        if (this.clientid === id || (this.game.me.Player && this.game.me.Player.PlayerControl.playerId === id)) {
-            return true;
-        }
-
-        return false;
     }
 
     _disconnect() {
@@ -499,11 +491,11 @@ export class AmongusClient extends EventEmitter {
         }
     }
     
-    async search(maps: bitfield|MapID[] = 0, imposters: number = 0, language: LanguageID = LanguageID.Any) {
+    async search(maps: bitfield|MapID[] = 0, imposters: number = 0, language: LanguageID = LanguageID.Any): Promise<GameListGame[]> {
         if (Array.isArray(maps)) {
-            return maps.reduce((val, map) => val + (1 << map), 0);
+            return this.search(maps.reduce((val, map) => val + (1 << map), 0), imposters, language);
         }
-        
+
         await this.send({
             op: PacketID.Reliable,
             payloadid: PayloadID.GetGameListV2,
@@ -514,5 +506,26 @@ export class AmongusClient extends EventEmitter {
                 language
             }
         });
+
+        const payload = await Promise.race([
+            this.awaitPayload(p => p.payloadid === PayloadID.Redirect),
+            this.awaitPayload(p => p.payloadid === PayloadID.GetGameListV2)
+        ]);
+
+        if (payload && (payload.op === PacketID.Reliable || payload.op === PacketID.Unreliable)) {
+            if (payload.payloadid === PayloadID.Redirect) {
+                await this.disconnect();
+
+                await this.connect(payload.ip, payload.port, this.username);
+
+                return await this.search(maps, imposters, language);
+            } else if (payload.bound === "client" && payload.payloadid === PayloadID.GetGameListV2) {
+                return payload.games;
+            }
+
+            return null;
+        } else {
+            return null;
+        }
     }
 }
