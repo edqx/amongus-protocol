@@ -96,10 +96,14 @@ export class PlayerClient extends GameObject {
         if (!this.removed) {
             await this.client.send({
                 op: PacketID.Reliable,
-                payloadid: PayloadID.KickPlayer,
-                bound: "server",
-                clientid: this.clientid,
-                banned: ban
+                payloads: [
+                    {
+                        bound: "server",
+                        payloadid: PayloadID.KickPlayer,
+                        clientid: this.clientid,
+                        banned: ban
+                    }
+                ]
             });
         }
     }
@@ -125,19 +129,29 @@ export class PlayerClient extends GameObject {
 
         await this.client.send({
             op: PacketID.Reliable,
-            payloadid: PayloadID.GameData,
-            code: this.client.game.code,
-            parts: [
+            payloads: [
                 {
-                    type: MessageID.RPC,
-                    handlerid: this.client.game.GameData.GameData.netid,
-                    rpcid: RPCID.SetTasks,
-                    playerid: this.Player.PlayerControl.playerId,
-                    num_tasks: tasks.length,
-                    tasks
+                    payloadid: PayloadID.GameData,
+                    code: this.client.game.code,
+                    parts: [
+                        {
+                            type: MessageID.RPC,
+                            handlerid: this.client.game.GameData.GameData.netid,
+                            rpcid: RPCID.SetTasks,
+                            playerid: this.Player.PlayerControl.playerId,
+                            num_tasks: tasks.length,
+                            tasks
+                        }
+                    ]
                 }
             ]
         });
+    }
+    
+    async vote(player: PlayerClient) {
+        if (this.Player && !this.removed) {
+            
+        }
     }
 
     async setName(name: string) {

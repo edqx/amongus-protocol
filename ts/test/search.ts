@@ -8,7 +8,7 @@ const client = new AmongusClient({
     debug: true
 });
 
-await client.connect(MasterServers.EU[0][0], MasterServers.EU[0][1], "weakeyes");
+await client.connect("127.0.0.1", 22023, "weakeyes");
 
 const games = await client.search([MapID.TheSkeld]);
 

@@ -9,6 +9,7 @@
     "test": "npm run load ts/test/main.ts",
     "test:search": "npm run load ts/test/search.ts",
     "test:knowledge": "npm run load ts/test/knowledge.ts",
+    "test:server": "npm run load ts/test/server.ts",
     "cmd": "npm run load ts/test/cmdline.ts",
     "parse": "npm run load ts/script/parse.ts",
     "compose": "npm run load ts/script/compose.ts",

@@ -127,13 +127,13 @@ export interface PingPacket extends Reliable {
     op: PacketID.Ping;
 }
 
-export interface HostGamePayloadServerBound extends Payload {
+export interface HostGamePayloadServerBound extends BasePayload {
     payloadid: PayloadID.HostGame;
     bound?: "server";
     options: Partial<GameOptionsData>;
 }
 
-export interface HostGamePayloadClientBound extends Payload {
+export interface HostGamePayloadClientBound extends BasePayload {
     payloadid: PayloadID.HostGame;
     bound?: "client";
     code: code;
@@ -141,7 +141,7 @@ export interface HostGamePayloadClientBound extends Payload {
 
 export type HostGamePayload = HostGamePayloadServerBound | HostGamePayloadClientBound;
 
-export interface JoinGamePayloadServerBound extends Payload {
+export interface JoinGamePayloadServerBound extends BasePayload {
     bound?: "server";
     payloadid: PayloadID.JoinGame;
     code: code;
@@ -149,13 +149,13 @@ export interface JoinGamePayloadServerBound extends Payload {
 }
 
 
-export interface JoinGamePayloadClientBoundError extends DisconnectReason, Payload {
+export interface JoinGamePayloadClientBoundError extends DisconnectReason, BasePayload {
     bound?: "client";
     error: true;
     payloadid: PayloadID.JoinGame;
 }
 
-export interface JoinGamePayloadClientBoundPlayer extends Payload {
+export interface JoinGamePayloadClientBoundPlayer extends BasePayload {
     bound?: "client";
     error: false;
     code: int32;
@@ -169,16 +169,16 @@ export type JoinGamePayloadClientBound = JoinGamePayloadClientBoundError
 
 export type JoinGamePayload = JoinGamePayloadServerBound | JoinGamePayloadClientBound;
 
-export interface StartGamePayload extends Payload {
+export interface StartGamePayload extends BasePayload {
     payloadid: PayloadID.StartGame;
     code: code;
 }
 
-export interface RemoveGamePayload extends Payload {
+export interface RemoveGamePayload extends BasePayload {
     payloadid: PayloadID.RemoveGame;
 }
 
-export interface RemovePlayerPayload extends DisconnectReason, Payload {
+export interface RemovePlayerPayload extends DisconnectReason, BasePayload {
     payloadid: PayloadID.RemovePlayer;
     code: int32;
     clientid: uint32;
@@ -528,27 +528,25 @@ export type GameDataMessage = DataMessage
     | ReadyMessage
     | ChangeSettingsMessage;
 
-export interface Payload extends BasePacket {
-    op: PacketID.Reliable | PacketID.Unreliable;
-    reliable?: boolean;
-    nonce?: number;
+export interface BasePayload {
+    bound?: "server"|"client";
     payloadid: PayloadID;
 }
 
-export interface GameDataPayload extends Payload {
+export interface GameDataPayload extends BasePayload {
     payloadid: PayloadID.GameData;
     code: code;
     parts: GameDataMessage[];
 }
 
-export interface GameDataToPayload extends Payload {
+export interface GameDataToPayload extends BasePayload {
     payloadid: PayloadID.GameDataTo;
     code: code;
     recipient: packed;
     parts: GameDataMessage[];
 }
 
-export interface JoinedGamePayload extends Payload {
+export interface JoinedGamePayload extends BasePayload {
     payloadid: PayloadID.JoinedGame;
     code: code;
     clientid: uint32;
@@ -557,28 +555,28 @@ export interface JoinedGamePayload extends Payload {
     clients: packed[];
 }
 
-export interface EndGamePayload extends Payload {
+export interface EndGamePayload extends BasePayload {
     payloadid: PayloadID.EndGame;
     code: code;
     reason: GameEndReason;
     show_ad: boolean;
 }
 
-export interface AlterGamePayload extends Payload {
+export interface AlterGamePayload extends BasePayload {
     payloadid: PayloadID.AlterGame;
     code: code;
     tag: AlterGameTag;
     is_public: boolean;
 }
 
-export interface KickPlayerPayloadServerBound extends Payload {
+export interface KickPlayerPayloadServerBound extends BasePayload {
     payloadid: PayloadID.KickPlayer;
     bound: "server";
     clientid: packed;
     banned: boolean;
 }
 
-export interface KickPlayerPayloadClientBound extends Payload {
+export interface KickPlayerPayloadClientBound extends BasePayload {
     payloadid: PayloadID.KickPlayer;
     bound: "client";
     code: code;
@@ -588,7 +586,7 @@ export interface KickPlayerPayloadClientBound extends Payload {
 
 export type KickPlayerPayload = KickPlayerPayloadServerBound | KickPlayerPayloadClientBound;
 
-export interface RedirectPayload extends Payload {
+export interface RedirectPayload extends BasePayload {
     payloadid: PayloadID.Redirect;
     ip: string;
     port: uint16;
@@ -602,7 +600,7 @@ export interface MasterServer {
     num_players: uint16;
 }
 
-export interface MasterServerListPayload extends Payload {
+export interface MasterServerListPayload extends BasePayload {
     payloadid: PayloadID.MasterServerList;
     num_servers: uint8;
     servers: MasterServer[];
@@ -620,13 +618,18 @@ export interface GameListGame {
     max_players: uint8;
 }
 
-export interface GameListPayloadClientbound extends Payload {
+export type GameListCount = {
+    [K in MapID]: number;
+}
+
+export interface GameListPayloadClientbound extends BasePayload {
     bound?: "client";
     payloadid: PayloadID.GetGameListV2;
+    count: GameListCount;
     games: GameListGame[];
 }
 
-export interface GameListPayloadServerBound extends Payload {
+export interface GameListPayloadServerBound extends BasePayload {
     bound?: "server";
     payloadid: PayloadID.GetGameListV2;
     options: Partial<GameOptionsData>;
@@ -634,7 +637,7 @@ export interface GameListPayloadServerBound extends Payload {
 
 export type GameListPayload = GameListPayloadClientbound | GameListPayloadServerBound;
 
-export type PayloadPacket = HostGamePayload
+export type Payload = HostGamePayload
     | JoinGamePayload
     | StartGamePayload
     | RemoveGamePayload
@@ -648,6 +651,21 @@ export type PayloadPacket = HostGamePayload
     | RedirectPayload
     | MasterServerListPayload
     | GameListPayload;
+
+export interface ReliablePayloadPacket extends BasePacket {
+    op: PacketID.Reliable;
+    reliable?: true;
+    nonce?: number;
+    payloads: Payload[];
+}
+
+export interface UnreliablePayloadPacket extends BasePacket {
+    op: PacketID.Unreliable;
+    reliable?: false;
+    payloads: Payload[];
+}
+
+export type PayloadPacket = ReliablePayloadPacket | UnreliablePayloadPacket;
 
 export type Packet = PayloadPacket
     | HelloPacket

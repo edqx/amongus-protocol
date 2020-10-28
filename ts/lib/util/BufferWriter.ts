@@ -351,7 +351,7 @@ export class BufferWriter {
 
         this.buffer.write(string, this.offset, "utf8");
 
-        this.offset += string.length - 1;
+        this.offset += string.length;
 
         return this;
     }

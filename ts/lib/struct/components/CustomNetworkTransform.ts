@@ -85,15 +85,19 @@ export class CustomNetworkTransform extends Component {
         
         await this.client.send({
             op: PacketID.Unreliable,
-            payloadid: PayloadID.GameData,
-            code: this.client.game.code,
-            parts: [
+            payloads: [
                 {
-                    type: MessageID.Data,
-                    datatype: DataID.Movement,
-                    netid: this.netid,
-                    datalen: data.size,
-                    data: data.buffer
+                    payloadid: PayloadID.GameData,
+                    code: this.client.game.code,
+                    parts: [
+                        {
+                            type: MessageID.Data,
+                            datatype: DataID.Movement,
+                            netid: this.netid,
+                            datalen: data.size,
+                            data: data.buffer
+                        }
+                    ]
                 }
             ]
         });
@@ -102,15 +106,19 @@ export class CustomNetworkTransform extends Component {
     async snapTo(position: Vector2) {
         await this.client.send({
             op: PacketID.Reliable,
-            payloadid: PayloadID.GameData,
-            code: this.client.game.code,
-            parts: [
+            payloads: [
                 {
-                    type: MessageID.RPC,
-                    handlerid: this.netid,
-                    rpcid: RPCID.SnapTo,
-                    x: position.x,
-                    y: position.y
+                    payloadid: PayloadID.GameData,
+                    code: this.client.game.code,
+                    parts: [
+                        {
+                            type: MessageID.RPC,
+                            handlerid: this.netid,
+                            rpcid: RPCID.SnapTo,
+                            x: position.x,
+                            y: position.y
+                        }
+                    ]
                 }
             ]
         });

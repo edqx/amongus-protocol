@@ -19,3 +19,11 @@ export function DecodeVersion(version: number): VersionInfo {
 
     return info as VersionInfo;
 }
+
+export function FormatVersion(version: VersionInfo|number) {
+    if (typeof version === "number") {
+        return FormatVersion(DecodeVersion(version));
+    }
+
+    return version.year + "." + version.month + "." + version.day;
+}

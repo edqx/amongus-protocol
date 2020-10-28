@@ -56,15 +56,19 @@ export class PlayerControl extends Component {
     async murderPlayer(playerid: number) {
         await this.client.send({
             op: PacketID.Reliable,
-            payloadid: PayloadID.GameDataTo,
-            recipient: this.client.game.hostid,
-            code: this.client.game.code,
-            parts: [
+            payloads: [
                 {
-                    type: MessageID.RPC,
-                    handlerid: this.netid,
-                    rpcid: RPCID.MurderPlayer,
-                    targetnetid: playerid
+                    payloadid: PayloadID.GameDataTo,
+                    recipient: this.client.game.hostid,
+                    code: this.client.game.code,
+                    parts: [
+                        {
+                            type: MessageID.RPC,
+                            handlerid: this.netid,
+                            rpcid: RPCID.MurderPlayer,
+                            targetnetid: playerid
+                        }
+                    ]
                 }
             ]
         });
@@ -73,59 +77,69 @@ export class PlayerControl extends Component {
     async setColour(colour: ColourID) {
         await this.client.send({
             op: PacketID.Reliable,
-            payloadid: PayloadID.GameDataTo,
-            recipient: this.client.game.hostid,
-            code: this.client.game.code,
-            parts: [
+            payloads:[
                 {
-                    type: MessageID.RPC,
-                    handlerid: this.netid,
-                    rpcid: RPCID.CheckColour,
-                    colour
+                    payloadid: PayloadID.GameDataTo,
+                    recipient: this.client.game.hostid,
+                    code: this.client.game.code,
+                    parts: [
+                        {
+                            type: MessageID.RPC,
+                            handlerid: this.netid,
+                            rpcid: RPCID.CheckColour,
+                            colour
+                        }
+                    ]
                 }
             ]
         });
         
-        await this.client.awaitPacket(packet => packet.bound === "client"
-            && packet.op === PacketID.Reliable
-            && packet.payloadid === PayloadID.GameData
-            && !!packet.parts.find(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetColour));
+        await this.client.awaitPayload(payload => 
+            payload.payloadid === PayloadID.GameData
+            && payload.parts.some(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetColour));
     }
     
     async setName(name: string) {
         await this.client.send({
             op: PacketID.Reliable,
-            payloadid: PayloadID.GameDataTo,
-            recipient: this.client.game.hostid,
-            code: this.client.game.code,
-            parts: [
+            payloads: [
                 {
-                    type: MessageID.RPC,
-                    handlerid: this.netid,
-                    rpcid: RPCID.CheckName,
-                    name
+                    payloadid: PayloadID.GameDataTo,
+                    recipient: this.client.game.hostid,
+                    code: this.client.game.code,
+                    parts: [
+                        {
+                            type: MessageID.RPC,
+                            handlerid: this.netid,
+                            rpcid: RPCID.CheckName,
+                            name
+                        }
+                    ]
                 }
             ]
         });
 
-        await this.client.awaitPacket(packet => packet.bound === "client"
-            && packet.op === PacketID.Reliable
-            && packet.payloadid === PayloadID.GameData
-            && !!packet.parts.find(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetName));
+        await this.client.awaitPayload(payload => 
+            payload.payloadid === PayloadID.GameData
+            && payload.parts.some(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetName));
     }
     
     async setHat(hat: HatID) {
         await this.client.send({
             op: PacketID.Reliable,
-            payloadid: PayloadID.GameDataTo,
-            recipient: this.client.game.hostid,
-            code: this.client.game.code,
-            parts: [
+            payloads: [
                 {
-                    type: MessageID.RPC,
-                    handlerid: this.netid,
-                    rpcid: RPCID.SetHat,
-                    hat
+                    payloadid: PayloadID.GameDataTo,
+                    recipient: this.client.game.hostid,
+                    code: this.client.game.code,
+                    parts: [
+                        {
+                            type: MessageID.RPC,
+                            handlerid: this.netid,
+                            rpcid: RPCID.SetHat,
+                            hat
+                        }
+                    ]
                 }
             ]
         });
@@ -134,15 +148,19 @@ export class PlayerControl extends Component {
     async setSkin(skin: SkinID) {
         await this.client.send({
             op: PacketID.Reliable,
-            payloadid: PayloadID.GameDataTo,
-            recipient: this.client.game.hostid,
-            code: this.client.game.code,
-            parts: [
+            payloads: [
                 {
-                    type: MessageID.RPC,
-                    handlerid: this.netid,
-                    rpcid: RPCID.SetSkin,
-                    skin: skin
+                    payloadid: PayloadID.GameDataTo,
+                    recipient: this.client.game.hostid,
+                    code: this.client.game.code,
+                    parts: [
+                        {
+                            type: MessageID.RPC,
+                            handlerid: this.netid,
+                            rpcid: RPCID.SetSkin,
+                            skin: skin
+                        }
+                    ]
                 }
             ]
         });
@@ -151,15 +169,19 @@ export class PlayerControl extends Component {
     async setPet(pet: PetID) {
         await this.client.send({
             op: PacketID.Reliable,
-            payloadid: PayloadID.GameDataTo,
-            recipient: this.client.game.hostid,
-            code: this.client.game.code,
-            parts: [
+            payloads: [
                 {
-                    type: MessageID.RPC,
-                    handlerid: this.netid,
-                    rpcid: RPCID.SetPet,
-                    pet: pet
+                    payloadid: PayloadID.GameDataTo,
+                    recipient: this.client.game.hostid,
+                    code: this.client.game.code,
+                    parts: [
+                        {
+                            type: MessageID.RPC,
+                            handlerid: this.netid,
+                            rpcid: RPCID.SetPet,
+                            pet: pet
+                        }
+                    ]
                 }
             ]
         });
@@ -168,14 +190,18 @@ export class PlayerControl extends Component {
     async chat(text: string) {
         await this.client.send({
             op: PacketID.Reliable,
-            payloadid: PayloadID.GameData,
-            code: this.client.game.code,
-            parts: [
+            payloads: [
                 {
-                    type: MessageID.RPC,
-                    handlerid: this.netid,
-                    rpcid: RPCID.SendChat,
-                    text
+                    payloadid: PayloadID.GameData,
+                    code: this.client.game.code,
+                    parts: [
+                        {
+                            type: MessageID.RPC,
+                            handlerid: this.netid,
+                            rpcid: RPCID.SendChat,
+                            text
+                        }
+                    ]
                 }
             ]
         });

@@ -5,6 +5,7 @@ import {
     AnyObject
 } from "../Client.js";
 import { MessageID, PacketID, PayloadID, RPCID, SpawnID, TaskID } from "../constants/Enums.js";
+import { GameOptionsData } from "../interfaces/Packets.js";
 
 import { Component } from "./components/Component.js";
 import { PlayerControl } from "./components/PlayerControl.js";
@@ -24,7 +25,8 @@ export interface Game {
     on(event: "vote", listener: (voter: PlayerClient, suspect: PlayerClient) => void);
     on(event: "votingComplete", listener: (skipped: boolean, tie: boolean, exiled: PlayerClient) => void);
     on(event: "murder", listener: (murderer: PlayerClient, target: PlayerClient) => void);
-    on(event: "meeting", listener: (emergency: boolean, target: PlayerControl) => void);
+    on(event: "startMeeting", listener: (emergency: boolean, target: PlayerClient) => void);
+    on(event: "sync", listener: (settings: GameOptionsData) => void);
 }
 
 export class Game extends GameObject {
@@ -38,6 +40,8 @@ export class Game extends GameObject {
 
     imposters: PlayerClient[];
 
+    options: GameOptionsData;
+
     constructor(protected client: AmongusClient, public code: number, public hostid: number, clients: number[]) {
         super(client, client);
 
@@ -50,6 +54,8 @@ export class Game extends GameObject {
         this.started = false;
 
         this.imposters = [];
+
+        this.options = null;
         
         clients.forEach(clientid => {
             this.clients.set(clientid, new PlayerClient(client, clientid));
@@ -66,27 +72,64 @@ export class Game extends GameObject {
     get GameData(): GameData {
         return this.children.find(child => child instanceof GameData) as GameData;
     }
+    
+    _syncSettings(options: GameOptionsData) {
+        this.options = options;
+        this.emit("sync", this.options);
+    }
 
-    async setImposters(imposters: number[]) {
+    async syncSettings(options: GameOptionsData) {
         if (this.client.clientid === this.hostid) {
             await this.client.send({
                 op: PacketID.Reliable,
-                payloadid: PayloadID.GameData,
-                code: this.code,
-                parts: [
+                payloads: [
                     {
-                        type: MessageID.RPC,
-                        handlerid: this.host.Player.PlayerControl.netid,
-                        rpcid: RPCID.SetInfected,
-                        count: imposters.length,
-                        infected: imposters
+                        payloadid: PayloadID.GameData,
+                        code: this.code,
+                        parts: [
+                            {
+                                type: MessageID.RPC,
+                                handlerid: this.host.Player.PlayerControl.netid,
+                                rpcid: RPCID.SyncSettings,
+                                options: options
+                            }
+                        ]
                     }
                 ]
             });
         }
 
+        this._syncSettings(options);
+    }
+
+    _setImposters(imposters: number[]) {
         this.imposters = imposters.map(imposter => this.getPlayer(imposter));
         this.emit("setImposters", this.imposters);
+    }
+
+    async setImposters(imposters: number[]) {
+        if (this.client.clientid === this.hostid) {
+            await this.client.send({
+                op: PacketID.Reliable,
+                payloads: [
+                    {
+                        payloadid: PayloadID.GameData,
+                        code: this.code,
+                        parts: [
+                            {
+                                type: MessageID.RPC,
+                                handlerid: this.host.Player.PlayerControl.netid,
+                                rpcid: RPCID.SetInfected,
+                                count: imposters.length,
+                                infected: imposters
+                            }
+                        ]
+                    }
+                ]
+            });
+        }
+
+        this._setImposters(imposters);
     }
 
     registerComponents(object: GameObject) {

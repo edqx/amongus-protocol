@@ -7,8 +7,8 @@ import { composePacket } from "./Compose.js"
 import dgram from "dgram"
 import util from "util"
 import { EventEmitter } from "events"
-import { GameListGame, Packet, Payload, PayloadPacket, PlayerVoteAreaFlags } from "./interfaces/Packets.js"
-import { DisconnectID, LanguageID, MapID, MessageID, PacketID, PayloadID, RPCID, SpawnID } from "./constants/Enums.js"
+import { GameListGame, Packet, BasePayload, PayloadPacket, PlayerVoteAreaFlags, Payload, GameOptionsData } from "./interfaces/Packets.js"
+import { DisconnectID, DistanceID, LanguageID, MapID, MessageID, PacketID, PayloadID, RPCID, SpawnID } from "./constants/Enums.js"
 import { DisconnectMessages } from "./constants/DisconnectMessages.js"
 import { runInThisContext } from "vm"
 import { Code2Int } from "./util/Codes.js"
@@ -115,197 +115,220 @@ export class AmongusClient extends EventEmitter {
         this.nonce = 1;
 
         this.socket.on("message", async buffer => {
+            this.debug("Recieved packet", buffer);
+
             const packet = parsePacket(buffer);
 
             if (packet.reliable) {
                 await this.ack(packet.nonce);
             }
 
-            if (packet.bound === "client") {
-                this.debug("Recieved packet", buffer, util.inspect(packet, false, 10, true));
+            this.debug(util.inspect(packet, false, 10, true));
 
+            if (packet.bound === "client") {
                 switch (packet.op) {
                     case PacketID.Unreliable:
                     case PacketID.Reliable:
-                        switch (packet.payloadid) {
-                            case PayloadID.JoinGame:
-                                switch (packet.error) {  // Couldn't get typings to work with if statements so I have to deal with switch/case..
-                                    case false:
-                                        if (packet.code === this.game.code) {
-                                            const client = new PlayerClient(this, packet.clientid);
+                        for (let i = 0; i < packet.payloads.length; i++) {
+                            const payload = packet.payloads[i];
 
-                                            this.game.clients.set(client.clientid, client);
-                                            this.game.emit("playerJoin", client);
+                            switch (payload.payloadid) {
+                                case PayloadID.JoinGame:
+                                    if (payload.bound === "client") {
+                                        switch (payload.error) {  // Couldn't get typings to work with if statements so I have to deal with switch/case..
+                                            case false:
+                                                if (payload.code === this.game.code) {
+                                                    const client = new PlayerClient(this, payload.clientid);
+
+                                                    this.game.clients.set(client.clientid, client);
+                                                    this.game.emit("playerJoin", client);
+                                                }
+                                                break;
                                         }
-                                        break;
-                                }
-                                break;
-                            case PayloadID.StartGame:
-                                if (packet.code === this.game.code) {
-                                    this.game.emit("start");
+                                    }
+                                    break;
+                                case PayloadID.StartGame:
+                                    if (payload.code === this.game.code) {
+                                        this.game.emit("start");
 
-                                    this.game.started = true;
+                                        this.game.started = true;
 
-                                    await this.send({
-                                        op: PacketID.Reliable,
-                                        payloadid: PayloadID.GameData,
-                                        code: this.game.code,
-                                        parts: [
-                                            {
-                                                type: MessageID.Ready,
-                                                clientid: this.clientid
+                                        await this.send({
+                                            op: PacketID.Reliable,
+                                            payloads: [
+                                                {
+                                                    payloadid: PayloadID.GameData,
+                                                    code: this.game.code,
+                                                    parts: [
+                                                        {
+                                                            type: MessageID.Ready,
+                                                            clientid: this.clientid
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        });
+                                    }
+                                    break;
+                                case PayloadID.EndGame:
+                                    if (payload.code === this.game.code) {
+                                        this.game.emit("finish");
+
+                                        this.game.started = false;
+                                    }
+                                    break;
+                                case PayloadID.RemovePlayer:
+                                    if (payload.code === this.game.code) {
+                                        const client = this.game.clients.get(payload.clientid);
+                                        
+                                        if (client) {
+                                            client.removed = true;
+
+                                            this.game.clients.delete(payload.clientid);
+                                            this.game.emit("playerLeave", client);
+                                        }
+                                    }
+                                    break;
+                                case PayloadID.JoinedGame:
+                                    this.game = new Game(this, payload.code, payload.hostid, [payload.clientid, ...payload.clients]);
+                                    this.clientid = payload.clientid;
+                                    break;
+                                case PayloadID.KickPlayer:
+                                    if (payload.bound === "client") {
+                                        if (payload.code === this.game.code) {
+                                            const client = this.game.clients.get(payload.clientid);
+
+                                            if (client) {
+                                                client.emit("kicked", payload.banned);
                                             }
-                                        ]
-                                    });
-                                }
-                                break;
-                            case PayloadID.EndGame:
-                                if (packet.code === this.game.code) {
-                                    this.game.emit("finish");
-
-                                    this.game.started = false;
-                                }
-                                break;
-                            case PayloadID.RemovePlayer:
-                                if (packet.code === this.game.code) {
-                                    const client = this.game.clients.get(packet.clientid);
-                                    
-                                    if (client) {
-                                        client.removed = true;
-
-                                        this.game.clients.delete(packet.clientid);
-                                        this.game.emit("playerLeave", client);
-                                    }
-                                }
-                                break;
-                            case PayloadID.JoinedGame:
-                                this.game = new Game(this, packet.code, packet.hostid, [packet.clientid, ...packet.clients]);
-                                this.clientid = packet.clientid;
-                                break;
-                            case PayloadID.KickPlayer:
-                                if (packet.code === this.game.code) {
-                                    const client = this.game.clients.get(packet.clientid);
-
-                                    if (client) {
-                                        client.emit("kicked", packet.banned);
-                                    }
-                                }
-                                break;
-                            case PayloadID.GameData:
-                            case PayloadID.GameDataTo:
-                                if (this.game.code === packet.code) {
-                                    for (let i = 0; i < packet.parts.length; i++) {
-                                        const part = packet.parts[i];
-
-                                        switch (part.type) {
-                                            case MessageID.Data:
-                                                const component = this.game.netcomponents.get(part.netid);
-
-                                                if (component) {
-                                                    component.OnDeserialize(part.datalen, part.data);
-                                                }
-                                                break;
-                                            case MessageID.RPC:
-                                                switch (part.rpcid) {
-                                                    case RPCID.SetInfected:
-                                                        this.game.setImposters(part.infected);
-                                                        break;
-                                                    case RPCID.CompleteTask:
-                                                        break;
-                                                    case RPCID.MurderPlayer: {
-                                                        const client = this.game.getPlayerByNetID(part.targetnetid);
-                                                        const murderer = this.game.getPlayerByNetID(part.handlerid);
-                                                        
-                                                        if (client && murderer) {
-                                                            client.dead = true;
-
-                                                            this.game.emit("murder", murderer, client);
-                                                            client.emit("murdered", murderer);
-                                                            murderer.emit("murder", client);
-                                                        }
-                                                        break;
-                                                    }
-                                                    case RPCID.StartMeeting:
-                                                        if (part.targetid === 0xFF) {
-                                                            this.game.emit("meeting", true, null);
-                                                        } else {
-                                                            const target = this.game.getPlayer(part.targetid);
-
-                                                            this.game.emit("meeting", false, target);
-                                                        }
-                                                        break;
-                                                    case RPCID.SetStartCounter:
-                                                        if (this.game.startCounterSeq === null || part.sequence > this.game.startCounterSeq) {
-                                                            this.game.startCount = part.time;
-                                                            this.game.emit("startCount", this.game.startCount);
-                                                        }
-                                                        break;
-                                                    case RPCID.VotingComplete:
-                                                        if (part.tie) {
-                                                            this.game.emit("votingComplete", false, true, null);
-                                                        } else if (part.exiled === 0xFF) {
-                                                            this.game.emit("votingComplete", true, false, null);
-                                                        } else {
-                                                            this.game.emit("votingComplete", false, false, this.game.getPlayer(part.exiled));
-                                                        }
-                                                        break;
-                                                    case RPCID.CastVote: {
-                                                        const client = this.game.getPlayer(part.voterid);
-                                                        const suspect = this.game.getPlayer(part.suspectid);
-
-                                                        this.game.emit("vote", client, suspect);
-                                                        client.emit("vote", suspect);
-                                                        break;
-                                                    }
-                                                    case RPCID.SetTasks:
-                                                        const client = this.game.getPlayer(part.playerid);
-
-                                                        if (client) {
-                                                            client._setTasks(part.tasks);
-                                                        }
-                                                        break;
-                                                    case RPCID.UpdateGameData:
-                                                        this.game.GameData.GameData.UpdatePlayers(part.players);
-                                                        break;
-                                                }
-                                                break;
-                                            case MessageID.Spawn:
-                                                switch (part.spawnid) {
-                                                    case SpawnID.ShipStatus:
-                                                        // new ShipStatus(this, this.game, part.components);
-                                                        break;
-                                                    case SpawnID.MeetingHub:
-                                                        // new MeetingHub(this, this.game, part.components);
-                                                        break;
-                                                    case SpawnID.LobbyBehaviour:
-                                                        new LobbyBehaviour(this, this.game, part.components)
-                                                        break;
-                                                    case SpawnID.GameData:
-                                                        new GameData(this, this.game, part.components);
-                                                        break;
-                                                    case SpawnID.Player:
-                                                        const playerclient = this.game.clients.get(part.ownerid);
-
-                                                        new Player(this, playerclient, part.components);
-                                                        break;
-                                                    case SpawnID.HeadQuarters:
-                                                        // new HeadQuarters(this, this.game, part.components);
-                                                        break;
-                                                    case SpawnID.PlanetMap:
-                                                        // new PlanetMap(this, this.game, part.components);
-                                                        break;
-                                                    case SpawnID.AprilShipStatus:
-                                                        // new AprilShipStatus(this, this.game, part.components);
-                                                        break;
-                                                }
-                                                break;
-                                            case MessageID.Despawn:
-                                                this.game.netcomponents.delete(part.netid);
-                                                break;
                                         }
                                     }
-                                }
-                                break;
+                                    break;
+                                case PayloadID.GameData:
+                                case PayloadID.GameDataTo:
+                                    if (this.game.code === payload.code) {
+                                        for (let i = 0; i < payload.parts.length; i++) {
+                                            const part = payload.parts[i];
+
+                                            switch (part.type) {
+                                                case MessageID.Data:
+                                                    const component = this.game.netcomponents.get(part.netid);
+
+                                                    if (component) {
+                                                        component.OnDeserialize(part.datalen, part.data);
+                                                    }
+                                                    break;
+                                                case MessageID.RPC:
+                                                    switch (part.rpcid) {
+                                                        case RPCID.CompleteTask:
+                                                            break;
+                                                        case RPCID.SyncSettings:
+                                                            this.game._syncSettings(part.options);
+                                                            break
+                                                        case RPCID.SetInfected:
+                                                            this.game.setImposters(part.infected);
+                                                            break;
+                                                        case RPCID.MurderPlayer: {
+                                                            const client = this.game.getPlayerByNetID(part.targetnetid);
+                                                            const murderer = this.game.getPlayerByNetID(part.handlerid);
+                                                            
+                                                            if (client && murderer) {
+                                                                client.dead = true;
+
+                                                                this.game.emit("murder", murderer, client);
+                                                                client.emit("murdered", murderer);
+                                                                murderer.emit("murder", client);
+                                                            }
+                                                            break;
+                                                        }
+                                                        case RPCID.StartMeeting:
+                                                            const handlerid = part.handlerid;
+                                                            const handler = this.game.netcomponents.get(handlerid);
+
+                                                            console.log(handler);
+
+                                                            if (part.targetid === 0xFF) {
+                                                                this.game.emit("startMeeting", true, null);
+                                                            } else {
+                                                                const target = this.game.getPlayer(part.targetid);
+
+                                                                this.game.emit("startMeeting", false, target);
+                                                            }
+                                                            break;
+                                                        case RPCID.SetStartCounter:
+                                                            if (this.game.startCounterSeq === null || part.sequence > this.game.startCounterSeq) {
+                                                                this.game.startCount = part.time;
+                                                                this.game.emit("startCount", this.game.startCount);
+                                                            }
+                                                            break;
+                                                        case RPCID.VotingComplete:
+                                                            if (part.tie) {
+                                                                this.game.emit("votingComplete", false, true, null);
+                                                            } else if (part.exiled === 0xFF) {
+                                                                this.game.emit("votingComplete", true, false, null);
+                                                            } else {
+                                                                this.game.emit("votingComplete", false, false, this.game.getPlayer(part.exiled));
+                                                            }
+                                                            break;
+                                                        case RPCID.CastVote: {
+                                                            const client = this.game.getPlayer(part.voterid);
+                                                            const suspect = this.game.getPlayer(part.suspectid);
+
+                                                            this.game.emit("vote", client, suspect);
+                                                            client.emit("vote", suspect);
+                                                            break;
+                                                        }
+                                                        case RPCID.SetTasks:
+                                                            const client = this.game.getPlayer(part.playerid);
+
+                                                            if (client) {
+                                                                client._setTasks(part.tasks);
+                                                            }
+                                                            break;
+                                                        case RPCID.UpdateGameData:
+                                                            this.game.GameData.GameData.UpdatePlayers(part.players);
+                                                            break;
+                                                    }
+                                                    break;
+                                                case MessageID.Spawn:
+                                                    switch (part.spawnid) {
+                                                        case SpawnID.ShipStatus:
+                                                            // new ShipStatus(this, this.game, part.components);
+                                                            break;
+                                                        case SpawnID.MeetingHub:
+                                                            // new MeetingHub(this, this.game, part.components);
+                                                            break;
+                                                        case SpawnID.LobbyBehaviour:
+                                                            new LobbyBehaviour(this, this.game, part.components)
+                                                            break;
+                                                        case SpawnID.GameData:
+                                                            new GameData(this, this.game, part.components);
+                                                            break;
+                                                        case SpawnID.Player:
+                                                            const playerclient = this.game.clients.get(part.ownerid);
+
+                                                            new Player(this, playerclient, part.components);
+                                                            break;
+                                                        case SpawnID.HeadQuarters:
+                                                            // new HeadQuarters(this, this.game, part.components);
+                                                            break;
+                                                        case SpawnID.PlanetMap:
+                                                            // new PlanetMap(this, this.game, part.components);
+                                                            break;
+                                                        case SpawnID.AprilShipStatus:
+                                                            // new AprilShipStatus(this, this.game, part.components);
+                                                            break;
+                                                    }
+                                                    break;
+                                                case MessageID.Despawn:
+                                                    this.game.netcomponents.delete(part.netid);
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                    break;
+                            }
+                            break;
                         }
                         break;
                 }
@@ -366,12 +389,20 @@ export class AmongusClient extends EventEmitter {
         });
     }
 
-    async awaitPayload(filter: (payload: PayloadPacket) => boolean): Promise<PayloadPacket|null> {
-        return await this.awaitPacket(packet => {
+    async awaitPayload(filter: (payload: Payload) => boolean): Promise<Payload|null> {
+        const packet = await this.awaitPacket(packet => {
             return (packet.op === PacketID.Unreliable || packet.op === PacketID.Reliable)
                 && packet.bound === "client"
-                && filter(packet);
-        }) as PayloadPacket;
+                && packet.payloads.some(payload => filter(payload));
+        });
+
+        if (packet.op === PacketID.Unreliable || packet.op === PacketID.Reliable) {
+            if (packet.bound === "client") {
+                return packet.payloads.find(payload => filter(payload));
+            }
+        }
+
+        return null;
     }
 
     async send(packet: Packet): Promise<boolean> {
@@ -446,65 +477,73 @@ export class AmongusClient extends EventEmitter {
 
         await this.send({
             op: PacketID.Reliable,
-            payloadid: PayloadID.JoinGame,
-            code: code,
-            mapOwnership: 0x07
+            payloads: [
+                {
+                    payloadid: PayloadID.JoinGame,
+                    code: code,
+                    mapOwnership: 0x07
+                }
+            ]
         });
 
-        const packet = await Promise.race([
+        const payload = await Promise.race([
             this.awaitPayload(p => p.payloadid === PayloadID.Redirect),
             this.awaitPayload(p => p.payloadid === PayloadID.JoinedGame),
             this.awaitPayload(p => p.payloadid === PayloadID.JoinGame)
         ]);
 
-        if (packet && (packet.op === PacketID.Reliable || packet.op === PacketID.Unreliable)) {
-            if (packet.payloadid === PayloadID.Redirect) {
-                await this.disconnect();
+        if (payload.payloadid === PayloadID.Redirect) {
+            await this.disconnect();
 
-                await this.connect(packet.ip, packet.port, this.username);
+            await this.connect(payload.ip, payload.port, this.username);
 
-                return await this.join(code);
-            } else if (packet.payloadid === PayloadID.JoinedGame) {
-                if (options.doSpawn ?? true) {
-                    await this.send({
-                        op: PacketID.Reliable,
-                        payloadid: PayloadID.GameData,
-                        code: packet.code,
-                        parts: [
-                            {
-                                type: MessageID.SceneChange,
-                                clientid: packet.clientid,
-                                location: "OnlineGame"
-                            }
-                        ]
-                    });
-                }
-
-                return this.game;
-            } else if (packet.payloadid === PayloadID.JoinGame) {
-                if (packet.bound === "client" && packet.error) {
-                    throw new Error("Join error: " + packet.reason + " (" + packet.message + ")");
-                }
+            return await this.join(code);
+        } else if (payload.payloadid === PayloadID.JoinedGame) {
+            if (options.doSpawn ?? true) {
+                await this.send({
+                    op: PacketID.Reliable,
+                    payloads: [
+                        {
+                            payloadid: PayloadID.GameData,
+                            code: payload.code,
+                            parts: [
+                                {
+                                    type: MessageID.SceneChange,
+                                    clientid: payload.clientid,
+                                    location: "OnlineGame"
+                                }
+                            ]
+                        }
+                    ]
+                });
             }
-        } else {
-            return null;
+
+            return this.game;
+        } else if (payload.payloadid === PayloadID.JoinGame) {
+            if (payload.bound === "client" && payload.error) {
+                throw new Error("Join error: " + payload.reason + " (" + payload.message + ")");
+            }
         }
     }
     
-    async search(maps: bitfield|MapID[] = 0, imposters: number = 0, language: LanguageID = LanguageID.Any): Promise<GameListGame[]> {
+    async search(maps: bitfield|MapID[] = 0x07, imposters: number = 0, language: LanguageID = LanguageID.Any): Promise<GameListGame[]> {
         if (Array.isArray(maps)) {
-            return this.search(maps.reduce((val, map) => val + (1 << map), 0), imposters, language);
+            return await this.search(maps.reduce((val, map) => val + (1 << map), 0), imposters, language);
         }
 
         await this.send({
             op: PacketID.Reliable,
-            payloadid: PayloadID.GetGameListV2,
-            bound: "server",
-            options: {
-                mapID: maps,
-                imposterCount: imposters,
-                language
-            }
+            payloads: [
+                {
+                    payloadid: PayloadID.GetGameListV2,
+                    bound: "server",
+                    options: {
+                        mapID: maps,
+                        imposterCount: imposters,
+                        language
+                    }
+                }
+            ]
         });
 
         const payload = await Promise.race([
@@ -512,20 +551,71 @@ export class AmongusClient extends EventEmitter {
             this.awaitPayload(p => p.payloadid === PayloadID.GetGameListV2)
         ]);
 
-        if (payload && (payload.op === PacketID.Reliable || payload.op === PacketID.Unreliable)) {
+        if (payload.payloadid === PayloadID.Redirect) {
+            await this.disconnect();
+
+            await this.connect(payload.ip, payload.port, this.username);
+
+            return await this.search(maps, imposters, language);
+        } else if (payload.bound === "client" && payload.payloadid === PayloadID.GetGameListV2) {
+            return payload.games;
+        }
+
+        return null;
+    }
+
+    async host(options: Partial<GameOptionsData> = {}) {
+        options = {
+            version: 2,
+            mapID: MapID.TheSkeld,
+            imposterCount: 1,
+            confirmEjects: true,
+            emergencies: 1,
+            emergencyCooldown: 15,
+            discussionTime: 15,
+            votingTime: 120,
+            playerSpeed: 1,
+            crewVision: 1,
+            imposterVision: 1.5,
+            killCooldown: 45,
+            killDistance: DistanceID.Medium,
+            visualTasks: true,
+            commonTasks: 1,
+            longTasks: 1,
+            shortTasks: 2,
+            ...options
+        };
+
+        await this.send({
+            op: PacketID.Reliable,
+            payloads: [
+                {
+                    payloadid: PayloadID.HostGame,
+                    options
+                }
+            ]
+        });
+
+        const payload = await Promise.race([
+            this.awaitPayload(p => p.payloadid === PayloadID.Redirect),
+            this.awaitPayload(p => p.payloadid === PayloadID.HostGame),
+            this.awaitPayload(p => p.payloadid === PayloadID.JoinGame)
+        ]);
+
+        if (payload.bound === "client") {
             if (payload.payloadid === PayloadID.Redirect) {
                 await this.disconnect();
 
                 await this.connect(payload.ip, payload.port, this.username);
 
-                return await this.search(maps, imposters, language);
-            } else if (payload.bound === "client" && payload.payloadid === PayloadID.GetGameListV2) {
-                return payload.games;
+                return await this.host(options);
+            } else if (payload.payloadid === PayloadID.HostGame) {
+                return payload.code;
+            } else if (payload.payloadid === PayloadID.JoinGame) {
+                if (payload.error) {
+                    throw new Error("Join error: " + payload.reason + " (" + payload.message + ")");
+                }
             }
-
-            return null;
-        } else {
-            return null;
         }
     }
 }
