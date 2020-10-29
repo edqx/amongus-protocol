@@ -4,6 +4,8 @@
 
 See the [wiki](https://github.com/edqx/amongus-protocol/wiki) for more information on the protocol.
 
+Documentation is available for preview at http://thechimp.store/amongus-protocol/
+
 An implementation of the Among Us protocol made in Typescript
 * Lightweight, 0 external dependencies.
 * Both server & client.
