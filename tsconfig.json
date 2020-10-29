@@ -10,7 +10,7 @@
         "suppressImplicitAnyIndexErrors": true,
         "outDir": "./js",
         "esModuleInterop": true,
-        "moduleResolution": "Node"
+        "moduleResolution": "Node",
     },
     "filesGlob": [
         "./**/*.ts",
