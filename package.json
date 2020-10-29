@@ -23,6 +23,7 @@
   "devDependencies": {
     "@types/node": "^14.11.10",
     "ts-node": "github:TypeStrong/ts-node#master",
-    "typescript": "^4.1.0-dev.20201017"
+    "typedoc": "^0.19.2",
+    "typescript": "^4.1.0-dev.20201029"
   }
 }

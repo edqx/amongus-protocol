@@ -1,5 +1,4 @@
-# AmongUs-Protocol (WIP)
-### This protocol is not finished, please avoid using this for any projects, use with caution and know that everything is subject to change.
+# AmongUs-Protocol
 
 ![Alt text](asset/logo.png "Amongus Protocol")
 
@@ -23,24 +22,20 @@ Data gathered from
 ## Install
 With NPM:
 `npm install --save amongus-protocol`
+
 Or clone with Git:
 `git clone https://github.com/edqx/amongus-protocol`
-
+s
 ## Example
 ```ts
 import {
     AmongusClient,
     MasterServers,
     ColourID,
-    PetID,
     HatID,
-    SkinID,
-    SpawnID
 } from "../index.js"
 
-import { PlayerClient } from "../lib/struct/PlayerClient.js";
-
-const server = MasterServers.NA[0];
+const server = MasterServers.EU[0];
 
 const client = new AmongusClient({
     debug: false
@@ -51,7 +46,7 @@ await client.connect(server[0], server[1], "weakeyes");
 const game = await client.join(process.argv[2]);
 
 game.me.on("spawn", () => {
-    game.me.setName("strong eyes");
+    game.me.setName("weakeyes");
     game.me.setColour(ColourID.Black);
     game.me.setHat(HatID.Plague);
 });
