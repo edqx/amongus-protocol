@@ -35,17 +35,38 @@ export declare interface AmongusClient {
     off(event: "connected", listener: () => void);
 }
 
-export type AnyObject = Player | GameData;
-
 export class AmongusClient extends EventEmitter {
     options: ClientOptions;
     socket: dgram.Socket;
+    
+    /**
+     * The IP that the client is connected to.
+     */
     ip: string;
+    
+    /**
+     * The port that the client is connected to.
+     */
     port: number;
+
+    /**
+     * The incrementing nonce for the client.
+     */
     nonce: number;
+    
+    /**
+     * The username of the client.
+     */
     username: string;
 
+    /**
+     * The current game of the client.
+     */
     game: Game;
+
+    /**
+     * The client ID of the client given after joining a game.
+     */
     clientid: number;
 
     constructor (options: ClientOptions = {}) {
@@ -57,6 +78,9 @@ export class AmongusClient extends EventEmitter {
         this.game = null;
     }
 
+    /**
+     * Print a debug message if the debug option is enabled.
+     */
     debug(...fmt) {
         if (this.options.debug) {
             console.log(...fmt);

@@ -1,8 +1,7 @@
 import { EventEmitter } from "events";
 
 import {
-    AmongusClient,
-    AnyObject
+    AmongusClient
 } from "../Client.js";
 import { AlterGameTag, MessageID, PacketID, PayloadID, RPCID, SpawnID, TaskID } from "../constants/Enums.js";
 import { GameOptionsData } from "../interfaces/Packets.js";
