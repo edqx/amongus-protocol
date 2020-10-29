@@ -27,7 +27,7 @@ With NPM:
 
 Or clone with Git:
 `git clone https://github.com/edqx/amongus-protocol`
-s
+
 ## Example
 ```ts
 import {
