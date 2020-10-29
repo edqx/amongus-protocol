@@ -72,6 +72,8 @@ export class PlayerClient extends GameObject {
 
     addChild(object: GameObject) {
         super.addChild(object);
+
+        this.client.game.registerComponents(object);
         
         if (object instanceof Player) this.emit("spawn", object);
     }
@@ -150,8 +152,50 @@ export class PlayerClient extends GameObject {
     
     async vote(player: PlayerClient) {
         if (this.Player && !this.removed) {
-            
+            await this.client.send({
+                op: PacketID.Reliable,
+                payloads: [
+                    {
+                        payloadid: PayloadID.GameData,
+                        code: this.client.game.code,
+                        parts: [
+                            {
+                                type: MessageID.RPC,
+                                rpcid: RPCID.CastVote,
+                                handlerid: this.Player.PlayerControl.netid,
+                                voterid: this.Player.PlayerControl.playerId,
+                                suspectid: player.Player.PlayerControl.playerId
+                            },
+                            {
+                                type: MessageID.RPC,
+                                rpcid: RPCID.SendChatNote,
+                                handlerid: this.Player.PlayerControl.playerId,
+                                playerid: this.Player.PlayerControl.playerId,
+                                notetype: 0x00
+                            }
+                        ]
+                    }
+                ]
+            });
         }
+    }
+
+    async ready() {
+        await this.client.send({
+            op: PacketID.Reliable,
+            payloads: [
+                {
+                    payloadid: PayloadID.GameData,
+                    code: this.client.game.code,
+                    parts: [
+                        {
+                            type: MessageID.Ready,
+                            clientid: this.clientid
+                        }
+                    ]
+                }
+            ]
+        });
     }
 
     async setName(name: string) {

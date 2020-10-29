@@ -7,8 +7,8 @@ import { composePacket } from "./Compose.js"
 import dgram from "dgram"
 import util from "util"
 import { EventEmitter } from "events"
-import { GameListGame, Packet, BasePayload, PayloadPacket, PlayerVoteAreaFlags, Payload, GameOptionsData } from "./interfaces/Packets.js"
-import { DisconnectID, DistanceID, LanguageID, MapID, MessageID, PacketID, PayloadID, RPCID, SpawnID } from "./constants/Enums.js"
+import { GameListGame, Packet, BasePayload, PayloadPacket, PlayerVoteAreaFlags, Payload, GameOptionsData, GameListClientBoundTag } from "./interfaces/Packets.js"
+import { AlterGameTag, DisconnectID, DistanceID, LanguageID, MapID, MessageID, PacketID, PayloadID, RPCID, SpawnID } from "./constants/Enums.js"
 import { DisconnectMessages } from "./constants/DisconnectMessages.js"
 import { runInThisContext } from "vm"
 import { Code2Int } from "./util/Codes.js"
@@ -75,6 +75,9 @@ export class AmongusClient extends EventEmitter {
         this.nonce = 1;
     }
 
+    /**
+     * Disconnect from the currently connected server.
+     */
     async disconnect(reason?: number, message?: string) {
         if (reason) {
             if (reason === DisconnectID.Custom) {
@@ -149,32 +152,14 @@ export class AmongusClient extends EventEmitter {
                                     break;
                                 case PayloadID.StartGame:
                                     if (payload.code === this.game.code) {
-                                        this.game.emit("start");
+                                        this.game._start();
 
-                                        this.game.started = true;
-
-                                        await this.send({
-                                            op: PacketID.Reliable,
-                                            payloads: [
-                                                {
-                                                    payloadid: PayloadID.GameData,
-                                                    code: this.game.code,
-                                                    parts: [
-                                                        {
-                                                            type: MessageID.Ready,
-                                                            clientid: this.clientid
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        });
+                                        await this.game.me.ready();
                                     }
                                     break;
                                 case PayloadID.EndGame:
                                     if (payload.code === this.game.code) {
-                                        this.game.emit("finish");
-
-                                        this.game.started = false;
+                                        this.game._finish();
                                     }
                                     break;
                                 case PayloadID.RemovePlayer:
@@ -190,7 +175,7 @@ export class AmongusClient extends EventEmitter {
                                     }
                                     break;
                                 case PayloadID.JoinedGame:
-                                    this.game = new Game(this, payload.code, payload.hostid, [payload.clientid, ...payload.clients]);
+                                    this.game = new Game(this, this.ip, this.port, payload.code, payload.hostid, [payload.clientid, ...payload.clients]);
                                     this.clientid = payload.clientid;
                                     break;
                                 case PayloadID.KickPlayer:
@@ -244,8 +229,6 @@ export class AmongusClient extends EventEmitter {
                                                         case RPCID.StartMeeting:
                                                             const handlerid = part.handlerid;
                                                             const handler = this.game.netcomponents.get(handlerid);
-
-                                                            console.log(handler);
 
                                                             if (part.targetid === 0xFF) {
                                                                 this.game.emit("startMeeting", true, null);
@@ -327,6 +310,13 @@ export class AmongusClient extends EventEmitter {
                                         }
                                     }
                                     break;
+                                case PayloadID.AlterGame:
+                                    switch (payload.tag) {
+                                        case AlterGameTag.ChangePrivacy:
+                                            this.game._setVisibility(payload.is_public ? "public" : "private");
+                                            break;
+                                    }
+                                    break;
                             }
                             break;
                         }
@@ -338,6 +328,10 @@ export class AmongusClient extends EventEmitter {
         });
     }
 
+    /**
+     * Connect to a server IP and port.
+     * @param username The username to connect with.
+     */
     async connect(ip: string, port: number, username: string): Promise<boolean|number> {
         if (this.socket) {
             await this.disconnect();
@@ -364,6 +358,9 @@ export class AmongusClient extends EventEmitter {
         });
     }
 
+    /**
+     * Wait for a packet to be received from the server.
+     */
     awaitPacket(filter: (packet: Packet) => boolean): Promise<Packet|null> {
         const _this = this;
 
@@ -389,6 +386,9 @@ export class AmongusClient extends EventEmitter {
         });
     }
 
+    /**
+     * Wait for a payload to be received from the server.
+     */
     async awaitPayload(filter: (payload: Payload) => boolean): Promise<Payload|null> {
         const packet = await this.awaitPacket(packet => {
             return (packet.op === PacketID.Unreliable || packet.op === PacketID.Reliable)
@@ -405,6 +405,9 @@ export class AmongusClient extends EventEmitter {
         return null;
     }
 
+    /**
+     * Send a packet to the server and wait for an acknowledgment with respect to disconnects.
+     */
     async send(packet: Packet): Promise<boolean> {
         const nonce = this.nonce;
 
@@ -453,6 +456,9 @@ export class AmongusClient extends EventEmitter {
         });
     }
 
+    /**
+     * Say hello to the server.
+     */
     async hello(username: string): Promise<boolean> {
         if (await this.send({
             op: PacketID.Hello,
@@ -466,6 +472,9 @@ export class AmongusClient extends EventEmitter {
         return false;
     }
 
+    /**
+     * Join a game by it's V6 code.
+     */
     async join(code: string|number, options: JoinOptions = {}): Promise<Game> {
         if (typeof code === "string") {
             return this.join(Code2Int(code));
@@ -500,22 +509,7 @@ export class AmongusClient extends EventEmitter {
             return await this.join(code);
         } else if (payload.payloadid === PayloadID.JoinedGame) {
             if (options.doSpawn ?? true) {
-                await this.send({
-                    op: PacketID.Reliable,
-                    payloads: [
-                        {
-                            payloadid: PayloadID.GameData,
-                            code: payload.code,
-                            parts: [
-                                {
-                                    type: MessageID.SceneChange,
-                                    clientid: payload.clientid,
-                                    location: "OnlineGame"
-                                }
-                            ]
-                        }
-                    ]
-                });
+                await this.spawn();
             }
 
             return this.game;
@@ -526,6 +520,31 @@ export class AmongusClient extends EventEmitter {
         }
     }
     
+    /**
+     * Spawn the player in the joined game.
+     */
+    async spawn() {
+        await this.send({
+            op: PacketID.Reliable,
+            payloads: [
+                {
+                    payloadid: PayloadID.GameData,
+                    code: this.game.code,
+                    parts: [
+                        {
+                            type: MessageID.SceneChange,
+                            clientid: this.clientid,
+                            location: "OnlineGame"
+                        }
+                    ]
+                }
+            ]
+        });
+    }
+    
+    /**
+     * Search for game using specified settings.
+     */
     async search(maps: bitfield|MapID[] = 0x07, imposters: number = 0, language: LanguageID = LanguageID.Any): Promise<GameListGame[]> {
         if (Array.isArray(maps)) {
             return await this.search(maps.reduce((val, map) => val + (1 << map), 0), imposters, language);
@@ -557,13 +576,16 @@ export class AmongusClient extends EventEmitter {
             await this.connect(payload.ip, payload.port, this.username);
 
             return await this.search(maps, imposters, language);
-        } else if (payload.bound === "client" && payload.payloadid === PayloadID.GetGameListV2) {
+        } else if (payload.bound === "client" && payload.payloadid === PayloadID.GetGameListV2 && payload.tag === GameListClientBoundTag.List) {
             return payload.games;
         }
 
         return null;
     }
 
+    /**
+     * WIP: Host a game and control game data.
+     */
     async host(options: Partial<GameOptionsData> = {}) {
         options = {
             version: 2,

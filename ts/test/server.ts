@@ -11,7 +11,3 @@ const client = new AmongusServer({
 });
 
 await client.listen(22023);
-
-client.on("identify", remote => {
-
-});

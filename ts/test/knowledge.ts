@@ -16,7 +16,7 @@ const client = new AmongusClient({
 
 const server = MasterServers.NA[0];
 
-await client.connect(server[0], server[1], "weakeyes");
+await client.connect("208.110.239.187", 22023, "weakeyes");
 
 const game = await client.join(process.argv[2], {
     doSpawn: true
@@ -50,7 +50,7 @@ game.me.on("spawn", async player => {
 game.on("spawn", object => {
     if (object instanceof GameData) {
         object.GameData.on("playerData", playerData => {
-            
+            console.log("playerData: " + playerData.name);
         });
     }
 });

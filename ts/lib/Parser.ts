@@ -26,7 +26,8 @@ import {
     PlayerDataFlags,
     PayloadPacket,
     Payload,
-    GameListCount
+    GameListCount,
+    GameListClientBoundTag
 } from "./interfaces/Packets.js"
 
 import { BufferReader } from "./util/BufferReader.js"
@@ -424,20 +425,19 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                         case PayloadID.GetGameListV2:
                             if (payload.bound === "client") {
                                 const gamelist_len = reader.uint16LE();
-                                reader.jump(0x01);
+                                payload.tag = reader.byte();
                                 const gamelist_start = reader.offset;
                                 const gamelist_end = gamelist_start + gamelist_len;
 
-                                const count: Partial<GameListCount> = {};
-    
-                                payload.games = [];
-                                while (reader.offset < gamelist_end) {
-                                    let game: Partial<GameListGame> = {};
-                                    reader.jump(0x02); // Skip length
-                                    const tag = reader.uint8();
-                                    
-                                    switch (tag) {
-                                        case 0x00:
+                                switch (payload.tag) {
+                                    case GameListClientBoundTag.List:
+                                        payload.games = [];
+
+                                        while (reader.offset < gamelist_end) {
+                                            let game: Partial<GameListGame> = {};
+                                            reader.jump(0x02); // Skip length
+                                            const tag = reader.uint8();
+
                                             game.ip = reader.bytes(4).join(".");
                                             game.port = reader.uint16LE();
                                             game.code = reader.int32LE();
@@ -450,15 +450,18 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
             
                                             payload.games.push(game as GameListGame);
                                             break;
-                                        case 0x01:
-                                            payload.count[MapID.TheSkeld] = reader.uint32LE();
-                                            payload.count[MapID.MiraHQ] = reader.uint32LE();
-                                            payload.count[MapID.Polus] = reader.uint32LE();
-                                            break;
-                                    }
-                                }
+                                        }
+                                        break;
+                                    case GameListClientBoundTag.Count:
+                                        const count: Partial<GameListCount> = {};
 
-                                payload.count = count as GameListCount;
+                                        count[MapID.TheSkeld] = reader.uint32LE();
+                                        count[MapID.MiraHQ] = reader.uint32LE();
+                                        count[MapID.Polus] = reader.uint32LE();
+                                        
+                                        payload.count = count as GameListCount;
+                                        break;
+                                }
                             } else if (payload.bound === "server") {
                                 reader.byte();
                                 payload.options = parseGameOptions(reader);

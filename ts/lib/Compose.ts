@@ -14,6 +14,7 @@ import {
 } from "./constants/Enums.js";
 
 import {
+    GameListClientBoundTag,
     GameOptionsData,
     Packet
 } from "./interfaces/Packets.js";
@@ -378,35 +379,41 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                         break;
                     case PayloadID.GetGameListV2:
                         if (payload.bound === "client") {
-                            const glwrite = new BufferWriter;
-                            
-                            for (let i = 0; i < payload.games.length; i++) {
-                                const game = payload.games[i];
-
-                                const gwrite = new BufferWriter;
-                                gwrite.bytes(game.ip.split(".").map(val => parseInt(val)));
-                                gwrite.uint16LE(game.port);
-                                gwrite.int32LE(game.code);
-                                gwrite.string(game.name, true);
-                                gwrite.uint8(game.num_players);
-                                gwrite.packed(game.age);
-                                gwrite.uint8(game.map);
-                                gwrite.uint8(game.imposters);
-                                gwrite.uint8(game.max_players);
-
-                                glwrite.uint16LE(gwrite.size);
-                                glwrite.uint8(0x00);
-                                glwrite.write(gwrite);
+                            switch (payload.tag) {
+                                case GameListClientBoundTag.List:
+                                    const list_writer = new BufferWriter;
+                                    
+                                    for (let i = 0; i < payload.games.length; i++) {
+                                        const game = payload.games[i];
+        
+                                        const game_writer = new BufferWriter;
+                                        game_writer.bytes(game.ip.split(".").map(val => parseInt(val)));
+                                        game_writer.uint16LE(game.port);
+                                        game_writer.int32LE(game.code);
+                                        game_writer.string(game.name, true);
+                                        game_writer.uint8(game.num_players);
+                                        game_writer.packed(game.age);
+                                        game_writer.uint8(game.map);
+                                        game_writer.uint8(game.imposters);
+                                        game_writer.uint8(game.max_players);
+        
+                                        list_writer.uint16LE(game_writer.size);
+                                        list_writer.uint8(0x00);
+                                        list_writer.write(game_writer);
+                                    }
+        
+                                    writer.uint16LE(list_writer.size);
+                                    writer.uint8(0x00);
+                                    writer.write(list_writer);
+                                    break;
+                                case GameListClientBoundTag.Count:
+                                    writer.uint16LE(0x012);
+                                    writer.uint8(0x01);
+                                    writer.uint32LE(payload.count[MapID.TheSkeld]);
+                                    writer.uint32LE(payload.count[MapID.MiraHQ]);
+                                    writer.uint32LE(payload.count[MapID.Polus]);
+                                    break;
                             }
-                            
-                            glwrite.uint8(0x01);
-                            glwrite.uint32LE(payload.count[MapID.TheSkeld]);
-                            glwrite.uint32LE(payload.count[MapID.MiraHQ]);
-                            glwrite.uint32LE(payload.count[MapID.Polus]);
-
-                            writer.uint16LE(glwrite.size);
-                            writer.uint8(0x00);
-                            writer.write(glwrite);
                         } else if (payload.bound === "server") {
                             writer.uint8(0x00);
                             writer.write(composeGameOptions(payload.options));

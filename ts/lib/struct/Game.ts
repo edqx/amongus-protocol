@@ -4,7 +4,7 @@ import {
     AmongusClient,
     AnyObject
 } from "../Client.js";
-import { MessageID, PacketID, PayloadID, RPCID, SpawnID, TaskID } from "../constants/Enums.js";
+import { AlterGameTag, MessageID, PacketID, PayloadID, RPCID, SpawnID, TaskID } from "../constants/Enums.js";
 import { GameOptionsData } from "../interfaces/Packets.js";
 
 import { Component } from "./components/Component.js";
@@ -27,39 +27,58 @@ export interface Game {
     on(event: "murder", listener: (murderer: PlayerClient, target: PlayerClient) => void);
     on(event: "startMeeting", listener: (emergency: boolean, target: PlayerClient) => void);
     on(event: "sync", listener: (settings: GameOptionsData) => void);
+    on(event: "visibility", listener: (visibility: "private"|"public") => void);
 }
 
 export class Game extends GameObject {
+    ip: string;
+    port: number;
+    
+    code: number;
+    hostid: number;
+
     clients: Map<number, PlayerClient>;
     netcomponents: Map<number, Component>;
 
+    instantiated: number;
+
     startCount: number;
     startCounterSeq: number;
-
     started: boolean;
-
     imposters: PlayerClient[];
 
     options: GameOptionsData;
+    visibility: "private"|"public";
 
-    constructor(protected client: AmongusClient, public code: number, public hostid: number, clients: number[]) {
+    constructor(protected client: AmongusClient, ip: string, port: number, code: number, hostid: number, clients: number[]) {
         super(client, client);
 
-        this.clients = new Map;
+        this.ip = ip;
+        this.port = port;
 
+        this.code = code;
+        this.hostid = hostid;
+
+        this.clients = new Map;
         this.netcomponents = new Map;
 
+        this.instantiated = Date.now();
+
+        this.startCount = -1;
         this.startCounterSeq = null;
-
         this.started = false;
-
         this.imposters = [];
 
         this.options = null;
+        this.visibility = "private";
         
         clients.forEach(clientid => {
             this.clients.set(clientid, new PlayerClient(client, clientid));
         });
+    }
+
+    get age() {
+        return Math.floor((Date.now() - this.instantiated) / 1000);
     }
 
     addChild(object: GameObject) {
@@ -130,6 +149,41 @@ export class Game extends GameObject {
         }
 
         this._setImposters(imposters);
+    }
+
+    _setVisibility(visibility: "private"|"public") {
+        this.visibility = visibility;
+        this.emit("visibility", visibility);
+    }
+
+    async setVisibility(visibility: "private"|"public") {
+        if (this.client.clientid === this.hostid) {
+            await this.client.send({
+                op: PacketID.Reliable,
+                payloads: [
+                    {
+                        payloadid: PayloadID.AlterGame,
+                        code: this.code,
+                        tag: AlterGameTag.ChangePrivacy,
+                        is_public: visibility === "public"
+                    }
+                ]
+            });
+        }
+
+        this._setVisibility(visibility);
+    }
+
+    _start() {
+        this.started = true;
+
+        this.emit("start");
+    }
+
+    _finish() {
+        this.started = false;
+        
+        this.emit("finish");
     }
 
     registerComponents(object: GameObject) {

@@ -622,11 +622,26 @@ export type GameListCount = {
     [K in MapID]: number;
 }
 
-export interface GameListPayloadClientbound extends BasePayload {
+export enum GameListClientBoundTag {
+    List = 0x00,
+    Count = 0x01
+}
+
+export interface GameListPayloadClientBound extends BasePayload {
     bound?: "client";
+    tag: GameListClientBoundTag;
     payloadid: PayloadID.GetGameListV2;
-    count: GameListCount;
+}
+
+
+export interface GameListPayloadClientBoundList extends GameListPayloadClientBound {
+    tag: GameListClientBoundTag.List;
     games: GameListGame[];
+}
+
+export interface GameListPayloadClientBoundCount extends GameListPayloadClientBound {
+    tag: GameListClientBoundTag.Count;
+    count: GameListCount;
 }
 
 export interface GameListPayloadServerBound extends BasePayload {
@@ -635,7 +650,7 @@ export interface GameListPayloadServerBound extends BasePayload {
     options: Partial<GameOptionsData>;
 }
 
-export type GameListPayload = GameListPayloadClientbound | GameListPayloadServerBound;
+export type GameListPayload = GameListPayloadClientBoundList | GameListPayloadClientBoundCount | GameListPayloadServerBound;
 
 export type Payload = HostGamePayload
     | JoinGamePayload

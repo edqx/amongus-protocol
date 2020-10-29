@@ -14,21 +14,9 @@ import {
 
 import { Game } from "../Game.js"
 
-interface ShipStatusOnSpawn {
-
-}
-
-interface ShipStatusOnDeserialize {
-
-}
-
 interface SystemStatus {
     OnSpawn(datalen: number, data: Buffer): any;
     OnDeserialize(datalen: number, data: Buffer): any;
-}
-
-const Systems = {
-
 }
 
 export class ShipStatus extends Component {

@@ -10,7 +10,7 @@ import { ServerOptions } from "./interfaces/ServerOptions.js"
 import { parsePacket } from "./Parser.js"
 import { BufferWriter } from "./util/BufferWriter.js";
 
-import { Packet } from "./interfaces/Packets.js";
+import { GameListClientBoundTag, GameListCount, Packet } from "./interfaces/Packets.js";
 import { composePacket } from "./Compose.js";
 import { DecodeVersion, EncodeVersion, FormatVersion } from "./util/Versions.js";
 import { appendFileSync } from "fs";
@@ -70,7 +70,7 @@ class PingInterval {
 export class AmongusServer extends EventEmitter {
     socket: dgram.Socket;
     port: number;
-    host: string;
+    ip: string;
     clients: Map<string, RemoteID>;
     games: Map<number, Game>;
     
@@ -83,7 +83,7 @@ export class AmongusServer extends EventEmitter {
         
         this.socket = null;
         this.port = null;
-        this.host = null;
+        this.ip = null;
         this.clients = new Map;
 
         this.client_inc = 0;
@@ -143,68 +143,75 @@ export class AmongusServer extends EventEmitter {
         return correct_version;
     }
 
+    countMatches(): GameListCount {
+        const count = {
+            [MapID.TheSkeld]: 0,
+            [MapID.MiraHQ]: 0,
+            [MapID.Polus]: 0
+        };
+
+        for (let [code, game] of this.games) {
+            if (game.visibility === "public") {
+                game[game.options.mapID]++;
+            }
+        }
+
+        return count;
+    }
+
     async search(remote: RemoteID, maps: bitfield|MapID[] = 0x07, imposters: number = 0, language: LanguageID = LanguageID.Any): Promise<boolean> {
         if (Array.isArray(maps)) {
             return await this.search(remote, maps.reduce((val, map) => val + (1 << map), 0), imposters, language);
         }
 
-        const packet = [...composePacket({
-            op: PacketID.Reliable,
-            payloads: [
-                {
-                    payloadid: PayloadID.GetGameListV2,
-                    count: {
-                        [MapID.TheSkeld]: 123,
-                        [MapID.MiraHQ]: 456,
-                        [MapID.Polus]: 789,
-                    },
-                    games: [
-                        {
-                            ip: this.host,
-                            port: this.port,
-                            code: 0x53729183,
-                            name: "weakeyes",
-                            num_players: 1,
-                            age: 60,
-                            map: MapID.TheSkeld,
-                            imposters: 2,
-                            max_players: 10
-                        }
-                    ]
-                }
-            ]
-        }, "client")];
-
-        console.log(packet.map(byte => {
-            let hex = byte.toString(16);
-
-            return (hex.length === 1 ? "0" : "") + hex;
-        }).join(" "));
-
         if (remote.identified) {
+            const count = this.countMatches();
+
             await this.send(remote, {
                 op: PacketID.Reliable,
                 payloads: [
                     {
                         payloadid: PayloadID.GetGameListV2,
-                        count: {
-                            [MapID.TheSkeld]: 123,
-                            [MapID.MiraHQ]: 456,
-                            [MapID.Polus]: 789,
-                        },
-                        games: [
-                            {
-                                ip: this.host,
-                                port: this.port,
-                                code: 0x53729183,
-                                name: "weakeyes",
-                                num_players: 1,
-                                age: 60,
-                                map: MapID.TheSkeld,
-                                imposters: 2,
-                                max_players: 10
+                        tag: GameListClientBoundTag.Count,
+                        count
+                    }
+                ]
+            });
+
+            const found_games: Game[] = [];
+
+            for (let [code, game] of this.games) {
+                if (maps & (1 << game.options.mapID)) {
+                    if (imposters === 0 || imposters === game.options.imposterCount) {
+                        if (language === LanguageID.Any || language === game.options.language) {
+                            found_games.push(game);
+                        }
+                    }
+                }
+            }
+            
+            const code = Buffer.alloc(4);
+            code.writeUInt32LE(0xdd44be99);
+
+            await this.send(remote, {
+                op: PacketID.Reliable,
+                payloads: [
+                    {
+                        payloadid: PayloadID.GetGameListV2,
+                        tag: GameListClientBoundTag.List,
+                        games: found_games.map(game => {
+                            return {
+                                ip: game.ip,
+                                port: game.port,
+                                code: game.code,
+                                name: game.host.Player.PlayerControl.name,
+                                num_players: game.clients.size,
+                                age: 0,
+                                map: game.options.mapID,
+                                imposters: game.options.imposterCount,
+                                max_players: game.options.maxPlayers
                             }
-                        ]
+                        })
                     }
                 ]
             });
@@ -297,10 +304,10 @@ export class AmongusServer extends EventEmitter {
         }
 
         this.port = port;
-        this.host = host;
+        this.ip = host;
 
         this.socket = dgram.createSocket("udp4");
-        this.socket.bind(this.port, this.host);
+        this.socket.bind(this.port, this.ip);
 
         this.socket.on("listening", () => {
             this.log("Listening on", host + ":" + port, "(locally available at 127.0.0.1:" + this.port + ")");
@@ -396,10 +403,16 @@ export class AmongusServer extends EventEmitter {
         });
     }
 
+    /**
+     * Broadcast a packet to specified remotes, or every remote.
+     */
     async broadcast(packet: Packet, remotes: RemoteID[] = [...this.clients.values()]) {
         await Promise.allSettled(remotes.map(remote => this.send(remote, packet)));
     }
 
+    /**
+     * Disconnect a remote or disconnect the server.
+     */
     async disconnect(remote?: RemoteID, reason: DisconnectID = DisconnectID.Destroy, message?: string) {
         const rhash = this.rHash(remote.info);
 
@@ -446,5 +459,7 @@ export class AmongusServer extends EventEmitter {
             reason,
             message
         });
+
+        this.clients.clear();
     }
 }
