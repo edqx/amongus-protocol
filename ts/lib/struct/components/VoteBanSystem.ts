@@ -3,12 +3,6 @@ import { AmongusClient } from "../../Client.js"
 import { Component } from "./Component.js"
 import { BufferReader } from "../../util/BufferReader.js"
 
-import {
-    float16,
-    uint8
-} from "../../interfaces/Types.js"
-import { Game } from "../Game.js";
-
 export class VoteBanSystem extends Component {
     name: "GameData";
     classname: "VoteBanSystem";

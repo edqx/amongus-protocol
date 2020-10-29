@@ -1,18 +1,10 @@
 import { AmongusClient } from "../../Client.js"
 
 import { Component } from "./Component.js"
-import { BufferReader } from "../../util/BufferReader.js"
 
 import {
     SystemType
 } from "../../constants/Enums.js"
-
-import {
-    float16,
-    uint8
-} from "../../interfaces/Types.js"
-
-import { Game } from "../Game.js"
 
 interface SystemStatus {
     OnSpawn(datalen: number, data: Buffer): any;

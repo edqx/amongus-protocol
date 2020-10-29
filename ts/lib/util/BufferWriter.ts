@@ -3,9 +3,7 @@ import util from "util"
 import { BufferWriterOptions } from "../interfaces/BufferWriterOptions.js"
 
 import {
-    bit,
     byte,
-    bitfield,
     uint8,
     int8,
     uint16,
@@ -14,10 +12,7 @@ import {
     int32,
     float,
     double,
-    packed,
-    code,
-    float16,
-    vector
+    packed
 } from "../interfaces/Types.js"
 
 import { getFloat16 } from "./Float16.js";

@@ -1,6 +1,5 @@
 import {
     AmongusClient,
-    MasterServers,
     MapID
 } from "../index.js"
 

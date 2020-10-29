@@ -1,6 +1,4 @@
-import { write } from "fs";
 import {
-    DataID,
     DisconnectID,
     DistanceID,
     LanguageID,
@@ -9,7 +7,6 @@ import {
     PacketID,
     PayloadID,
     RPCID,
-    SpawnID,
     TaskBarUpdate
 } from "./constants/Enums.js";
 

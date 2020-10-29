@@ -1,12 +1,10 @@
 import {
-    DataID,
     DisconnectID,
     MapID,
     MessageID,
     PacketID,
     PayloadID,
-    RPCID,
-    SpawnID
+    RPCID
 } from "./constants/Enums.js"
 
 import { DisconnectMessages } from "./constants/DisconnectMessages.js"
@@ -17,14 +15,10 @@ import {
     DisconnectReason,
     GameDataMessage,
     ParsedPlayerGameData,
-    PlayerTaskState,
     MasterServer,
     GameListGame,
-    MeetingHudPlayerState,
-    PlayerVoteAreaFlags,
     ComponentData,
     PlayerDataFlags,
-    PayloadPacket,
     Payload,
     GameListCount,
     GameListClientBoundTag

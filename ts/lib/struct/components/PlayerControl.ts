@@ -18,8 +18,6 @@ import {
     SkinID
 } from "../../../index.js";
 
-import { Game } from "../Game.js";
-
 interface PlayerControlOnSpawn {
     isNew: boolean;
 }

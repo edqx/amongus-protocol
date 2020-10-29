@@ -3,21 +3,13 @@ import { AmongusClient } from "../../Client.js"
 import { GameObject } from "./GameObject.js"
 
 import { LobbyBehaviour as LobbyBehaviourComponent } from "../components/LobbyBehaviour.js"
-import { VoteBanSystem } from "../components/VoteBanSystem.js"
 
 import {
-    ColourID,
-    HatID,
-    MessageID,
-    PacketID,
-    PayloadID,
-    RPCID,
     SpawnID
 } from "../../constants/Enums.js"
 
 import { ComponentData } from "../../interfaces/Packets.js"
 import { Game } from "../Game.js"
-import { Component } from "../components/Component.js"
 
 export class LobbyBehaviour extends GameObject {
     spawnid: SpawnID.LobbyBehaviour;

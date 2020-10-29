@@ -6,14 +6,10 @@ import { BufferReader } from "../../util/BufferReader.js"
 import { BufferWriter } from "../../util/BufferWriter.js";
 
 import {
-    float16,
-    uint8,
     Vector2
 } from "../../interfaces/Types.js"
 
 import { LerpValue, UnlerpValue } from "../../util/Lerp.js";
-
-import { Game } from "../Game.js";
 
 import {
     DataID,

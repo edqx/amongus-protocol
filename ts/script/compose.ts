@@ -1,5 +1,3 @@
-import util from "util"
-
 import { composePacket } from "../lib/Compose.js"
 
 const json = process.argv.slice(2).join(" ");

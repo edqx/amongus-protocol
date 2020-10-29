@@ -3,40 +3,11 @@ import { AmongusClient } from "../../Client.js"
 import { Component } from "./Component.js"
 import { BufferReader } from "../../util/BufferReader.js"
 
-import {
-    float16,
-    uint8,
-    bitfield,
-    packed
-} from "../../interfaces/Types.js"
-
 import { parsePlayerData } from "../../Parser.js";
 
 import {
-    ColourID,
-    HatID,
-    PetID,
-    SkinID
-} from "../../constants/Enums.js";
-
-import {
-    PlayerDataFlags,
-    PlayerTaskState,
     ParsedPlayerGameData
 } from "../../interfaces/Packets.js";
-
-import {
-    DataID,
-    MessageID,
-    PacketID,
-    PayloadID, 
-    RPCID,
-    TaskID
-} from "../../constants/Enums.js";
-
-import { EventEmitter } from "events";
-
-import { Game } from "../Game.js";
 
 export interface GameData {
     on(event: "playerData", listener: (data: ParsedPlayerGameData) => void);

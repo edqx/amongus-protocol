@@ -1,4 +1,5 @@
 import util from "util"
+
 import { parsePacket } from "../lib/Parser.js"
 
 const serverbound = process.argv[2] === "server";

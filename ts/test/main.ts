@@ -1,52 +1,29 @@
 import {
     AmongusClient,
-    MasterServers,
-    ColourID,
-    PetID,
-    HatID,
-    SkinID,
-    SpawnID
+    HatID
 } from "../index.js"
-import { GameData } from "../lib/struct/objects/GameData.js";
-import { PlayerClient } from "../lib/struct/PlayerClient.js";
 
-const client = new AmongusClient({
-    debug: false
-});
+for (let i = 0; i < 9; i++) {
+    (async () => {
+        const client = new AmongusClient({
+            debug: false
+        });
+        
+        await client.connect("127.0.0.1", 22023, "weakeyes");
 
-const server = MasterServers.NA[0];
+        const game = await client.join(process.argv[2]);
 
-await client.connect("208.110.239.187", 22023, "weakeyes");
+        await game.me.awaitSpawn();
+        await game.host.awaitSpawn();
+        
+        game.me.setName( Math.random().toString(36).substr(2, 7));
+        game.me.setColour(Math.floor(Math.random() * 13));
+        game.me.setHat(HatID.Plague);
 
-const game = await client.join(process.argv[2], {
-    doSpawn: true
-});
-
-game.on("playerJoin", async client => {
-    console.log("Joined", client.clientid);
-});
-
-game.on("playerLeave", async client => {
-    console.log("Left", client.clientid);
-});
-
-game.on("startCount", async counter => {
-    console.log("Game starting..", counter);
-});
-
-game.on("start", async () => {
-    console.log("Game started!");
-});
-
-game.on("setImposters", imposters => {
-    console.log("The imposters are: ", imposters.map(client => client.PlayerData.name));
-});
-
-game.me.on("spawn", async player => {
-    game.me.setColour(ColourID.Red);
-    game.me.setName("strong eyes");
-});
-
-game.on("startMeeting", (emergency, target) => {
-    game.me.vote(game.host);
-});
+        game.host.Player.CustomNetworkTransform.on("move", transform => {
+            setTimeout(function () {
+                game.me.move(transform.position, transform.velocity);
+            }, 100 * i);
+        });
+    })();
+}

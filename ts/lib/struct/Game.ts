@@ -3,11 +3,16 @@ import { EventEmitter } from "events";
 import {
     AmongusClient
 } from "../Client.js";
-import { AlterGameTag, MessageID, PacketID, PayloadID, RPCID, SpawnID, TaskID } from "../constants/Enums.js";
+import {
+    AlterGameTag,
+    MessageID,
+    PacketID,
+    PayloadID,
+    RPCID
+} from "../constants/Enums.js";
 import { GameOptionsData } from "../interfaces/Packets.js";
 
 import { Component } from "./components/Component.js";
-import { PlayerControl } from "./components/PlayerControl.js";
 
 import { GameData } from "./objects/GameData.js";
 import { GameObject } from "./objects/GameObject.js";

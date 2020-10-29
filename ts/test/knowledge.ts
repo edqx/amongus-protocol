@@ -1,14 +1,10 @@
 import {
     AmongusClient,
     MasterServers,
-    ColourID,
-    PetID,
-    HatID,
-    SkinID,
-    SpawnID
+    ColourID
 } from "../index.js"
+
 import { GameData } from "../lib/struct/objects/GameData.js";
-import { PlayerClient } from "../lib/struct/PlayerClient.js";
 
 const client = new AmongusClient({
     debug: false

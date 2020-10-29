@@ -1,12 +1,9 @@
 import { AmongusClient } from "../Client.js"
 
 import { Player } from "./objects/Player.js"
-import { Game } from "./Game.js"
-import { CustomNetworkTransform } from "./components/CustomNetworkTransform.js"
 
 import {
     ColourID,
-    DataID,
     HatID,
     MessageID,
     PacketID,
@@ -14,20 +11,13 @@ import {
     PetID,
     RPCID,
     SkinID,
-    SpawnID,
     TaskID
 } from "../constants/Enums.js"
 
 import {
-    float,
-    uint16,
-    uint8,
     Vector2
 } from "../interfaces/Types.js"
 
-import { BufferWriter } from "../util/BufferWriter.js"
-
-import { UnlerpValue } from "../util/Lerp.js"
 import { PlayerTaskState } from "../interfaces/Packets.js"
 import { GameObject } from "./objects/GameObject.js"
 

@@ -4,16 +4,9 @@ import { Component } from "./Component.js"
 import { BufferReader } from "../../util/BufferReader.js"
 
 import {
-    packed,
-    uint8
-} from "../../interfaces/Types.js"
-
-import {
     MeetingHudPlayerState,
     PlayerVoteAreaFlags
 } from "../../interfaces/Packets.js";
-
-import { Game } from "../Game.js";
 
 export class MeetingHud extends Component {
     name: "MeetingHub";

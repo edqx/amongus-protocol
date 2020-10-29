@@ -2,7 +2,6 @@ import { EventEmitter } from "events";
 import { AmongusClient } from "../../Client.js"
 import { SpawnID } from "../../constants/Enums.js";
 import { Component } from "../components/Component.js";
-import { Game } from "../Game.js";
 
 export class GameObject extends EventEmitter {
     spawnid: SpawnID;

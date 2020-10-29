@@ -1,3 +1,6 @@
+export { AmongusClient } from "./lib/Client.js"
+export { AmongusServer } from "./lib/Server.js"
+
 export { DisconnectMessages } from "./lib/constants/DisconnectMessages.js"
 export * from "./lib/constants/Enums.js"
 export { MasterServers } from "./lib/constants/MasterServers.js"
@@ -10,9 +13,6 @@ export { ServerOptions } from "./lib/interfaces/ServerOptions.js"
 export * as Types from "./lib/interfaces/Types.js"
 export { VersionInfo } from "./lib/interfaces/VersionInfo.js"
 
-export * as Component from "./components.js"
-export * as GameObject from "./objects.js"
-
 export { BufferReader } from "./lib/util/BufferReader.js"
 export { BufferWriter } from "./lib/util/BufferWriter.js"
 export { Code2Int, Int2Code } from "./lib/util/Codes.js"
@@ -23,5 +23,5 @@ export { EncodeVersion, DecodeVersion } from "./lib/util/Versions.js"
 export { composePacket } from "./lib/Compose.js"
 export { parsePacket } from "./lib/Parser.js"
 
-export { AmongusClient } from "./lib/Client.js"
-export { AmongusServer } from "./lib/Server.js"
+export * as Component from "./components.js"
+export * as GameObject from "./objects.js"

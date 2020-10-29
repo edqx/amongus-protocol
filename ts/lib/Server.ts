@@ -3,18 +3,35 @@ import util from "util"
 import crypto from "crypto"
 
 import { EventEmitter } from "events";
-import { DisconnectID, LanguageID, MapID, PacketID, PayloadID } from "./constants/Enums.js";
+
+import {
+    DisconnectID,
+    LanguageID,
+    MapID,
+    PacketID,
+    PayloadID
+} from "./constants/Enums.js";
+
+import {
+    bitfield
+} from "./interfaces/Types.js";
+
+import { parsePacket } from "./Parser.js"
+import { composePacket } from "./Compose.js";
+
+import {
+    GameListClientBoundTag,
+    GameListCount,
+    Packet
+} from "./interfaces/Packets.js";
+
+import {
+    DecodeVersion,
+    FormatVersion
+} from "./util/Versions.js";
 
 import { ServerOptions } from "./interfaces/ServerOptions.js"
 
-import { parsePacket } from "./Parser.js"
-import { BufferWriter } from "./util/BufferWriter.js";
-
-import { GameListClientBoundTag, GameListCount, Packet } from "./interfaces/Packets.js";
-import { composePacket } from "./Compose.js";
-import { DecodeVersion, EncodeVersion, FormatVersion } from "./util/Versions.js";
-import { appendFileSync } from "fs";
-import { bitfield } from "./interfaces/Types.js";
 import { Game } from "./struct/Game.js";
 
 interface RemoteID {
