@@ -12,4 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build docs to use with github pages.
-        run: npm run docs
+        run: |
+          npm install
+          npm run docs
