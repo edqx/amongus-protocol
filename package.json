@@ -1,6 +1,6 @@
 {
   "name": "amongus-protocol",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A recreated Among Us protocol implemented in Typescript.",
   "main": "js/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "test:search": "npm run load ts/test/search.ts",
     "test:knowledge": "npm run load ts/test/knowledge.ts",
     "test:server": "npm run load ts/test/server.ts",
-    "docs": "typedoc --out ../docs lib --mode modules",
+    "docs": "typedoc --out docs --mode modules --excludePrivate --excludeNotExported ts/lib",
     "cmd": "npm run load ts/test/cmdline.ts",
     "parse": "npm run load ts/script/parse.ts",
     "compose": "npm run load ts/script/compose.ts",
