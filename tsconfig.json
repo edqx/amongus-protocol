@@ -17,6 +17,6 @@
         "!./node_modules/**/*.ts"
     ],
     "include": [
-        "./ts",
+        "./ts"
     ]
 }
