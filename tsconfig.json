@@ -1,5 +1,5 @@
 {
-    "version": "4.1.0-dev.20201017",
+    "version": "4.0.5",
     "compilerOptions": {
         "target": "ES2020",
         "module": "ESNext",
@@ -10,7 +10,8 @@
         "suppressImplicitAnyIndexErrors": true,
         "outDir": "./js",
         "esModuleInterop": true,
-        "moduleResolution": "Node"
+        "moduleResolution": "Node" ,
+        "declaration": true
     },
     "filesGlob": [
         "./**/*.ts",
