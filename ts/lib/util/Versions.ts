@@ -8,7 +8,7 @@ export function EncodeVersion(info: VersionInfo): number {
 }
 
 export function DecodeVersion(version: number): VersionInfo {
-    const info: Partial<VersionInfo> = {};
+    const info: Partial<VersionInfo> = {}
 
     info.year = Math.floor(version / 25000);
     version %= 25000;

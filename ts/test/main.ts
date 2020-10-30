@@ -16,7 +16,7 @@ for (let i = 0; i < 9; i++) {
         await game.me.awaitSpawn();
         await game.host.awaitSpawn();
         
-        game.me.setName( Math.random().toString(36).substr(2, 7));
+        game.me.setName(Math.random().toString(36).substr(2, 7));
         game.me.setColour(Math.floor(Math.random() * 13));
         game.me.setHat(HatID.Plague);
 

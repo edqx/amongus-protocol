@@ -1,10 +1,16 @@
 import { EventEmitter } from "events";
 import { AmongusClient } from "../../Client.js"
-import { SpawnID } from "../../constants/Enums.js";
+import { PacketID, PayloadID, SpawnID } from "../../constants/Enums.js";
 import { Component } from "../components/Component.js";
 
+export interface GameObject {
+    on(event: "spawn", listener: (object: GameObject) => void);
+}
+
 export class GameObject extends EventEmitter {
+    id: number;
     spawnid: SpawnID;
+    parentid: number;
 
     children: GameObject[];
     parent: AmongusClient|GameObject;
@@ -12,9 +18,27 @@ export class GameObject extends EventEmitter {
     
     constructor (protected client: AmongusClient, parent: AmongusClient|GameObject) {
         super();
+        
+        this.parentid = parent.id;
 
         this.children = [];
         this.components = [];
+    }
+
+    awaitChild(filter: (object: GameObject) => boolean): Promise<GameObject> {
+        return new Promise(resolve => {
+            const child = this.children.find(filter);
+
+            if (child) {
+                return child;
+            }
+
+            this.on("spawn", function onObject(object) {
+                this.off("spawn", onObject);
+
+                resolve(object);
+            });
+        });
     }
 
     isChild(child: GameObject): boolean {

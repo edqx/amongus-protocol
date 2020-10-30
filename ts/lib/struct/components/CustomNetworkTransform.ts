@@ -31,12 +31,14 @@ export class CustomNetworkTransform extends Component {
     position: Vector2;
     velocity: Vector2;
 
-    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
+    constructor(client: AmongusClient, netid: number, datalen?: number, data?: Buffer) {
         super(client, netid);
 
         this.sequence = null;
 
-        this.OnSpawn(datalen, data);
+        if (typeof datalen !== "undefined" && typeof data !== "undefined") {
+            this.OnSpawn(datalen, data);
+        }
     }
 
     OnSpawn(datalen: number, data: Buffer): void {
@@ -67,6 +69,19 @@ export class CustomNetworkTransform extends Component {
         }
 
         this.emit("move", this);
+    }
+
+    Serialize() {
+        const writer = new BufferWriter;
+
+        writer.byte(this.sequence);
+        writer.byte(0x00);
+        writer.uint16LE(UnlerpValue(this.position.x, -40, 40) * 65535);
+        writer.uint16LE(UnlerpValue(this.position.y, -40, 40) * 65535);
+        writer.uint16LE(UnlerpValue(this.velocity.x, -40, 40) * 65535);
+        writer.uint16LE(UnlerpValue(this.velocity.y, -40, 40) * 65535);
+
+        return writer.buffer;
     }
 
     async move(position: Vector2, velocity: Vector2) {

@@ -1,24 +1,50 @@
 import dgram from "dgram"
 import util from "util"
 
-import { ClientOptions } from "./interfaces/ClientOptions.js"
+import { EventEmitter } from "events"
 
 import { parsePacket } from "./Parser.js"
 import { composePacket } from "./Compose.js"
 
-import { EventEmitter } from "events"
-import { GameListGame, Packet, Payload, GameOptionsData, GameListClientBoundTag } from "./interfaces/Packets.js"
-import { AlterGameTag, DisconnectID, DistanceID, LanguageID, MapID, MessageID, PacketID, PayloadID, RPCID, SpawnID } from "./constants/Enums.js"
 import { Code2Int } from "./util/Codes.js"
+
+import {
+    GameListGame,
+    Packet,
+    Payload,
+    GameOptionsData,
+    GameListClientBoundTag
+} from "./interfaces/Packets.js"
+
+import {
+    AlterGameTag,
+    DisconnectID,
+    DistanceID,
+    LanguageID,
+    MapID,
+    MessageID,
+    PacketID,
+    PayloadID,
+    RPCID,
+    SpawnID,
+    TaskBarUpdate
+} from "./constants/Enums.js"
+
 import { Game } from "./struct/Game.js"
+import { PlayerClient } from "./struct/PlayerClient.js"
+
 import { bitfield } from "./interfaces/Types.js"
 import { JoinOptions } from "./interfaces/JoinOptions.js"
 
 import { Player } from "./struct/objects/Player.js"
 import { GameData } from "./struct/objects/GameData.js"
-
-import { PlayerClient } from "./struct/PlayerClient.js"
 import { LobbyBehaviour } from "./struct/objects/LobbyBehaviour.js"
+
+import { LobbyBehaviour as LobbyBehaviourComponent } from "./struct/components/LobbyBehaviour.js"
+import { GameData as GameDataComponent } from "./struct/components/GameData.js"
+import { VoteBanSystem } from "./struct/components/VoteBanSystem.js"
+
+import { ClientOptions } from "./interfaces/ClientOptions.js"
 
 export declare interface AmongusClient {
     on(event: "packet", listener: (packet: Packet) => void);
@@ -32,6 +58,8 @@ export declare interface AmongusClient {
 export class AmongusClient extends EventEmitter {
     options: ClientOptions;
     socket: dgram.Socket;
+
+    id: number;
     
     /**
      * The IP that the client is connected to.
@@ -65,6 +93,8 @@ export class AmongusClient extends EventEmitter {
 
     constructor (options: ClientOptions = {}) {
         super();
+
+        this.id = null;
 
         this.options = options;
         this.nonce = 1;
@@ -136,7 +166,8 @@ export class AmongusClient extends EventEmitter {
         this.nonce = 1;
 
         this.socket.on("message", async buffer => {
-            this.debug("Recieved packet", buffer);
+            const format_buffer = [...buffer].map(byte => "0".repeat(2 - byte.toString(16).length) + byte.toString(16)).join(" ");
+            this.debug("Recieved packet", format_buffer);
 
             const packet = parsePacket(buffer);
 
@@ -156,13 +187,11 @@ export class AmongusClient extends EventEmitter {
                             switch (payload.payloadid) {
                                 case PayloadID.JoinGame:
                                     if (payload.bound === "client") {
-                                        switch (payload.error) {  // Couldn't get typings to work with if statements so I have to deal with switch/case..
+                                        switch (payload.error) {  // Couldn't get typings to work with if statements so I have to deal with switch/case.
                                             case false:
                                                 if (payload.code === this.game.code) {
-                                                    const client = new PlayerClient(this, payload.clientid);
-
-                                                    this.game.clients.set(client.clientid, client);
-                                                    this.game.emit("playerJoin", client);
+                                                    this.game.playerJoin(payload.clientid);
+                                                    this.game.hostid = payload.hostid;
                                                 }
                                                 break;
                                         }
@@ -193,8 +222,14 @@ export class AmongusClient extends EventEmitter {
                                     }
                                     break;
                                 case PayloadID.JoinedGame:
-                                    this.game = new Game(this, this.ip, this.port, payload.code, payload.hostid, [payload.clientid, ...payload.clients]);
-                                    this.clientid = payload.clientid;
+                                    if (!this.game) {
+                                        this.game = new Game(this, this.ip, this.port, payload.code, payload.hostid, [payload.clientid, ...payload.clients]);
+                                        this.clientid = payload.clientid;
+
+                                        if (this.clientid === this.game.hostid) {
+                                            
+                                        }
+                                    }
                                     break;
                                 case PayloadID.KickPlayer:
                                     if (payload.bound === "client") {
@@ -239,15 +274,13 @@ export class AmongusClient extends EventEmitter {
                                                                 client.dead = true;
 
                                                                 this.game.emit("murder", murderer, client);
+
                                                                 client.emit("murdered", murderer);
                                                                 murderer.emit("murder", client);
                                                             }
                                                             break;
                                                         }
                                                         case RPCID.StartMeeting:
-                                                            const handlerid = part.handlerid;
-                                                            const handler = this.game.netcomponents.get(handlerid);
-
                                                             if (part.targetid === 0xFF) {
                                                                 this.game.emit("startMeeting", true, null);
                                                             } else {
@@ -257,6 +290,8 @@ export class AmongusClient extends EventEmitter {
                                                             }
                                                             break;
                                                         case RPCID.SetStartCounter:
+
+
                                                             if (this.game.startCounterSeq === null || part.sequence > this.game.startCounterSeq) {
                                                                 this.game.startCount = part.time;
                                                                 this.game.emit("startCount", this.game.startCount);
@@ -287,6 +322,8 @@ export class AmongusClient extends EventEmitter {
                                                             }
                                                             break;
                                                         case RPCID.UpdateGameData:
+                                                            await this.game.awaitChild(object => object instanceof GameData);
+
                                                             this.game.GameData.GameData.UpdatePlayers(part.players);
                                                             break;
                                                     }
@@ -443,7 +480,8 @@ export class AmongusClient extends EventEmitter {
         
         await this._send(composed);
         
-        this.debug("Sent packet", composed);
+        const format_buffer = [...composed].map(byte => "0".repeat(2 - byte.toString(16).length) + byte.toString(16)).join(" ");
+        this.debug("Sent packet", format_buffer);
 
         if (packet.reliable) {
             const interval = setInterval(() => {
@@ -608,6 +646,7 @@ export class AmongusClient extends EventEmitter {
         options = {
             version: 2,
             mapID: MapID.TheSkeld,
+            language: LanguageID.Other,
             imposterCount: 1,
             confirmEjects: true,
             emergencies: 1,
@@ -624,7 +663,7 @@ export class AmongusClient extends EventEmitter {
             longTasks: 1,
             shortTasks: 2,
             ...options
-        };
+        }
 
         await this.send({
             op: PacketID.Reliable,
@@ -650,7 +689,24 @@ export class AmongusClient extends EventEmitter {
 
                 return await this.host(options);
             } else if (payload.payloadid === PayloadID.HostGame) {
-                return payload.code;
+                const game = new Game(this, this.ip, this.port, payload.code, null, []);
+
+                new LobbyBehaviour(this, game, [
+                    {
+                        netid: game.netcomponents.size
+                    }
+                ]);
+
+                new GameData(this, game, [
+                    {
+                        netid: game.netcomponents.size
+                    },
+                    {
+                        netid: game.netcomponents.size + 1
+                    }
+                ]);
+
+                return game;
             } else if (payload.payloadid === PayloadID.JoinGame) {
                 if (payload.error) {
                     throw new Error("Join error: " + payload.reason + " (" + payload.message + ")");

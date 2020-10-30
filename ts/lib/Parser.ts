@@ -21,14 +21,15 @@ import {
     PlayerDataFlags,
     Payload,
     GameListCount,
-    GameListClientBoundTag
+    GameListClientBoundTag,
+    SceneChangeLocation
 } from "./interfaces/Packets.js"
 
 import { BufferReader } from "./util/BufferReader.js"
 import { LerpValue } from "./util/Lerp.js";
 
 export function parseGameOptions(reader: BufferReader): GameOptionsData {
-    let options: Partial<GameOptionsData> = {};
+    let options: Partial<GameOptionsData> = {}
 
     options.length = reader.packed();
     options.version = reader.byte() as 1|2|3;
@@ -67,7 +68,7 @@ export function parseGameOptions(reader: BufferReader): GameOptionsData {
 }
 
 export function parseDisconnect(reader: BufferReader): DisconnectReason {
-    let data: Partial<DisconnectReason> = {};
+    let data: Partial<DisconnectReason> = {}
 
     if (reader.offset < reader.size) {
         data.reason = reader.uint8();
@@ -83,7 +84,7 @@ export function parseDisconnect(reader: BufferReader): DisconnectReason {
 }
 
 export function parsePlayerData(reader: BufferReader): ParsedPlayerGameData {
-    let player: Partial<ParsedPlayerGameData> = {};
+    let player: Partial<ParsedPlayerGameData> = {}
     player.playerId = reader.uint8();
     player.name = reader.string();
     player.colour = reader.uint8();
@@ -112,7 +113,7 @@ export function parsePlayerData(reader: BufferReader): ParsedPlayerGameData {
 export function parsePacket(buffer, bound: "server" | "client" = "client"): Packet {
     const reader = new BufferReader(buffer);
 
-    let packet: Partial<Packet> = {};
+    let packet: Partial<Packet> = {}
     
     packet.op = reader.byte();
     packet.bound = bound;
@@ -130,7 +131,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                 packet.payloads = [];
 
                 while (reader.offset < reader.size) {
-                    const payload: Partial<Payload> = {};
+                    const payload: Partial<Payload> = {}
 
                     const payload_len = reader.uint16LE();
                     payload.payloadid = reader.uint8();
@@ -149,7 +150,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                             break;
                         case PayloadID.JoinGame:
                             if (payload.bound === "client") {
-                                payload.error = reader.size !== 18; // For players joining the game.
+                                payload.error = payload_len !== 12 && payload_len !== 18; // For players joining the game.
     
                                 switch (payload.error) { // Couldn't get typings to work with if statements so I have to deal with switch/case..
                                     case true:
@@ -200,7 +201,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                             payload.parts = [];
     
                             while (reader.offset < payload_end) {
-                                let part: Partial<GameDataMessage> = {};
+                                let part: Partial<GameDataMessage> = {}
                                 const part_len = reader.uint16LE();
                                 part.type = reader.uint8();
                                 const part_start = reader.offset;
@@ -336,7 +337,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                         part.components = [];
     
                                         for (let i = 0; i < part.num_components; i++) {
-                                            const component: Partial<ComponentData> = {};
+                                            const component: Partial<ComponentData> = {}
                                             component.netid = reader.packed();
                                             component.datalen = reader.uint16LE();
                                             component.type = reader.uint8();
@@ -353,7 +354,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                         break;
                                     case MessageID.SceneChange:
                                         part.clientid = reader.packed();
-                                        part.location = reader.string();
+                                        part.location = reader.string() as SceneChangeLocation;
                                         break;
                                     case MessageID.Ready:
                                         part.clientid = reader.packed();
@@ -405,7 +406,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                             payload.num_servers = reader.uint8();
                             payload.servers = [];
                             for (let i = 0; i < payload.num_servers; i++) {
-                                let server: Partial<MasterServer> = {};
+                                let server: Partial<MasterServer> = {}
                                 reader.jump(0x02);
                                 server.flag = reader.byte();
                                 server.name = reader.string();
@@ -428,7 +429,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                         payload.games = [];
 
                                         while (reader.offset < gamelist_end) {
-                                            let game: Partial<GameListGame> = {};
+                                            let game: Partial<GameListGame> = {}
                                             reader.jump(0x02); // Skip length
                                             const tag = reader.uint8();
 
@@ -447,7 +448,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                         }
                                         break;
                                     case GameListClientBoundTag.Count:
-                                        const count: Partial<GameListCount> = {};
+                                        const count: Partial<GameListCount> = {}
 
                                         count[MapID.TheSkeld] = reader.uint32LE();
                                         count[MapID.MiraHQ] = reader.uint32LE();

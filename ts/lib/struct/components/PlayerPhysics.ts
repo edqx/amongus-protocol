@@ -13,10 +13,13 @@ export class PlayerPhysics extends Component {
     name: "Player";
     classname: "PlayerPhysics";
 
-    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
+    constructor(client: AmongusClient, netid: number, datalen?: number, data?: Buffer) {
         super(client, netid);
 
-        this.OnSpawn(datalen, data);
+        
+        if (typeof datalen !== "undefined" && typeof data !== "undefined") {
+            this.OnSpawn(datalen, data);
+        }
     }
     
     OnSpawn(datalen: number, data: Buffer): void {

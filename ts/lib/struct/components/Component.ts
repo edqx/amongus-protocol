@@ -10,6 +10,10 @@ export class Component extends EventEmitter {
         super();
     }
 
-    OnSpawn(datalen: number, data: Buffer) {};
-    OnDeserialize(datalen: number, data: Buffer) {};
+    OnSpawn(datalen: number, data: Buffer) {}
+    OnDeserialize(datalen: number, data: Buffer) {}
+
+    Serialize(...args: any[]): Buffer {
+        return Buffer.alloc(0);
+    }
 }

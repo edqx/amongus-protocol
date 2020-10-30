@@ -18,7 +18,7 @@ import {
     Vector2
 } from "../interfaces/Types.js"
 
-import { PlayerTaskState } from "../interfaces/Packets.js"
+import { PlayerTaskState, SceneChangeLocation } from "../interfaces/Packets.js"
 import { GameObject } from "./objects/GameObject.js"
 
 export interface PlayerClient {
@@ -29,6 +29,7 @@ export interface PlayerClient {
     on(event: "kicked", listener: (banned: boolean) => void);
     on(event: "murder", listener: (target: PlayerClient) => void);
     on(event: "murdered", listener: (murderer: PlayerClient) => void);
+    on(event: "sceneChange", listener: (location: SceneChangeLocation) => void);
 }
 
 export class PlayerClient extends GameObject {
@@ -46,6 +47,8 @@ export class PlayerClient extends GameObject {
         this.dead = false;
 
         this.tasks = [];
+
+        this.id = clientid;
     }
 
     awaitSpawn() {

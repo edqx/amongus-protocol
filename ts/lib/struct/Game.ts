@@ -1,21 +1,29 @@
-import { EventEmitter } from "events";
-
+import { threadId } from "worker_threads";
 import {
     AmongusClient
 } from "../Client.js";
+
 import {
     AlterGameTag,
     MessageID,
     PacketID,
     PayloadID,
-    RPCID
+    RPCID,
+    SpawnID
 } from "../constants/Enums.js";
-import { GameOptionsData } from "../interfaces/Packets.js";
+
+import {
+    GameOptionsData,
+    SceneChangeLocation
+} from "../interfaces/Packets.js";
 
 import { Component } from "./components/Component.js";
 
 import { GameData } from "./objects/GameData.js";
 import { GameObject } from "./objects/GameObject.js";
+import { LobbyBehaviour } from "./objects/LobbyBehaviour.js";
+import { Player } from "./objects/Player.js";
+
 import { PlayerClient } from "./PlayerClient.js";
 
 export interface Game {
@@ -32,6 +40,7 @@ export interface Game {
     on(event: "startMeeting", listener: (emergency: boolean, target: PlayerClient) => void);
     on(event: "sync", listener: (settings: GameOptionsData) => void);
     on(event: "visibility", listener: (visibility: "private"|"public") => void);
+    on(event: "sceneChange", listener: (client: PlayerClient, location: SceneChangeLocation) => void);
 }
 
 export class Game extends GameObject {
@@ -56,6 +65,8 @@ export class Game extends GameObject {
 
     constructor(protected client: AmongusClient, ip: string, port: number, code: number, hostid: number, clients: number[]) {
         super(client, client);
+
+        this.id = -2;
 
         this.ip = ip;
         this.port = port;
@@ -178,16 +189,140 @@ export class Game extends GameObject {
         this._setVisibility(visibility);
     }
 
+    _setStartCounter(sequence: number, counter: number = -1) {
+        if (sequence > this.startCounterSeq) {
+            this.startCounterSeq = sequence;
+            this.startCount = counter;
+            
+
+            this.emit("startCount", counter);
+        }
+    }
+
+    async setStartCounter(counter) {
+        const sequence = this.startCounterSeq + 1;
+
+        if (this.client.clientid === this.hostid) {
+            await this.client.send({
+                op: PacketID.Reliable,
+                payloads:[
+                    {
+                        payloadid: PayloadID.GameData,
+                        code: this.code,
+                        parts: [
+                            {
+                                type: MessageID.RPC,
+                                handlerid: this.host.Player.PlayerControl.netid,
+                                rpcid: RPCID.SetStartCounter,
+                                sequence: sequence,
+                                time: counter
+                            }
+                        ]
+                    }
+                ]
+            });
+        }
+
+        this._setStartCounter(sequence, counter);
+    }
+
+    _playerJoin(clientid: number) {
+        const client = new PlayerClient(this.client, clientid);
+        
+        this.clients.set(client.clientid, client);
+        this.emit("playerJoin", client);
+    }
+
+    async playerJoin(clientid: number) {
+        if (this.client.clientid === this.hostid) {
+            this.setStartCounter(-1);
+        }
+
+        this._playerJoin(clientid);
+    }
+
+    _sceneChange(clientid: number, location: SceneChangeLocation) {
+        const client = this.clients.get(clientid);
+
+        if (client) {
+            this.emit("sceneChange", client, location);
+            client.emit("sceneChange", location);
+        }
+    }
+
+    async sceneChange(clientid: number, location: SceneChangeLocation) {
+        if (this.client.clientid === this.hostid) {
+            const gamedata = await this.awaitChild(object => object instanceof GameData) as GameData;
+            const lobbybehaviour = await this.awaitChild(object => object instanceof LobbyBehaviour) as LobbyBehaviour;
+
+            // Perhaps the worst code I have ever written.
+            // V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V
+            const player_objects = (await Promise.allSettled([...this.clients.values()].map(client => {
+                if (client.clientid === clientid) return Promise.resolve();
+
+                return client.awaitChild(object => object instanceof Player);
+            }))).map(settled => (settled.status === "fulfilled" ? settled.value : null) as GameObject) // Get all player objects connected, and if they aren't spawned yet, wait for them.
+
+            await this.client.send({
+                op: PacketID.Reliable,
+                payloads: [
+                    {
+                        payloadid: PayloadID.GameDataTo,
+                        code: this.code,
+                        recipient: clientid,
+                        parts: [
+                            gamedata,
+                            lobbybehaviour,
+                            ...player_objects
+                        ].map(object => {
+                            return {
+                                type: MessageID.Spawn,
+                                spawnid: object.spawnid,
+                                ownerid: object.parentid,
+                                flags: 0,
+                                num_components: object.components.length,
+                                components: (object.components as Component[]).map(component => {
+                                    const serialised = component.Serialize();
+
+                                    return {
+                                        netid: component.netid,
+                                        type: 0,
+                                        datalen: serialised.byteLength,
+                                        data: serialised
+                                    }
+                                })
+                            }
+                        })
+                    }
+                ]
+            });
+        }
+
+        this._sceneChange(clientid, location);
+    }
+
     _start() {
         this.started = true;
 
         this.emit("start");
     }
 
+    async start() {
+        // TODO: Handle finishing games as hosts.
+
+        this._start();
+    }
+
     _finish() {
         this.started = false;
         
         this.emit("finish");
+    }
+
+    async finish() {
+        // TODO: Handle finishing games as hosts.
+
+        this._finish();
     }
 
     registerComponents(object: GameObject) {

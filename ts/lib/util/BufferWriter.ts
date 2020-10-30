@@ -33,7 +33,7 @@ export class BufferWriter {
             initial: 0,
             maxSize: 5242880,
             ...options
-        };
+        }
     }
     
     [Symbol.toStringTag]() {

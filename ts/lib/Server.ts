@@ -113,7 +113,7 @@ export class AmongusServer extends EventEmitter {
             versions: ["2020.9.7"], 
             pingInterval: 1500,
             ...options
-        };
+        }
     }
 
     debug(...fmt) {
@@ -165,7 +165,7 @@ export class AmongusServer extends EventEmitter {
             [MapID.TheSkeld]: 0,
             [MapID.MiraHQ]: 0,
             [MapID.Polus]: 0
-        };
+        }
 
         for (let [code, game] of this.games) {
             if (game.visibility === "public") {

@@ -22,8 +22,9 @@ import { UnlerpValue } from "./util/Lerp.js";
 export function composeGameOptions(options: Partial<GameOptionsData>) {
     options.version = options.version ?? 3;
 
+    const writer = new BufferWriter;
+
     const bwrite = new BufferWriter;
-    bwrite.jump(0x02);
     bwrite.byte(options.version);
     bwrite.uint8(options.maxPlayers ?? 10);
     bwrite.uint32LE(options.language ?? LanguageID.English);
@@ -56,10 +57,10 @@ export function composeGameOptions(options: Partial<GameOptionsData>) {
         bwrite.uint8(options.taskBarUpdates ?? TaskBarUpdate.Always);
     }
     
-    bwrite.goto(0x00);
-    bwrite.packed(bwrite.size - 2);
+    writer.packed(bwrite.size);
+    writer.write(bwrite);
 
-    return bwrite;
+    return writer;
 }
 
 export function composePacket(packet: Packet, bound: "server"|"client" = "server"): Buffer {

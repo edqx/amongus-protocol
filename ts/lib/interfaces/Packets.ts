@@ -505,10 +505,12 @@ export interface DespawnMessage extends Message {
     netid: packed;
 }
 
+export type SceneChangeLocation = "OnlineGame";
+
 export interface SceneChangeMessage extends Message {
     type: MessageID.SceneChange;
     clientid: packed;
-    location: string;
+    location: SceneChangeLocation;
 }
 
 export interface ReadyMessage extends Message {

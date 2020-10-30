@@ -18,8 +18,10 @@ export class Player extends GameObject {
     spawnid: SpawnID.Player;
     components: [PlayerControl, PlayerPhysics, CustomNetworkTransform];
 
-    constructor (client: AmongusClient, parent: PlayerClient, components: ComponentData[]) {
+    constructor (client: AmongusClient, parent: PlayerClient, components: Partial<ComponentData>[]) {
         super(client, parent);
+        
+        this.id = null;
 
         this.components = [
             new PlayerControl(client, components[0].netid, components[0].datalen, components[0].data),

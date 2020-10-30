@@ -17,6 +17,8 @@ import {
     RPCID,
     SkinID
 } from "../../../index.js";
+import { BufferWriter } from "../../util/BufferWriter.js";
+import { write } from "fs";
 
 interface PlayerControlOnSpawn {
     isNew: boolean;
@@ -28,10 +30,12 @@ export class PlayerControl extends Component {
 
     playerId: uint8;
 
-    constructor(client: AmongusClient, netid: number, datalen: number, data: Buffer) {
+    constructor(client: AmongusClient, netid: number, datalen?: number, data?: Buffer) {
         super(client, netid);
-
-        this.OnSpawn(datalen, data);
+        
+        if (typeof datalen !== "undefined" && typeof data !== "undefined") {
+            this.OnSpawn(datalen, data);
+        }
     }
     
     OnSpawn(datalen: number, data: Buffer): PlayerControlOnSpawn {
@@ -49,6 +53,15 @@ export class PlayerControl extends Component {
         const reader = new BufferReader(data);
 
         this.playerId = reader.uint8();
+    }
+
+    Serialize(isNew: boolean = false) {
+        const writer = new BufferWriter;
+
+        writer.bool(isNew);
+        writer.uint8(this.playerId);
+
+        return writer.buffer;
     }
 
     async murderPlayer(playerid: number) {
@@ -73,53 +86,93 @@ export class PlayerControl extends Component {
     }
 
     async setColour(colour: ColourID) {
-        await this.client.send({
-            op: PacketID.Reliable,
-            payloads:[
-                {
-                    payloadid: PayloadID.GameDataTo,
-                    recipient: this.client.game.hostid,
-                    code: this.client.game.code,
-                    parts: [
-                        {
-                            type: MessageID.RPC,
-                            handlerid: this.netid,
-                            rpcid: RPCID.CheckColour,
-                            colour
-                        }
-                    ]
-                }
-            ]
-        });
-        
-        await this.client.awaitPayload(payload => 
-            payload.payloadid === PayloadID.GameData
-            && payload.parts.some(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetColour));
+        if (this.client.clientid === this.client.game.hostid) {
+            await this.client.send({
+                op: PacketID.Reliable,
+                payloads:[
+                    {
+                        payloadid: PayloadID.GameData,
+                        code: this.client.game.code,
+                        parts: [
+                            {
+                                type: MessageID.RPC,
+                                handlerid: this.netid,
+                                rpcid: RPCID.SetColour,
+                                colour
+                            }
+                        ]
+                    }
+                ]
+            });
+        } else {
+            await this.client.send({
+                op: PacketID.Reliable,
+                payloads:[
+                    {
+                        payloadid: PayloadID.GameDataTo,
+                        recipient: this.client.game.hostid,
+                        code: this.client.game.code,
+                        parts: [
+                            {
+                                type: MessageID.RPC,
+                                handlerid: this.netid,
+                                rpcid: RPCID.CheckColour,
+                                colour
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            await this.client.awaitPayload(payload => 
+                payload.payloadid === PayloadID.GameData
+                    && payload.parts.some(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetColour));
+        }
     }
     
     async setName(name: string) {
-        await this.client.send({
-            op: PacketID.Reliable,
-            payloads: [
-                {
-                    payloadid: PayloadID.GameDataTo,
-                    recipient: this.client.game.hostid,
-                    code: this.client.game.code,
-                    parts: [
-                        {
-                            type: MessageID.RPC,
-                            handlerid: this.netid,
-                            rpcid: RPCID.CheckName,
-                            name
-                        }
-                    ]
-                }
-            ]
-        });
+        if (this.client.clientid === this.client.game.hostid) {
+            await this.client.send({
+                op: PacketID.Reliable,
+                payloads: [
+                    {
+                        payloadid: PayloadID.GameData,
+                        code: this.client.game.code,
+                        parts: [
+                            {
+                                type: MessageID.RPC,
+                                handlerid: this.netid,
+                                rpcid: RPCID.SetName,
+                                name
+                            }
+                        ]
+                    }
+                ]
+            });
+        } else {
+            await this.client.send({
+                op: PacketID.Reliable,
+                payloads: [
+                    {
+                        payloadid: PayloadID.GameDataTo,
+                        recipient: this.client.game.hostid,
+                        code: this.client.game.code,
+                        parts: [
+                            {
+                                type: MessageID.RPC,
+                                handlerid: this.netid,
+                                rpcid: RPCID.CheckName,
+                                name
+                            }
+                        ]
+                    }
+                ]
+            });
 
-        await this.client.awaitPayload(payload => 
-            payload.payloadid === PayloadID.GameData
-            && payload.parts.some(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetName));
+            await this.client.awaitPayload(payload => 
+                payload.payloadid === PayloadID.GameData
+                && payload.parts.some(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetName));
+        }
     }
     
     async setHat(hat: HatID) {

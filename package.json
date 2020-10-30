@@ -11,11 +11,10 @@
     "test:search": "npm run load ts/test/search.ts",
     "test:knowledge": "npm run load ts/test/knowledge.ts",
     "test:server": "npm run load ts/test/server.ts",
+    "test:host": "npm run load ts/test/host.ts",
     "docs": "typedoc --out docs --mode modules --excludePrivate --excludeNotExported --plugin typedoc-plugin-nojekyll ts/lib",
-    "cmd": "npm run load ts/test/cmdline.ts",
     "parse": "npm run load ts/script/parse.ts",
     "compose": "npm run load ts/script/compose.ts",
-    "view": "npm run load ts/script/view.ts",
     "postinstall": "npm run build"
   },
   "type": "module",
