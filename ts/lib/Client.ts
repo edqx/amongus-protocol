@@ -45,6 +45,7 @@ import { GameData as GameDataComponent } from "./struct/components/GameData.js"
 import { VoteBanSystem } from "./struct/components/VoteBanSystem.js"
 
 import { ClientOptions } from "./interfaces/ClientOptions.js"
+import { MeetingHub } from "./struct/objects/MeetingHub.js"
 
 export declare interface AmongusClient {
     on(event: "packet", listener: (packet: Packet) => void);
@@ -290,8 +291,6 @@ export class AmongusClient extends EventEmitter {
                                                             }
                                                             break;
                                                         case RPCID.SetStartCounter:
-
-
                                                             if (this.game.startCounterSeq === null || part.sequence > this.game.startCounterSeq) {
                                                                 this.game.startCount = part.time;
                                                                 this.game.emit("startCount", this.game.startCount);
@@ -334,7 +333,7 @@ export class AmongusClient extends EventEmitter {
                                                             // new ShipStatus(this, this.game, part.components);
                                                             break;
                                                         case SpawnID.MeetingHub:
-                                                            // new MeetingHub(this, this.game, part.components);
+                                                            new MeetingHub(this, this.game, part.components);
                                                             break;
                                                         case SpawnID.LobbyBehaviour:
                                                             new LobbyBehaviour(this, this.game, part.components)
@@ -448,7 +447,7 @@ export class AmongusClient extends EventEmitter {
         const packet = await this.awaitPacket(packet => {
             return (packet.op === PacketID.Unreliable || packet.op === PacketID.Reliable)
                 && packet.bound === "client"
-                && packet.payloads.some(payload => filter(payload));
+                && packet.payloads.some(filter);
         });
 
         if (packet.op === PacketID.Unreliable || packet.op === PacketID.Reliable) {

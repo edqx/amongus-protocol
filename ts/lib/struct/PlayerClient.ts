@@ -20,6 +20,8 @@ import {
 
 import { PlayerTaskState, SceneChangeLocation } from "../interfaces/Packets.js"
 import { GameObject } from "./objects/GameObject.js"
+import { GameData } from "./objects/GameData.js"
+import { MeetingHub } from "./objects/MeetingHub.js"
 
 export interface PlayerClient {
     on(event: "spawn", listener: (player: Player) => void);
@@ -145,31 +147,29 @@ export class PlayerClient extends GameObject {
     
     async vote(player: PlayerClient) {
         if (this.Player && !this.removed) {
-            await this.client.send({
-                op: PacketID.Reliable,
-                payloads: [
-                    {
-                        payloadid: PayloadID.GameData,
-                        code: this.client.game.code,
-                        parts: [
-                            {
-                                type: MessageID.RPC,
-                                rpcid: RPCID.CastVote,
-                                handlerid: this.Player.PlayerControl.netid,
-                                voterid: this.Player.PlayerControl.playerId,
-                                suspectid: player.Player.PlayerControl.playerId
-                            },
-                            {
-                                type: MessageID.RPC,
-                                rpcid: RPCID.SendChatNote,
-                                handlerid: this.Player.PlayerControl.playerId,
-                                playerid: this.Player.PlayerControl.playerId,
-                                notetype: 0x00
-                            }
-                        ]
-                    }
-                ]
-            });
+            const meetinghub = this.client.game.findChild(object => object instanceof MeetingHub) as MeetingHub;
+
+            if (meetinghub) {
+                await this.client.send({
+                    op: PacketID.Reliable,
+                    payloads: [
+                        {
+                            payloadid: PayloadID.GameDataTo,
+                            recipient: this.client.game.hostid,
+                            code: this.client.game.code,
+                            parts: [
+                                {
+                                    type: MessageID.RPC,
+                                    rpcid: RPCID.CastVote,
+                                    handlerid: meetinghub.MeetingHud.netid,
+                                    voterid: this.Player.PlayerControl.playerId,
+                                    suspectid: player.Player.PlayerControl.playerId
+                                }
+                            ]
+                        }
+                    ]
+                });
+            }
         }
     }
 

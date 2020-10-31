@@ -1,29 +1,35 @@
 import {
     AmongusClient,
-    HatID
+    HatID,
+    MasterServers
 } from "../index.js"
 
-for (let i = 0; i < 9; i++) {
-    (async () => {
-        const client = new AmongusClient({
-            debug: false
-        });
-        
-        await client.connect("127.0.0.1", 22023, "weakeyes");
+(async () => {
+    const client = new AmongusClient({
+        debug: false
+    });
 
-        const game = await client.join(process.argv[2]);
+    const servers = MasterServers.NA[0];
 
-        await game.me.awaitSpawn();
-        await game.host.awaitSpawn();
-        
-        game.me.setName(Math.random().toString(36).substr(2, 7));
-        game.me.setColour(Math.floor(Math.random() * 13));
-        game.me.setHat(HatID.Plague);
+    await client.connect(servers[0], servers[1], "weakeyes");
 
-        game.host.Player.CustomNetworkTransform.on("move", transform => {
-            setTimeout(function () {
-                game.me.move(transform.position, transform.velocity);
-            }, 100 * i);
-        });
-    })();
-}
+    const game = await client.join(process.argv[2]);
+
+    await game.me.awaitSpawn();
+    await game.host.awaitSpawn();
+
+    await game.me.setName("strongeyes");
+    console.log("Set name.");
+    await game.me.setColour(Math.floor(Math.random() * 13));
+    console.log("Set colour.");
+    game.me.setHat(HatID.Plague);
+    console.log("Set hat.");
+
+    game.on("startMeeting", (emergecy, target) => {
+        console.log("Meeting started, voting in 20s..");
+        setTimeout(() => {
+            console.log("Voted");
+            game.me.vote(game.host)
+        }, 20000);
+    });
+})();

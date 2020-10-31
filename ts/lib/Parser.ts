@@ -279,7 +279,6 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                                 part.time = reader.int8();
                                                 break;
                                             case RPCID.EnterVent:
-                                                part.sequence = reader.byte();
                                                 part.ventid = reader.packed();
                                                 break;
                                             case RPCID.ExitVent:

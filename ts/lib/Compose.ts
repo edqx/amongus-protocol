@@ -224,7 +224,6 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                             mwrite.int8(part.time);
                                             break;
                                         case RPCID.EnterVent:
-                                            mwrite.byte(part.sequence);
                                             mwrite.packed(part.ventid);
                                             break;
                                         case RPCID.ExitVent:

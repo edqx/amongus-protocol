@@ -171,7 +171,7 @@ export class PlayerControl extends Component {
 
             await this.client.awaitPayload(payload => 
                 payload.payloadid === PayloadID.GameData
-                && payload.parts.some(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetName));
+                && payload.parts.some(part => part.type === MessageID.RPC && part.handlerid === this.netid && part.rpcid === RPCID.SetName));
         }
     }
     

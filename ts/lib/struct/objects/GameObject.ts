@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import { AmongusClient } from "../../Client.js"
 import { PacketID, PayloadID, SpawnID } from "../../constants/Enums.js";
+import { UnlerpValue } from "../../util/Lerp.js";
 import { Component } from "../components/Component.js";
 
 export interface GameObject {
@@ -30,7 +31,7 @@ export class GameObject extends EventEmitter {
             const child = this.children.find(filter);
 
             if (child) {
-                return child;
+                resolve(child);
             }
 
             this.on("spawn", function onObject(object) {
@@ -39,6 +40,16 @@ export class GameObject extends EventEmitter {
                 resolve(object);
             });
         });
+    }
+
+    findChild(filter: (object: GameObject) => boolean): GameObject {
+        const child = this.children.find(filter);
+
+        if (child) {
+            return child;
+        }
+
+        return null;
     }
 
     isChild(child: GameObject): boolean {
