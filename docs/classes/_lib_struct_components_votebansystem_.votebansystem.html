@@ -105,6 +105,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="_lib_struct_components_votebansystem_.votebansystem.html#ondeserialize" class="tsd-kind-icon">On<wbr>Deserialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="_lib_struct_components_votebansystem_.votebansystem.html#onspawn" class="tsd-kind-icon">On<wbr>Spawn</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="_lib_struct_components_votebansystem_.votebansystem.html#serialize" class="tsd-kind-icon">Serialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_votebansystem_.votebansystem.html#addlistener" class="tsd-kind-icon">add<wbr>Listener</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_votebansystem_.votebansystem.html#emit" class="tsd-kind-icon">emit</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_votebansystem_.votebansystem.html#eventnames" class="tsd-kind-icon">event<wbr>Names</a></li>
@@ -131,14 +132,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Vote<wbr>Ban<wbr>System<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="_lib_client_.amongusclient.html" class="tsd-signature-type">AmongusClient</a>, netid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, datalen<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_lib_struct_components_votebansystem_.votebansystem.html" class="tsd-signature-type">VoteBanSystem</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Vote<wbr>Ban<wbr>System<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="_lib_client_.amongusclient.html" class="tsd-signature-type">AmongusClient</a>, netid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, datalen<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_lib_struct_components_votebansystem_.votebansystem.html" class="tsd-signature-type">VoteBanSystem</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/VoteBanSystem.ts#L16">ts/lib/struct/components/VoteBanSystem.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/VoteBanSystem.ts#L11">ts/lib/struct/components/VoteBanSystem.ts:11</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -150,10 +151,10 @@
 									<h5>netid: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>datalen: <span class="tsd-signature-type">number</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> datalen: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>data: <span class="tsd-signature-type">Buffer</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> data: <span class="tsd-signature-type">Buffer</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_lib_struct_components_votebansystem_.votebansystem.html" class="tsd-signature-type">VoteBanSystem</a></h4>
@@ -170,7 +171,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#classname">classname</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/VoteBanSystem.ts#L14">ts/lib/struct/components/VoteBanSystem.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/VoteBanSystem.ts#L9">ts/lib/struct/components/VoteBanSystem.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -181,7 +182,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#client">client</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/Component.ts#L10">ts/lib/struct/components/Component.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/Component.ts#L9">ts/lib/struct/components/Component.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -192,7 +193,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/VoteBanSystem.ts#L13">ts/lib/struct/components/VoteBanSystem.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/VoteBanSystem.ts#L8">ts/lib/struct/components/VoteBanSystem.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -203,7 +204,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#netid">netid</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/Component.ts#L10">ts/lib/struct/components/Component.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/Component.ts#L9">ts/lib/struct/components/Component.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -213,7 +214,7 @@
 					<div class="tsd-signature tsd-kind-icon">num_<wbr>votes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/VoteBanSystem.ts#L16">ts/lib/struct/components/VoteBanSystem.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/VoteBanSystem.ts#L11">ts/lib/struct/components/VoteBanSystem.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -231,7 +232,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#ondeserialize">OnDeserialize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/VoteBanSystem.ts#L28">ts/lib/struct/components/VoteBanSystem.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/VoteBanSystem.ts#L27">ts/lib/struct/components/VoteBanSystem.ts:27</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -258,7 +259,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#onspawn">OnSpawn</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/VoteBanSystem.ts#L24">ts/lib/struct/components/VoteBanSystem.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/VoteBanSystem.ts#L23">ts/lib/struct/components/VoteBanSystem.ts:23</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -271,6 +272,24 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+					<a name="serialize" class="tsd-anchor"></a>
+					<h3>Serialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">Serialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#serialize">Serialize</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/VoteBanSystem.ts#L31">ts/lib/struct/components/VoteBanSystem.ts:31</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Buffer</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -815,6 +834,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="_lib_struct_components_votebansystem_.votebansystem.html#onspawn" class="tsd-kind-icon">On<wbr>Spawn</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+								<a href="_lib_struct_components_votebansystem_.votebansystem.html#serialize" class="tsd-kind-icon">Serialize</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="_lib_struct_components_votebansystem_.votebansystem.html#addlistener" class="tsd-kind-icon">add<wbr>Listener</a>

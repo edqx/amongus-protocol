@@ -16,7 +16,8 @@ import {
     PayloadID,
     DistanceID,
     TaskBarUpdate,
-    MapID
+    MapID,
+    LanguageID
 } from "../constants/Enums.js"
 
 import {
@@ -39,43 +40,121 @@ import {
 
 export interface BaseGameOptionsData {
     length: packed;
+    /**
+     * The version of the options.
+     */
     version: byte;
+    /**
+     * The maximum number of players in the game.
+     */
     maxPlayers: uint8;
-    language: uint32;
-    mapID: byte;
+    /**
+     * The language of the game.
+     */
+    language: LanguageID;
+    /**
+     * The map ID of the game.
+     */
+    mapID: MapID;
+    /**
+     * The speed multiplier for the players.
+     */
     playerSpeed: float;
+    /**
+     * The vision multiplier for the crewmates.
+     */
     crewVision: float;
+    /**
+     * The vision multiplier for the imposters.
+     */
     imposterVision: float;
+    /**
+     * The required amount of time to wait between each kill.
+     */
     killCooldown: float;
+    /**
+     * The number of common tasks.
+     */
     commonTasks: uint8;
+    /**
+     * The number of long tasks.
+     */
     longTasks: uint8;
+    /**
+     * The number of short tasks.
+     */
     shortTasks: uint8;
+    /**
+     * The number of emergencies allowed for each player.
+     */
     emergencies: int32;
+    /**
+     * The number of imposters.
+     */
     imposterCount: uint8;
+    /**
+     * The maximum distance required to kill a player.
+     */
     killDistance: DistanceID;
+    /**
+     * The number of seconds to discuss before voting.
+     */
     discussionTime: int32;
+    /**
+     * The number of seconds allowed to vote.
+     */
     votingTime: int32;
+    /**
+     * Whether or not these settings are default.
+     */
     isDefault: boolean;
 }
 
 export interface GameOptionsDataV1 extends BaseGameOptionsData {
     version: 1;
+    /**
+     * The cooldown between each emergency call.
+     */
     emergencyCooldown: uint8;
 }
 
 export interface GameOptionsDataV2 extends BaseGameOptionsData {
     version: 2;
+    /**
+     * The cooldown between each emergency call.
+     */
     emergencyCooldown: uint8;
+    /**
+     * Whether or not the game tells you if you ejected the imposter.
+     */
     confirmEjects: boolean;
+    /**
+     * Whether or not certain tasks have a visual indicator to show that they are being done.
+     */
     visualTasks: boolean;
 }
 
 export interface GameOptionsDataV3 extends BaseGameOptionsData {
     version: 3;
+    /**
+     * The cooldown between each emergency call.
+     */
     emergencyCooldown: uint8;
+    /**
+     * Whether or not the game tells you if you ejected the imposter.
+     */
     confirmEjects: boolean;
+    /**
+     * Whether or not certain tasks have a visual indicator to show that they are being done.
+     */
     visualTasks: boolean;
+    /**
+     * Whether or not votes are tallied completely anonymously.
+     */
     anonymousVoting: boolean;
+    /**
+     * When the task bar should update.
+     */
     taskBarUpdates: TaskBarUpdate;
 }
 

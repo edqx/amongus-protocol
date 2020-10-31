@@ -54,13 +54,13 @@ export class PlayerClient extends GameObject {
     }
 
     awaitSpawn() {
-        return new Promise<void>(resolve => {
+        return new Promise<Player>(resolve => {
             if (this.Player) {
-                return resolve();
+                return resolve(this.Player);
             }
 
-            this.once("spawn", () => {
-                resolve();
+            this.once("spawn", player => {
+                resolve(player);
             });
         });
     }
@@ -138,6 +138,29 @@ export class PlayerClient extends GameObject {
                             playerid: this.Player.PlayerControl.playerId,
                             num_tasks: tasks.length,
                             tasks
+                        }
+                    ]
+                }
+            ]
+        });
+    }
+
+    /**
+     * @param task The index of the task as in PlayerClient.tasks.
+     */
+    async completeTask(task: number) {
+        await this.client.send({
+            op: PacketID.Reliable,
+            payloads: [
+                {
+                    payloadid: PayloadID.GameData,
+                    code: this.client.game.code,
+                    parts: [
+                        {
+                            type: MessageID.RPC,
+                            rpcid: RPCID.CompleteTask,
+                            handlerid: this.Player.PlayerControl.netid,
+                            taskid: task
                         }
                     ]
                 }

@@ -8,6 +8,10 @@ import {
     PlayerVoteAreaFlags
 } from "../../interfaces/Packets.js";
 
+export interface MeetingHud {
+    on(event: "update", listener: (states: Map<number, MeetingHudPlayerState>) => void);
+}
+
 export class MeetingHud extends Component {
     name: "MeetingHub";
     classname: "MeetingHud";
@@ -30,15 +34,19 @@ export class MeetingHud extends Component {
         for (let playerId = 0; playerId < datalen; playerId++) {
             const flags = reader.byte();
 
-            this.states.set(playerId, {
+            const state = {
                 flags,
                 playerId,
                 votedFor: flags & PlayerVoteAreaFlags.VotedFor,
                 reported: (flags & PlayerVoteAreaFlags.DidReport) !== 0,
                 voted: (flags & PlayerVoteAreaFlags.DidVote) !== 0,
                 dead: (flags & PlayerVoteAreaFlags.IsDead) !== 0
-            });
+            }
+
+            this.states.set(playerId, state);
         }
+        
+        this.emit("update", this.states);
     }
 
     OnDeserialize(datalen: number, data: Buffer): number {
@@ -46,20 +54,28 @@ export class MeetingHud extends Component {
         
         const updateMask = reader.packed();
 
+        const updated = new Map<number, MeetingHudPlayerState>();
+
         for (let playerId = 0; reader.offset < reader.size; playerId++) {
             const flags = reader.byte();
 
             if (((1 << playerId) & updateMask) !== 0) {
-                this.states.set(playerId, {
+                const state = {
                     flags,
                     playerId,
                     votedFor: flags & PlayerVoteAreaFlags.VotedFor,
                     reported: (flags & PlayerVoteAreaFlags.DidReport) !== 0,
                     voted: (flags & PlayerVoteAreaFlags.DidVote) !== 0,
                     dead: (flags & PlayerVoteAreaFlags.IsDead) !== 0
-                });
+                };
+
+                this.states.set(playerId, state);
+
+                updated.set(playerId, state);
             }
         }
+
+        this.emit("update", updated);
 
         return updateMask;
     }

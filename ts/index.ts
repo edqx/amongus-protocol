@@ -1,6 +1,9 @@
 export { AmongusClient } from "./lib/Client.js"
 export { AmongusServer } from "./lib/Server.js"
 
+export { Game } from "./lib/struct/Game.js"
+export { PlayerClient } from "./lib/struct/PlayerClient.js"
+
 export { DisconnectMessages } from "./lib/constants/DisconnectMessages.js"
 export * from "./lib/constants/Enums.js"
 export { MasterServers } from "./lib/constants/MasterServers.js"

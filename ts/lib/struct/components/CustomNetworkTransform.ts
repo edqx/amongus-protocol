@@ -41,6 +41,21 @@ export class CustomNetworkTransform extends Component {
         }
     }
 
+    SidGreater(newSid) {
+        if (this.sequence === null) {
+            return true;
+        }
+
+        const threshold = this.sequence + 0x7FFF;
+        const wrapped = threshold > 0xFFFF ? threshold - 0xFFFF : threshold;
+
+        if (wrapped > this.sequence) {
+            return newSid > this.sequence && newSid <= wrapped;
+        }
+
+        return newSid > this.sequence || newSid <= wrapped;
+    }
+
     OnSpawn(datalen: number, data: Buffer): void {
         return this.OnDeserialize(datalen, data);
     }
@@ -48,15 +63,13 @@ export class CustomNetworkTransform extends Component {
     OnDeserialize(datalen: number, data: Buffer): void {
         const reader = new BufferReader(data);
 
-        const sequence = reader.byte();
+        const sequence = reader.uint16LE();
 
-        if (this.sequence !== null && sequence < this.sequence) {
+        if (!this.SidGreater(sequence)) {
             return;
         }
 
         this.sequence = sequence;
-
-        reader.jump(0x01);
 
         this.position = {
             x: LerpValue(reader.uint16LE() / 65535, -40, 40),
@@ -74,8 +87,7 @@ export class CustomNetworkTransform extends Component {
     Serialize() {
         const writer = new BufferWriter;
 
-        writer.byte(this.sequence);
-        writer.byte(0x00);
+        writer.uint16LE(this.sequence);
         writer.uint16LE(UnlerpValue(this.position.x, -40, 40) * 65535);
         writer.uint16LE(UnlerpValue(this.position.y, -40, 40) * 65535);
         writer.uint16LE(UnlerpValue(this.velocity.x, -40, 40) * 65535);
@@ -87,8 +99,12 @@ export class CustomNetworkTransform extends Component {
     async move(position: Vector2, velocity: Vector2) {
         const data = new BufferWriter;
         this.sequence++;
-        data.uint8(this.sequence);
-        data.uint8(0x00);
+        
+        if (this.sequence > 0xFFFF) {
+            this.sequence -= 0x10000;
+        }
+
+        data.uint16LE(this.sequence);
         data.uint16LE(UnlerpValue(position.x, -40, 40) * 65535);
         data.uint16LE(UnlerpValue(position.y, -40, 40) * 65535);
         data.uint16LE(UnlerpValue(velocity.x, -40, 40) * 65535);

@@ -105,6 +105,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="_lib_struct_components_playercontrol_.playercontrol.html#ondeserialize" class="tsd-kind-icon">On<wbr>Deserialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="_lib_struct_components_playercontrol_.playercontrol.html#onspawn" class="tsd-kind-icon">On<wbr>Spawn</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="_lib_struct_components_playercontrol_.playercontrol.html#serialize" class="tsd-kind-icon">Serialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_playercontrol_.playercontrol.html#addlistener" class="tsd-kind-icon">add<wbr>Listener</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_lib_struct_components_playercontrol_.playercontrol.html#chat" class="tsd-kind-icon">chat</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_playercontrol_.playercontrol.html#emit" class="tsd-kind-icon">emit</a></li>
@@ -138,14 +139,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Player<wbr>Control<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="_lib_client_.amongusclient.html" class="tsd-signature-type">AmongusClient</a>, netid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, datalen<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_lib_struct_components_playercontrol_.playercontrol.html" class="tsd-signature-type">PlayerControl</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Player<wbr>Control<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="_lib_client_.amongusclient.html" class="tsd-signature-type">AmongusClient</a>, netid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, datalen<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_lib_struct_components_playercontrol_.playercontrol.html" class="tsd-signature-type">PlayerControl</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/PlayerControl.ts#L31">ts/lib/struct/components/PlayerControl.ts:31</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L31">ts/lib/struct/components/PlayerControl.ts:31</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -157,10 +158,10 @@
 									<h5>netid: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>datalen: <span class="tsd-signature-type">number</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> datalen: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>data: <span class="tsd-signature-type">Buffer</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> data: <span class="tsd-signature-type">Buffer</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_lib_struct_components_playercontrol_.playercontrol.html" class="tsd-signature-type">PlayerControl</a></h4>
@@ -177,7 +178,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#classname">classname</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/PlayerControl.ts#L29">ts/lib/struct/components/PlayerControl.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L29">ts/lib/struct/components/PlayerControl.ts:29</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -188,7 +189,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#client">client</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/Component.ts#L10">ts/lib/struct/components/Component.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/Component.ts#L9">ts/lib/struct/components/Component.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -199,7 +200,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/PlayerControl.ts#L28">ts/lib/struct/components/PlayerControl.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L28">ts/lib/struct/components/PlayerControl.ts:28</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -210,7 +211,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#netid">netid</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/Component.ts#L10">ts/lib/struct/components/Component.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/Component.ts#L9">ts/lib/struct/components/Component.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -220,7 +221,7 @@
 					<div class="tsd-signature tsd-kind-icon">player<wbr>Id<span class="tsd-signature-symbol">:</span> <a href="../modules/_lib_interfaces_types_.html#uint8" class="tsd-signature-type">uint8</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/PlayerControl.ts#L31">ts/lib/struct/components/PlayerControl.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L31">ts/lib/struct/components/PlayerControl.ts:31</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -238,7 +239,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#ondeserialize">OnDeserialize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/PlayerControl.ts#L50">ts/lib/struct/components/PlayerControl.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L52">ts/lib/struct/components/PlayerControl.ts:52</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -265,7 +266,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#onspawn">OnSpawn</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/PlayerControl.ts#L39">ts/lib/struct/components/PlayerControl.ts:39</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L41">ts/lib/struct/components/PlayerControl.ts:41</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -278,6 +279,30 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">PlayerControlOnSpawn</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+					<a name="serialize" class="tsd-anchor"></a>
+					<h3>Serialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">Serialize<span class="tsd-signature-symbol">(</span>isNew<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#serialize">Serialize</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L58">ts/lib/struct/components/PlayerControl.ts:58</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> isNew: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Buffer</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -336,7 +361,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/PlayerControl.ts#L190">ts/lib/struct/components/PlayerControl.ts:190</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L241">ts/lib/struct/components/PlayerControl.ts:241</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -470,7 +495,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/PlayerControl.ts#L56">ts/lib/struct/components/PlayerControl.ts:56</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L67">ts/lib/struct/components/PlayerControl.ts:67</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -811,7 +836,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/PlayerControl.ts#L77">ts/lib/struct/components/PlayerControl.ts:77</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L88">ts/lib/struct/components/PlayerControl.ts:88</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -834,7 +859,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/PlayerControl.ts#L127">ts/lib/struct/components/PlayerControl.ts:127</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L178">ts/lib/struct/components/PlayerControl.ts:178</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -881,7 +906,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/PlayerControl.ts#L102">ts/lib/struct/components/PlayerControl.ts:102</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L133">ts/lib/struct/components/PlayerControl.ts:133</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -904,7 +929,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/PlayerControl.ts#L169">ts/lib/struct/components/PlayerControl.ts:169</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L220">ts/lib/struct/components/PlayerControl.ts:220</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -927,7 +952,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/PlayerControl.ts#L148">ts/lib/struct/components/PlayerControl.ts:148</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/PlayerControl.ts#L199">ts/lib/struct/components/PlayerControl.ts:199</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -983,6 +1008,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="_lib_struct_components_playercontrol_.playercontrol.html#onspawn" class="tsd-kind-icon">On<wbr>Spawn</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+								<a href="_lib_struct_components_playercontrol_.playercontrol.html#serialize" class="tsd-kind-icon">Serialize</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="_lib_struct_components_playercontrol_.playercontrol.html#addlistener" class="tsd-kind-icon">add<wbr>Listener</a>

@@ -96,7 +96,9 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#children" class="tsd-kind-icon">children</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#client" class="tsd-kind-icon">client</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#components" class="tsd-kind-icon">components</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#id" class="tsd-kind-icon">id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#parent" class="tsd-kind-icon">parent</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#parentid" class="tsd-kind-icon">parentid</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#spawnid" class="tsd-kind-icon">spawnid</a></li>
 							</ul>
 						</section>
@@ -111,14 +113,16 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#addchild" class="tsd-kind-icon">add<wbr>Child</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#addlistener" class="tsd-kind-icon">add<wbr>Listener</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#awaitchild" class="tsd-kind-icon">await<wbr>Child</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#emit" class="tsd-kind-icon">emit</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#eventnames" class="tsd-kind-icon">event<wbr>Names</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#findchild" class="tsd-kind-icon">find<wbr>Child</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#getmaxlisteners" class="tsd-kind-icon">get<wbr>Max<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#ischild" class="tsd-kind-icon">is<wbr>Child</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#listenercount" class="tsd-kind-icon">listener<wbr>Count</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#listeners" class="tsd-kind-icon">listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#off" class="tsd-kind-icon">off</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#on" class="tsd-kind-icon">on</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#on" class="tsd-kind-icon">on</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#once" class="tsd-kind-icon">once</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#prependlistener" class="tsd-kind-icon">prepend<wbr>Listener</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#prependoncelistener" class="tsd-kind-icon">prepend<wbr>Once<wbr>Listener</a></li>
@@ -139,14 +143,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Lobby<wbr>Behaviour<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="_lib_client_.amongusclient.html" class="tsd-signature-type">AmongusClient</a>, parent<span class="tsd-signature-symbol">: </span><a href="_lib_struct_game_.game.html" class="tsd-signature-type">Game</a>, components<span class="tsd-signature-symbol">: </span><a href="../interfaces/_lib_interfaces_packets_.componentdata.html" class="tsd-signature-type">ComponentData</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html" class="tsd-signature-type">LobbyBehaviour</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Lobby<wbr>Behaviour<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="_lib_client_.amongusclient.html" class="tsd-signature-type">AmongusClient</a>, parent<span class="tsd-signature-symbol">: </span><a href="_lib_struct_game_.game.html" class="tsd-signature-type">Game</a>, components<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_lib_interfaces_packets_.componentdata.html" class="tsd-signature-type">ComponentData</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html" class="tsd-signature-type">LobbyBehaviour</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/objects/LobbyBehaviour.ts#L24">ts/lib/struct/objects/LobbyBehaviour.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/LobbyBehaviour.ts#L16">ts/lib/struct/objects/LobbyBehaviour.ts:16</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -158,7 +162,7 @@
 									<h5>parent: <a href="_lib_struct_game_.game.html" class="tsd-signature-type">Game</a></h5>
 								</li>
 								<li>
-									<h5>components: <a href="../interfaces/_lib_interfaces_packets_.componentdata.html" class="tsd-signature-type">ComponentData</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>components: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_lib_interfaces_packets_.componentdata.html" class="tsd-signature-type">ComponentData</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html" class="tsd-signature-type">LobbyBehaviour</a></h4>
@@ -175,7 +179,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#children">children</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/objects/GameObject.ts#L10">ts/lib/struct/objects/GameObject.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/GameObject.ts#L16">ts/lib/struct/objects/GameObject.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -186,7 +190,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#client">client</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/objects/GameObject.ts#L14">ts/lib/struct/objects/GameObject.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/GameObject.ts#L20">ts/lib/struct/objects/GameObject.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -197,7 +201,18 @@
 					<aside class="tsd-sources">
 						<p>Overrides <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#components">components</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/objects/LobbyBehaviour.ts#L24">ts/lib/struct/objects/LobbyBehaviour.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/LobbyBehaviour.ts#L16">ts/lib/struct/objects/LobbyBehaviour.ts:16</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+					<a name="id" class="tsd-anchor"></a>
+					<h3>id</h3>
+					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#id">id</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/GameObject.ts#L12">ts/lib/struct/objects/GameObject.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -208,7 +223,18 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#parent">parent</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/objects/GameObject.ts#L11">ts/lib/struct/objects/GameObject.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/GameObject.ts#L17">ts/lib/struct/objects/GameObject.ts:17</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+					<a name="parentid" class="tsd-anchor"></a>
+					<h3>parentid</h3>
+					<div class="tsd-signature tsd-kind-icon">parentid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#parentid">parentid</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/GameObject.ts#L14">ts/lib/struct/objects/GameObject.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -219,7 +245,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#spawnid">spawnid</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/objects/LobbyBehaviour.ts#L23">ts/lib/struct/objects/LobbyBehaviour.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/LobbyBehaviour.ts#L15">ts/lib/struct/objects/LobbyBehaviour.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -236,7 +262,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/objects/LobbyBehaviour.ts#L38">ts/lib/struct/objects/LobbyBehaviour.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/LobbyBehaviour.ts#L32">ts/lib/struct/objects/LobbyBehaviour.ts:32</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="_lib_struct_components_lobbybehaviour_.lobbybehaviour.html" class="tsd-signature-type">LobbyBehaviour</a></h4>
@@ -257,7 +283,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#addchild">addChild</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/objects/GameObject.ts#L41">ts/lib/struct/objects/GameObject.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/GameObject.ts#L75">ts/lib/struct/objects/GameObject.ts:75</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -316,6 +342,48 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="awaitchild" class="tsd-anchor"></a>
+					<h3>await<wbr>Child</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">await<wbr>Child<span class="tsd-signature-symbol">(</span>filter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#awaitchild">awaitChild</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/GameObject.ts#L29">ts/lib/struct/objects/GameObject.ts:29</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>filter: <span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>object: <a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a name="emit" class="tsd-anchor"></a>
 					<h3>emit</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
@@ -361,6 +429,48 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="findchild" class="tsd-anchor"></a>
+					<h3>find<wbr>Child</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">find<wbr>Child<span class="tsd-signature-symbol">(</span>filter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#findchild">findChild</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/GameObject.ts#L45">ts/lib/struct/objects/GameObject.ts:45</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>filter: <span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>object: <a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a name="getmaxlisteners" class="tsd-anchor"></a>
 					<h3>get<wbr>Max<wbr>Listeners</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
@@ -389,7 +499,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#ischild">isChild</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/objects/GameObject.ts#L21">ts/lib/struct/objects/GameObject.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/GameObject.ts#L55">ts/lib/struct/objects/GameObject.ts:55</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -495,38 +605,39 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 					<a name="on" class="tsd-anchor"></a>
 					<h3>on</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"spawn"</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#on">on</a></p>
+								<p>Inherited from <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#on">on</a></p>
+								<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#on">on</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/node/events.d.ts:63</li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/GameObject.ts#L8">ts/lib/struct/objects/GameObject.ts:8</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>event: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span></h5>
+									<h5>event: <span class="tsd-signature-type">"spawn"</span></h5>
 								</li>
 								<li>
-									<h5>listener: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<h5>listener: <span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
 														<li>
-															<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+															<h5>object: <a href="_lib_struct_objects_gameobject_.gameobject.html" class="tsd-signature-type">GameObject</a></h5>
 														</li>
 													</ul>
 													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -536,7 +647,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -734,7 +845,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#removechild">removeChild</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/objects/GameObject.ts#L31">ts/lib/struct/objects/GameObject.ts:31</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/GameObject.ts#L65">ts/lib/struct/objects/GameObject.ts:65</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -827,7 +938,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_lib_struct_objects_gameobject_.gameobject.html">GameObject</a>.<a href="_lib_struct_objects_gameobject_.gameobject.html#setparent">setParent</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/objects/GameObject.ts#L48">ts/lib/struct/objects/GameObject.ts:48</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/objects/GameObject.ts#L82">ts/lib/struct/objects/GameObject.ts:82</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -873,7 +984,13 @@
 								<a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#components" class="tsd-kind-icon">components</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+								<a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#id" class="tsd-kind-icon">id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 								<a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#parent" class="tsd-kind-icon">parent</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+								<a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#parentid" class="tsd-kind-icon">parentid</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
 								<a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#spawnid" class="tsd-kind-icon">spawnid</a>
@@ -888,10 +1005,16 @@
 								<a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#addlistener" class="tsd-kind-icon">add<wbr>Listener</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#awaitchild" class="tsd-kind-icon">await<wbr>Child</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#emit" class="tsd-kind-icon">emit</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#eventnames" class="tsd-kind-icon">event<wbr>Names</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#findchild" class="tsd-kind-icon">find<wbr>Child</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#getmaxlisteners" class="tsd-kind-icon">get<wbr>Max<wbr>Listeners</a>
@@ -908,7 +1031,7 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#off" class="tsd-kind-icon">off</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 								<a href="_lib_struct_objects_lobbybehaviour_.lobbybehaviour.html#on" class="tsd-kind-icon">on</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">

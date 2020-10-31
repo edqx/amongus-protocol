@@ -105,6 +105,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="_lib_struct_components_meetinghud_.meetinghud.html#ondeserialize" class="tsd-kind-icon">On<wbr>Deserialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="_lib_struct_components_meetinghud_.meetinghud.html#onspawn" class="tsd-kind-icon">On<wbr>Spawn</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_meetinghud_.meetinghud.html#serialize" class="tsd-kind-icon">Serialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_meetinghud_.meetinghud.html#addlistener" class="tsd-kind-icon">add<wbr>Listener</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_meetinghud_.meetinghud.html#emit" class="tsd-kind-icon">emit</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_meetinghud_.meetinghud.html#eventnames" class="tsd-kind-icon">event<wbr>Names</a></li>
@@ -112,7 +113,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_meetinghud_.meetinghud.html#listenercount" class="tsd-kind-icon">listener<wbr>Count</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_meetinghud_.meetinghud.html#listeners" class="tsd-kind-icon">listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_meetinghud_.meetinghud.html#off" class="tsd-kind-icon">off</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_meetinghud_.meetinghud.html#on" class="tsd-kind-icon">on</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="_lib_struct_components_meetinghud_.meetinghud.html#on" class="tsd-kind-icon">on</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_meetinghud_.meetinghud.html#once" class="tsd-kind-icon">once</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_meetinghud_.meetinghud.html#prependlistener" class="tsd-kind-icon">prepend<wbr>Listener</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_lib_struct_components_meetinghud_.meetinghud.html#prependoncelistener" class="tsd-kind-icon">prepend<wbr>Once<wbr>Listener</a></li>
@@ -131,14 +132,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Meeting<wbr>Hud<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="_lib_client_.amongusclient.html" class="tsd-signature-type">AmongusClient</a>, netid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, datalen<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_lib_struct_components_meetinghud_.meetinghud.html" class="tsd-signature-type">MeetingHud</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Meeting<wbr>Hud<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="_lib_client_.amongusclient.html" class="tsd-signature-type">AmongusClient</a>, netid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, datalen<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_lib_struct_components_meetinghud_.meetinghud.html" class="tsd-signature-type">MeetingHud</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/MeetingHud.ts#L22">ts/lib/struct/components/MeetingHud.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/MeetingHud.ts#L19">ts/lib/struct/components/MeetingHud.ts:19</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -150,10 +151,10 @@
 									<h5>netid: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>datalen: <span class="tsd-signature-type">number</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> datalen: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>data: <span class="tsd-signature-type">Buffer</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> data: <span class="tsd-signature-type">Buffer</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_lib_struct_components_meetinghud_.meetinghud.html" class="tsd-signature-type">MeetingHud</a></h4>
@@ -170,7 +171,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#classname">classname</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/MeetingHud.ts#L20">ts/lib/struct/components/MeetingHud.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/MeetingHud.ts#L17">ts/lib/struct/components/MeetingHud.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -181,7 +182,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#client">client</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/Component.ts#L10">ts/lib/struct/components/Component.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/Component.ts#L9">ts/lib/struct/components/Component.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -192,7 +193,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/MeetingHud.ts#L19">ts/lib/struct/components/MeetingHud.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/MeetingHud.ts#L16">ts/lib/struct/components/MeetingHud.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -203,27 +204,19 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#netid">netid</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/Component.ts#L10">ts/lib/struct/components/Component.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/Component.ts#L9">ts/lib/struct/components/Component.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="states" class="tsd-anchor"></a>
 					<h3>states</h3>
-					<div class="tsd-signature tsd-kind-icon">states<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
+					<div class="tsd-signature tsd-kind-icon">states<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/_lib_interfaces_packets_.meetinghudplayerstate.html" class="tsd-signature-type">MeetingHudPlayerState</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/MeetingHud.ts#L22">ts/lib/struct/components/MeetingHud.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/MeetingHud.ts#L19">ts/lib/struct/components/MeetingHud.ts:19</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-index-signature">
-								<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]: </span><a href="../interfaces/_lib_interfaces_packets_.meetinghudplayerstate.html" class="tsd-signature-type">MeetingHudPlayerState</a></h5>
-							</li>
-						</ul>
-					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -239,7 +232,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#ondeserialize">OnDeserialize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/MeetingHud.ts#L47">ts/lib/struct/components/MeetingHud.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/MeetingHud.ts#L52">ts/lib/struct/components/MeetingHud.ts:52</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -266,7 +259,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#onspawn">OnSpawn</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/23488ad/ts/lib/struct/components/MeetingHud.ts#L30">ts/lib/struct/components/MeetingHud.ts:30</a></li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/MeetingHud.ts#L31">ts/lib/struct/components/MeetingHud.ts:31</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -279,6 +272,30 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="serialize" class="tsd-anchor"></a>
+					<h3>Serialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">Serialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#serialize">Serialize</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/Component.ts#L16">ts/lib/struct/components/Component.ts:16</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Buffer</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -483,38 +500,38 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<a name="on" class="tsd-anchor"></a>
 					<h3>on</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"update"</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>states<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/_lib_interfaces_packets_.meetinghudplayerstate.html" class="tsd-signature-type">MeetingHudPlayerState</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#on">on</a></p>
+								<p>Overrides <a href="_lib_struct_components_component_.component.html">Component</a>.<a href="_lib_struct_components_component_.component.html#on">on</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/node/events.d.ts:63</li>
+									<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/83ec1f4/ts/lib/struct/components/MeetingHud.ts#L12">ts/lib/struct/components/MeetingHud.ts:12</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>event: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span></h5>
+									<h5>event: <span class="tsd-signature-type">"update"</span></h5>
 								</li>
 								<li>
-									<h5>listener: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<h5>listener: <span class="tsd-signature-symbol">(</span>states<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/_lib_interfaces_packets_.meetinghudplayerstate.html" class="tsd-signature-type">MeetingHudPlayerState</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>states<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/_lib_interfaces_packets_.meetinghudplayerstate.html" class="tsd-signature-type">MeetingHudPlayerState</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
 														<li>
-															<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+															<h5>states: <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/_lib_interfaces_packets_.meetinghudplayerstate.html" class="tsd-signature-type">MeetingHudPlayerState</a><span class="tsd-signature-symbol">&gt;</span></h5>
 														</li>
 													</ul>
 													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -524,7 +541,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -825,6 +842,9 @@
 								<a href="_lib_struct_components_meetinghud_.meetinghud.html#onspawn" class="tsd-kind-icon">On<wbr>Spawn</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_lib_struct_components_meetinghud_.meetinghud.html#serialize" class="tsd-kind-icon">Serialize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="_lib_struct_components_meetinghud_.meetinghud.html#addlistener" class="tsd-kind-icon">add<wbr>Listener</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
@@ -845,7 +865,7 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="_lib_struct_components_meetinghud_.meetinghud.html#off" class="tsd-kind-icon">off</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="_lib_struct_components_meetinghud_.meetinghud.html#on" class="tsd-kind-icon">on</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">

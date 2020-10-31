@@ -50,17 +50,38 @@ export class Game extends GameObject {
     code: number;
     hostid: number;
 
+    /**
+     * The clients connected to the game, not necessarily spawned.
+     */
     clients: Map<number, PlayerClient>;
+
+    /**
+     * A shortcut for all components in the game, all with unique net IDs.
+     */
     netcomponents: Map<number, Component>;
 
+    /**
+     * When the game was instantiated.
+     */
     instantiated: number;
 
     startCount: number;
     startCounterSeq: number;
     started: boolean;
+
+    /**
+     * The imposters in the game.
+     */
     imposters: PlayerClient[];
 
+    /**
+     * The options fo the game, not necessarily synced, use the `sync` event.
+     */
     options: GameOptionsData;
+
+    /**
+     * The visibility of the game.
+     */
     visibility: "private"|"public";
 
     constructor(protected client: AmongusClient, ip: string, port: number, code: number, hostid: number, clients: number[]) {
@@ -103,6 +124,10 @@ export class Game extends GameObject {
         this.emit("spawn", object);
     }
 
+    async awaitSpawns() {
+        return await Promise.all([...this.clients.values()].map(client => client.awaitSpawn()));
+    }
+
     get GameData(): GameData {
         return this.children.find(child => child instanceof GameData) as GameData;
     }
@@ -131,9 +156,9 @@ export class Game extends GameObject {
                     }
                 ]
             });
+            
+            this._syncSettings(options);
         }
-
-        this._syncSettings(options);
     }
 
     _setImposters(imposters: number[]) {
@@ -161,9 +186,9 @@ export class Game extends GameObject {
                     }
                 ]
             });
+            
+            this._setImposters(imposters);
         }
-
-        this._setImposters(imposters);
     }
 
     _setVisibility(visibility: "private"|"public") {
@@ -184,9 +209,9 @@ export class Game extends GameObject {
                     }
                 ]
             });
+            
+            this._setVisibility(visibility);
         }
-
-        this._setVisibility(visibility);
     }
 
     _setStartCounter(sequence: number, counter: number = -1) {
@@ -221,9 +246,9 @@ export class Game extends GameObject {
                     }
                 ]
             });
+            
+            this._setStartCounter(sequence, counter);
         }
-
-        this._setStartCounter(sequence, counter);
     }
 
     _playerJoin(clientid: number) {
@@ -296,9 +321,9 @@ export class Game extends GameObject {
                     }
                 ]
             });*/
+            
+            this._sceneChange(clientid, location);
         }
-
-        this._sceneChange(clientid, location);
     }
 
     _start() {
@@ -347,6 +372,9 @@ export class Game extends GameObject {
         return components.length ? components : null;
     }
 
+    /**
+     * Find a player by their name.
+     */
     findPlayer(username: string) {
         for (let [clientid, client] of this.clients) {
             if (!client.Player || client.removed) continue;
@@ -361,6 +389,9 @@ export class Game extends GameObject {
         return null;
     }
 
+    /**
+     * Get a player by their player ID.
+     */
     getPlayer(playerid: number) {
         for (let [clientid, client] of this.clients) {
             if (!client.Player || client.removed) continue;
@@ -373,6 +404,9 @@ export class Game extends GameObject {
         return null;
     }
 
+    /**
+     * Get a player by their PlayerControl component's network ID.
+     */
     getPlayerByNetID(netid: number) {
         for (let [clientid, client] of this.clients) {
             if (!client.Player || client.removed) continue;

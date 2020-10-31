@@ -265,7 +265,7 @@ export class AmongusClient extends EventEmitter {
                                                             this.game._syncSettings(part.options);
                                                             break
                                                         case RPCID.SetInfected:
-                                                            this.game.setImposters(part.infected);
+                                                            this.game._setImposters(part.infected);
                                                             break;
                                                         case RPCID.MurderPlayer: {
                                                             const client = this.game.getPlayerByNetID(part.targetnetid);
