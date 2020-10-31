@@ -424,7 +424,7 @@ export class AmongusServer extends EventEmitter {
      * Broadcast a packet to specified remotes, or every remote.
      */
     async broadcast(packet: Packet, remotes: RemoteID[] = [...this.clients.values()]) {
-        await Promise.allSettled(remotes.map(remote => this.send(remote, packet)));
+        // await Promise.allSettled(remotes.map(remote => this.send(remote, packet)));
     }
 
     /**

@@ -257,7 +257,7 @@ export class Game extends GameObject {
 
             // Perhaps the worst code I have ever written.
             // V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V
-            const player_objects = (await Promise.allSettled([...this.clients.values()].map(client => {
+            /*const player_objects = (await Promise.allSettled([...this.clients.values()].map(client => {
                 if (client.clientid === clientid) return Promise.resolve();
 
                 return client.awaitChild(object => object instanceof Player);
@@ -295,7 +295,7 @@ export class Game extends GameObject {
                         })
                     }
                 ]
-            });
+            });*/
         }
 
         this._sceneChange(clientid, location);
