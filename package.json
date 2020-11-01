@@ -1,6 +1,6 @@
 {
   "name": "amongus-protocol",
-  "version": "1.1.14",
+  "version": "1.1.15",
   "description": "A recreated Among Us protocol implemented in Typescript.",
   "repository": "https://github.com/edqx/amongus-protocol",
   "main": "js/index.js",
@@ -8,10 +8,6 @@
     "build": "tsc -p .",
     "load": "node --loader ts-node/esm",
     "test": "npm run load ts/test/main.ts",
-    "test:search": "npm run load ts/test/search.ts",
-    "test:knowledge": "npm run load ts/test/knowledge.ts",
-    "test:server": "npm run load ts/test/server.ts",
-    "test:host": "npm run load ts/test/host.ts",
     "docs": "typedoc --out docs --mode modules --excludePrivate --excludeNotExported --plugin typedoc-plugin-nojekyll ts/lib",
     "parse": "npm run load ts/script/parse.ts",
     "compose": "npm run load ts/script/compose.ts",
