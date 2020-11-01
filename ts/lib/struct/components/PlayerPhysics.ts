@@ -1,13 +1,6 @@
 import { AmongusClient } from "../../Client.js"
 
 import { Component } from "./Component.js"
-import { BufferReader } from "../../util/BufferReader.js"
-
-import {
-    uint8
-} from "../../interfaces/Types.js"
-
-import { Game } from "../Game.js";
 
 export class PlayerPhysics extends Component {
     name: "Player";

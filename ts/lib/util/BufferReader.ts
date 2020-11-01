@@ -46,6 +46,13 @@ export class BufferReader {
     slice(start?: number, len?: number): BufferReader {
         return new BufferReader(this.buffer.slice(start, len));
     }
+
+    /**
+     * The number of bytes left in the buffer.
+     */
+    get left() {
+        return this.size - this.offset;
+    }
     
     /**
      * The size of the buffer in bytes.
@@ -303,10 +310,10 @@ export class BufferReader {
     /**
      * Create a list of a structure.
      */
-    list<T>(fn: (struct: BufferReader) => T, length: number): T[] {
+    list<T>(fn: (struct: BufferReader) => T, length?: number): T[] {
         const items: T[] = [];
 
-        for (let i = 0; i < length; i++) {
+        for (let i = 0; typeof length === "undefined" ? this.offset < this.size : i < length; i++) {
             const reader = this.slice(this.offset);
 
             const struct: T = fn(reader);

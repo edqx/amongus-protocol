@@ -4,19 +4,19 @@ import { Component } from "./Component.js"
 import { BufferReader } from "../../util/BufferReader.js"
 
 import {
-    MeetingHudPlayerState,
+    VotePlayerState,
     PlayerVoteAreaFlags
 } from "../../interfaces/Packets.js";
 
 export interface MeetingHud {
-    on(event: "update", listener: (states: Map<number, MeetingHudPlayerState>) => void);
+    on(event: "update", listener: (states: Map<number, VotePlayerState>) => void);
 }
 
 export class MeetingHud extends Component {
     name: "MeetingHub";
     classname: "MeetingHud";
 
-    states: Map<number, MeetingHudPlayerState>
+    states: Map<number, VotePlayerState>
 
     constructor(client: AmongusClient, netid: number, datalen?: number, data?: Buffer) {
         super(client, netid);
@@ -57,7 +57,7 @@ export class MeetingHud extends Component {
         
         const updateMask = reader.packed();
 
-        const updated = new Map<number, MeetingHudPlayerState>();
+        const updated = new Map<number, VotePlayerState>();
 
         for (let playerId = 0; reader.offset < reader.size; playerId++) {
             const flags = reader.byte();

@@ -514,7 +514,7 @@ export enum PlayerVoteAreaFlags {
     IsDead = 0x80
 }
 
-export interface MeetingHudPlayerState {
+export interface VotePlayerState {
     flags: PlayerVoteAreaFlags;
     playerId: number;
     votedFor: uint8;

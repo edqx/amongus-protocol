@@ -13,7 +13,9 @@ import {
     Packet,
     Payload,
     GameOptionsData,
-    GameListClientBoundTag
+    GameListClientBoundTag,
+    VotePlayerState,
+    PlayerVoteAreaFlags
 } from "./interfaces/Packets.js"
 
 import {
@@ -36,16 +38,16 @@ import { PlayerClient } from "./struct/PlayerClient.js"
 import { bitfield } from "./interfaces/Types.js"
 import { JoinOptions } from "./interfaces/JoinOptions.js"
 
-import { Player } from "./struct/objects/Player.js"
 import { GameData } from "./struct/objects/GameData.js"
 import { LobbyBehaviour } from "./struct/objects/LobbyBehaviour.js"
-
-import { FollowerCamera } from "./struct/components/FollowerCamera.js"
-import { GameData as GameDataComponent } from "./struct/components/GameData.js"
-import { VoteBanSystem } from "./struct/components/VoteBanSystem.js"
+import { MeetingHub } from "./struct/objects/MeetingHub.js"
+import { Player } from "./struct/objects/Player.js"
+import { ShipStatus } from "./struct/objects/ShipStatus.js"
+import { HeadQuarters } from "./struct/objects/HeadQuarters.js"
+import { PlanetMap } from "./struct/objects/PlanetMap.js"
+import { AprilShipStatus } from "./struct/objects/AprilShipStatus.js"
 
 import { ClientOptions } from "./interfaces/ClientOptions.js"
-import { MeetingHub } from "./struct/objects/MeetingHub.js"
 
 export declare interface AmongusClient {
     on(event: "packet", listener: (packet: Packet) => void);
@@ -297,6 +299,23 @@ export class AmongusClient extends EventEmitter {
                                                             }
                                                             break;
                                                         case RPCID.VotingComplete:
+                                                            const states: Map<number, VotePlayerState> = new Map;
+
+                                                            for (let playerId = 0; playerId < part.states.length; playerId++) {
+                                                                const flags = part.states[playerId];
+
+                                                                const state = {
+                                                                    flags,
+                                                                    playerId,
+                                                                    votedFor: flags & PlayerVoteAreaFlags.VotedFor,
+                                                                    reported: (flags & PlayerVoteAreaFlags.DidReport) !== 0,
+                                                                    voted: (flags & PlayerVoteAreaFlags.DidVote) !== 0,
+                                                                    dead: (flags & PlayerVoteAreaFlags.IsDead) !== 0
+                                                                }
+
+                                                                states.set(playerId, state);
+                                                            }
+
                                                             if (part.tie) {
                                                                 this.game.emit("votingComplete", false, true, null);
                                                             } else if (part.exiled === 0xFF) {
@@ -313,6 +332,8 @@ export class AmongusClient extends EventEmitter {
                                                             client.emit("vote", suspect);
                                                             break;
                                                         }
+                                                        case RPCID.SendChatNote:
+                                                            break;
                                                         case RPCID.SetTasks:
                                                             const client = this.game.getPlayer(part.playerid);
 
@@ -330,7 +351,7 @@ export class AmongusClient extends EventEmitter {
                                                 case MessageID.Spawn:
                                                     switch (part.spawnid) {
                                                         case SpawnID.ShipStatus:
-                                                            // new ShipStatus(this, this.game, part.components);
+                                                            new ShipStatus(this, this.game, part.components);
                                                             break;
                                                         case SpawnID.MeetingHub:
                                                             new MeetingHub(this, this.game, part.components);
@@ -347,13 +368,13 @@ export class AmongusClient extends EventEmitter {
                                                             new Player(this, playerclient, part.components);
                                                             break;
                                                         case SpawnID.HeadQuarters:
-                                                            // new HeadQuarters(this, this.game, part.components);
+                                                            new HeadQuarters(this, this.game, part.components);
                                                             break;
                                                         case SpawnID.PlanetMap:
-                                                            // new PlanetMap(this, this.game, part.components);
+                                                            new PlanetMap(this, this.game, part.components);
                                                             break;
                                                         case SpawnID.AprilShipStatus:
-                                                            // new AprilShipStatus(this, this.game, part.components);
+                                                            new AprilShipStatus(this, this.game, part.components);
                                                             break;
                                                     }
                                                     break;

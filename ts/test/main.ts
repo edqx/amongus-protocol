@@ -49,10 +49,10 @@ function format_array(arr: any[]): string {
     });
 
     game.on("start", () => {
-        setTimeout(async function () {
+        /*setTimeout(async function () {
             console.log("Completing all " + game.me.tasks.length + " tasks");
             for (let i = 0; i < game.me.tasks.length; i++) await game.me.completeTask(i);
-        }, 7500);
+        }, 7500);*/
     });
 
     game.on("startMeeting", (emergency, target) => {

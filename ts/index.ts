@@ -23,6 +23,8 @@ export { getFloat16, getFloat32 } from "./lib/util/Float16.js"
 export { LerpValue, UnlerpValue } from "./lib/util/Lerp.js"
 export { EncodeVersion, DecodeVersion } from "./lib/util/Versions.js"
 
+export { ServerInfo, RegionInfo } from "./lib/interfaces/RegionInfo.js"
+
 export { composePacket } from "./lib/Compose.js"
 export { parsePacket } from "./lib/Parser.js"
 

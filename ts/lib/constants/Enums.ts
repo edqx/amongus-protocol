@@ -197,6 +197,14 @@ export enum SystemType {
     Greenhouse = 0x18
 }
 
+export enum DeconState {
+    Idle = 0x00,
+    Enter = 0x01,
+    Closed = 0x02,
+    Exit = 0x04,
+    HeadingUp = 0x08
+}
+
 export enum MapID {
     TheSkeld = 0x00,
     MiraHQ = 0x01,
