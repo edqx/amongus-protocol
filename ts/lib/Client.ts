@@ -40,7 +40,7 @@ import { Player } from "./struct/objects/Player.js"
 import { GameData } from "./struct/objects/GameData.js"
 import { LobbyBehaviour } from "./struct/objects/LobbyBehaviour.js"
 
-import { LobbyBehaviour as LobbyBehaviourComponent } from "./struct/components/LobbyBehaviour.js"
+import { FollowerCamera } from "./struct/components/FollowerCamera.js"
 import { GameData as GameDataComponent } from "./struct/components/GameData.js"
 import { VoteBanSystem } from "./struct/components/VoteBanSystem.js"
 

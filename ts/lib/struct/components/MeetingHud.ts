@@ -20,6 +20,9 @@ export class MeetingHud extends Component {
 
     constructor(client: AmongusClient, netid: number, datalen?: number, data?: Buffer) {
         super(client, netid);
+        
+        this.name = "MeetingHub";
+        this.classname = "MeetingHud";
 
         this.states = new Map;
 

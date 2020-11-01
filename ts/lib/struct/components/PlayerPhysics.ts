@@ -16,6 +16,8 @@ export class PlayerPhysics extends Component {
     constructor(client: AmongusClient, netid: number, datalen?: number, data?: Buffer) {
         super(client, netid);
 
+        this.name = "Player";
+        this.classname = "PlayerPhysics";
         
         if (typeof datalen !== "undefined" && typeof data !== "undefined") {
             this.OnSpawn(datalen, data);

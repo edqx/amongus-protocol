@@ -303,7 +303,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                             case RPCID.ClearVote:
                                                 break;
                                             case RPCID.AddVote:
-                                                part.playerid = reader.uint8();
+                                                part.targetid = reader.uint8();
                                                 break;
                                             case RPCID.CloseDoorsOfType:
                                                 part.systemtype = reader.uint8();

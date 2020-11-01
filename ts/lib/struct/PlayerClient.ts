@@ -20,7 +20,6 @@ import {
 
 import { PlayerTaskState, SceneChangeLocation } from "../interfaces/Packets.js"
 import { GameObject } from "./objects/GameObject.js"
-import { GameData } from "./objects/GameData.js"
 import { MeetingHub } from "./objects/MeetingHub.js"
 
 export interface PlayerClient {
@@ -192,6 +191,32 @@ export class PlayerClient extends GameObject {
                         }
                     ]
                 });
+            }
+        }
+    }
+
+    async voteKick(player: PlayerClient) {
+        if (this.Player && !this.removed) {
+            const gamedata = this.client.game.GameData;
+
+            if (gamedata) {
+                await this.client.send({
+                    op: PacketID.Reliable,
+                    payloads: [
+                        {
+                            payloadid: PayloadID.GameData,
+                            code: this.client.game.code,
+                            parts: [
+                                {
+                                    type: MessageID.RPC,
+                                    rpcid: RPCID.AddVote,
+                                    handlerid: gamedata.VoteBanSystem.netid,
+                                    targetid: player.Player.PlayerControl.playerId
+                                }
+                            ]
+                        }
+                    ]
+                })
             }
         }
     }

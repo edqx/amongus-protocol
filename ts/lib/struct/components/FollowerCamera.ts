@@ -2,13 +2,15 @@ import { AmongusClient } from "../../Client.js"
 
 import { Component } from "./Component.js"
 
-export class LobbyBehaviour extends Component {
+export class FollowerCamera extends Component {
     name: "LobbyBehaviour";
-    classname: "LobbyBehaviour";
+    classname: "FollowerCamera";
 
     constructor(client: AmongusClient, netid: number, datalen?: number, data?: Buffer) {
         super(client, netid);
 
+        this.name = "LobbyBehaviour";
+        this.classname = "FollowerCamera";
         
         if (typeof datalen !== "undefined" && typeof data !== "undefined") {
             this.OnSpawn(datalen, data);

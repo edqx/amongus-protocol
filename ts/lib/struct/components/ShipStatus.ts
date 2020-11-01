@@ -20,6 +20,8 @@ export class ShipStatus extends Component {
     constructor(client: AmongusClient, netid: number, datalen?: number, data?: Buffer) {
         super(client, netid);
 
+        this.name = "ShipStatus";
+        this.classname = "ShipStatus";
         
         if (typeof datalen !== "undefined" && typeof data !== "undefined") {
             this.OnSpawn(datalen, data);

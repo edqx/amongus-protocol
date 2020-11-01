@@ -313,6 +313,11 @@ export enum SpawnID {
     AprilShipStatus = 0x07
 }
 
+export enum SpawnFlag {
+    None = 0x00,
+    PlayerControl = 0x01
+}
+
 export enum TaskID {
     SubmitScan = 0x00,
     PrimeShields = 0x01,

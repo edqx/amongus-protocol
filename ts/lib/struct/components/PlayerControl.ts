@@ -32,6 +32,9 @@ export class PlayerControl extends Component {
 
     constructor(client: AmongusClient, netid: number, datalen?: number, data?: Buffer) {
         super(client, netid);
+
+        this.name = "Player";
+        this.classname = "PlayerControl";
         
         if (typeof datalen !== "undefined" && typeof data !== "undefined") {
             this.OnSpawn(datalen, data);

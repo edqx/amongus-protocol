@@ -17,7 +17,8 @@ import {
     DistanceID,
     TaskBarUpdate,
     MapID,
-    LanguageID
+    LanguageID,
+    SpawnFlag
 } from "../constants/Enums.js"
 
 import {
@@ -421,7 +422,7 @@ export interface RPCClearVote extends RPC {
 
 export interface RPCAddVote extends RPC {
     rpcid: RPCID.AddVote;
-    playerid: uint8;
+    targetid: uint8;
 }
 
 export interface RPCCloseDoorsOfType extends RPC {
@@ -533,7 +534,7 @@ export interface ObjectSpawn extends Message {
     type: MessageID.Spawn;
     spawnid: SpawnID;
     ownerid: packed;
-    flags: bitfield;
+    flags: SpawnFlag;
     num_components: packed;
     components: ComponentData[];
 }

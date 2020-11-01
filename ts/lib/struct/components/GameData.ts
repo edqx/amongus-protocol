@@ -23,6 +23,9 @@ export class GameData extends Component {
 
     constructor(client: AmongusClient, netid: number, datalen?: number, data?: Buffer) {
         super(client, netid);
+        
+        this.name = "GameData";
+        this.classname = "GameData";
 
         this.num_players = null;
         this.players = new Map;

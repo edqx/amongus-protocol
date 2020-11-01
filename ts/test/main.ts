@@ -32,7 +32,7 @@ function format_array(arr: any[]): string {
         debug: false
     });
 
-    const servers = MasterServers.EU[0];
+    const servers = MasterServers.NA[0];
 
     await client.connect(servers[0], servers[1], "weakeyes");
 
@@ -49,8 +49,9 @@ function format_array(arr: any[]): string {
     });
 
     game.on("start", () => {
-        setTimeout(function () {
-            for (let i = 0; i < game.me.tasks.length; i++) game.me.completeTask(game.me.tasks[i]);
+        setTimeout(async function () {
+            console.log("Completing all " + game.me.tasks.length + " tasks");
+            for (let i = 0; i < game.me.tasks.length; i++) await game.me.completeTask(i);
         }, 7500);
     });
 
@@ -63,12 +64,5 @@ function format_array(arr: any[]): string {
 
             game.me.vote(game.imposters[Math.floor(Math.random() * game.imposters.length)]);
         }, (game.options.discussionTime * 1000) + 5000);
-    });
-
-    const weakeyes = game.findPlayer("weakeyes");
-
-    weakeyes.Player.CustomNetworkTransform.on("move", function (transform) {
-        console.log("Move.");
-        game.me.move(transform.position, transform.velocity);
     });
 })();

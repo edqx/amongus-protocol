@@ -34,6 +34,9 @@ export class CustomNetworkTransform extends Component {
     constructor(client: AmongusClient, netid: number, datalen?: number, data?: Buffer) {
         super(client, netid);
 
+        this.name = "Player";
+        this.classname = "CustomNetworkTransform";
+
         this.sequence = null;
 
         if (typeof datalen !== "undefined" && typeof data !== "undefined") {

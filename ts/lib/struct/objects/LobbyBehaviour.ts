@@ -2,7 +2,7 @@ import { AmongusClient } from "../../Client.js"
 
 import { GameObject } from "./GameObject.js"
 
-import { LobbyBehaviour as LobbyBehaviourComponent } from "../components/LobbyBehaviour.js"
+import { FollowerCamera } from "../components/FollowerCamera.js"
 
 import {
     SpawnID
@@ -13,7 +13,7 @@ import { Game } from "../Game.js"
 
 export class LobbyBehaviour extends GameObject {
     spawnid: SpawnID.LobbyBehaviour;
-    components: [LobbyBehaviourComponent];
+    components: [FollowerCamera];
 
     constructor (client: AmongusClient, parent: Game, components: Partial<ComponentData>[]) {
         super(client, parent);
@@ -21,7 +21,7 @@ export class LobbyBehaviour extends GameObject {
         this.id = null;
 
         this.components = [
-            new LobbyBehaviourComponent(client, components[0].netid, components[0].datalen, components[0].data)
+            new FollowerCamera(client, components[0].netid, components[0].datalen, components[0].data)
         ];
         
         if (parent instanceof GameObject) {
@@ -29,7 +29,7 @@ export class LobbyBehaviour extends GameObject {
         }
     }
 
-    get LobbyBehaviour() {
+    get FollowerCamera() {
         return this.components[0];
     }
 }

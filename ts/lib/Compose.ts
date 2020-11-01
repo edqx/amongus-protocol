@@ -248,7 +248,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                         case RPCID.ClearVote:
                                             break;
                                         case RPCID.AddVote:
-                                            mwrite.uint8(part.playerid);
+                                            mwrite.uint8(part.targetid);
                                             break;
                                         case RPCID.CloseDoorsOfType:
                                             mwrite.uint8(part.systemtype);
