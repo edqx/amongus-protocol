@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>MeetingHudPlayerState | amongus-protocol</title>
+	<title>ServerInfo | amongus-protocol</title>
 	<meta name="description" content="Documentation for amongus-protocol">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,13 +54,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_lib_interfaces_packets_.html">&quot;lib/interfaces/Packets&quot;</a>
+					<a href="../modules/_lib_interfaces_regioninfo_.html">&quot;lib/interfaces/RegionInfo&quot;</a>
 				</li>
 				<li>
-					<a href="_lib_interfaces_packets_.meetinghudplayerstate.html">MeetingHudPlayerState</a>
+					<a href="_lib_interfaces_regioninfo_.serverinfo.html">ServerInfo</a>
 				</li>
 			</ul>
-			<h1>Interface MeetingHudPlayerState</h1>
+			<h1>Interface ServerInfo</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">MeetingHudPlayerState</span>
+						<span class="target">ServerInfo</span>
 					</li>
 				</ul>
 			</section>
@@ -82,12 +82,10 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_lib_interfaces_packets_.meetinghudplayerstate.html#dead" class="tsd-kind-icon">dead</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_lib_interfaces_packets_.meetinghudplayerstate.html#flags" class="tsd-kind-icon">flags</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_lib_interfaces_packets_.meetinghudplayerstate.html#playerid" class="tsd-kind-icon">player<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_lib_interfaces_packets_.meetinghudplayerstate.html#reported" class="tsd-kind-icon">reported</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_lib_interfaces_packets_.meetinghudplayerstate.html#voted" class="tsd-kind-icon">voted</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_lib_interfaces_packets_.meetinghudplayerstate.html#votedfor" class="tsd-kind-icon">voted<wbr>For</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_lib_interfaces_regioninfo_.serverinfo.html#ip" class="tsd-kind-icon">ip</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_lib_interfaces_regioninfo_.serverinfo.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_lib_interfaces_regioninfo_.serverinfo.html#port" class="tsd-kind-icon">port</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_lib_interfaces_regioninfo_.serverinfo.html#unknown" class="tsd-kind-icon">unknown</a></li>
 							</ul>
 						</section>
 					</div>
@@ -96,62 +94,42 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="dead" class="tsd-anchor"></a>
-					<h3>dead</h3>
-					<div class="tsd-signature tsd-kind-icon">dead<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="ip" class="tsd-anchor"></a>
+					<h3>ip</h3>
+					<div class="tsd-signature tsd-kind-icon">ip<span class="tsd-signature-symbol">:</span> <a href="../modules/_lib_interfaces_types_.html#byte" class="tsd-signature-type">byte</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/b7d8c6d/ts/lib/interfaces/Packets.ts#L523">ts/lib/interfaces/Packets.ts:523</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/e189492/ts/lib/interfaces/RegionInfo.ts#L10">ts/lib/interfaces/RegionInfo.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="flags" class="tsd-anchor"></a>
-					<h3>flags</h3>
-					<div class="tsd-signature tsd-kind-icon">flags<span class="tsd-signature-symbol">:</span> <a href="../enums/_lib_interfaces_packets_.playervoteareaflags.html" class="tsd-signature-type">PlayerVoteAreaFlags</a></div>
+					<a name="name" class="tsd-anchor"></a>
+					<h3>name</h3>
+					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/b7d8c6d/ts/lib/interfaces/Packets.ts#L518">ts/lib/interfaces/Packets.ts:518</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/e189492/ts/lib/interfaces/RegionInfo.ts#L9">ts/lib/interfaces/RegionInfo.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="playerid" class="tsd-anchor"></a>
-					<h3>player<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">player<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="port" class="tsd-anchor"></a>
+					<h3>port</h3>
+					<div class="tsd-signature tsd-kind-icon">port<span class="tsd-signature-symbol">:</span> <a href="../modules/_lib_interfaces_types_.html#uint16" class="tsd-signature-type">uint16</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/b7d8c6d/ts/lib/interfaces/Packets.ts#L519">ts/lib/interfaces/Packets.ts:519</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/e189492/ts/lib/interfaces/RegionInfo.ts#L11">ts/lib/interfaces/RegionInfo.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="reported" class="tsd-anchor"></a>
-					<h3>reported</h3>
-					<div class="tsd-signature tsd-kind-icon">reported<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="unknown" class="tsd-anchor"></a>
+					<h3>unknown</h3>
+					<div class="tsd-signature tsd-kind-icon">unknown<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/b7d8c6d/ts/lib/interfaces/Packets.ts#L521">ts/lib/interfaces/Packets.ts:521</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="voted" class="tsd-anchor"></a>
-					<h3>voted</h3>
-					<div class="tsd-signature tsd-kind-icon">voted<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/b7d8c6d/ts/lib/interfaces/Packets.ts#L522">ts/lib/interfaces/Packets.ts:522</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="votedfor" class="tsd-anchor"></a>
-					<h3>voted<wbr>For</h3>
-					<div class="tsd-signature tsd-kind-icon">voted<wbr>For<span class="tsd-signature-symbol">:</span> <a href="../modules/_lib_interfaces_types_.html#uint8" class="tsd-signature-type">uint8</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/b7d8c6d/ts/lib/interfaces/Packets.ts#L520">ts/lib/interfaces/Packets.ts:520</a></li>
+							<li>Defined in <a href="https://github.com/edqx/amongus-protocol/blob/e189492/ts/lib/interfaces/RegionInfo.ts#L12">ts/lib/interfaces/RegionInfo.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -164,34 +142,31 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/_lib_interfaces_packets_.html">&quot;lib/interfaces/<wbr>Packets&quot;</a>
+						<a href="../modules/_lib_interfaces_regioninfo_.html">&quot;lib/interfaces/<wbr>Region<wbr>Info&quot;</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="_lib_interfaces_regioninfo_.regioninfo.html" class="tsd-kind-icon">Region<wbr>Info</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module">
-						<a href="_lib_interfaces_packets_.meetinghudplayerstate.html" class="tsd-kind-icon">Meeting<wbr>Hud<wbr>Player<wbr>State</a>
+						<a href="_lib_interfaces_regioninfo_.serverinfo.html" class="tsd-kind-icon">Server<wbr>Info</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_lib_interfaces_packets_.meetinghudplayerstate.html#dead" class="tsd-kind-icon">dead</a>
+								<a href="_lib_interfaces_regioninfo_.serverinfo.html#ip" class="tsd-kind-icon">ip</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_lib_interfaces_packets_.meetinghudplayerstate.html#flags" class="tsd-kind-icon">flags</a>
+								<a href="_lib_interfaces_regioninfo_.serverinfo.html#name" class="tsd-kind-icon">name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_lib_interfaces_packets_.meetinghudplayerstate.html#playerid" class="tsd-kind-icon">player<wbr>Id</a>
+								<a href="_lib_interfaces_regioninfo_.serverinfo.html#port" class="tsd-kind-icon">port</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_lib_interfaces_packets_.meetinghudplayerstate.html#reported" class="tsd-kind-icon">reported</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_lib_interfaces_packets_.meetinghudplayerstate.html#voted" class="tsd-kind-icon">voted</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_lib_interfaces_packets_.meetinghudplayerstate.html#votedfor" class="tsd-kind-icon">voted<wbr>For</a>
+								<a href="_lib_interfaces_regioninfo_.serverinfo.html#unknown" class="tsd-kind-icon">unknown</a>
 							</li>
 						</ul>
 					</li>
