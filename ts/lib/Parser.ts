@@ -261,7 +261,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                                 part.text = reader.string();
                                                 break;
                                             case RPCID.StartMeeting:
-                                                part.targetid = reader.uint8();
+                                                part.bodyid = reader.uint8();
                                                 break;
                                             case RPCID.SetScanner:
                                                 part.scanning = reader.bool();

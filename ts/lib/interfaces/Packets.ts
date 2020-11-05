@@ -355,7 +355,7 @@ export interface RPCSendChat extends RPC {
 
 export interface RPCStartMeeting extends RPC {
     rpcid: RPCID.StartMeeting;
-    targetid: uint8 | 0xff;
+    bodyid: uint8;
 }
 
 export interface RPCSetScanner extends RPC {

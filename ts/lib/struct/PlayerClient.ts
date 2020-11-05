@@ -239,6 +239,26 @@ export class PlayerClient extends GameObject {
         });
     }
 
+    async meeting(bodyid: number|"emergency") {
+        await this.client.send({
+            op: PacketID.Reliable,
+            payloads: [
+                {
+                    payloadid: PayloadID.GameData,
+                    code: this.client.game.code,
+                    parts: [
+                        {
+                            type: MessageID.RPC,
+                            rpcid: RPCID.StartMeeting,
+                            handlerid: this.Player.PlayerControl.netid,
+                            bodyid: bodyid === "emergency" ? 0xFF : bodyid
+                        }
+                    ]
+                }
+            ]
+        })
+    }
+
     async setName(name: string) {
         if (this.Player && !this.removed) {
             await this.Player.PlayerControl.setName(name);

@@ -4,33 +4,13 @@ import {
     MasterServers,
     Game,
     PlayerClient,
-    DebugOptions
+    DebugOptions,
+    GameObject
 } from "../index.js"
-
-function get_imposter_names(imposters: PlayerClient[]): string[] {
-    return imposters.map(imposter => {
-        return imposter.PlayerData.name;
-    });
-}
-
-function format_array(arr: any[]): string {
-    if (arr.length === 0) {
-        return "";
-    }
-    
-    if (arr.length === 1) {
-        return arr[0].toString();
-    }
-
-    const head = arr.slice(0, arr.length - 1).join(", ");
-    const tail = arr[arr.length - 1];
-
-    return head + " and " + tail;
-}
 
 (async () => {
     const client = new AmongusClient({
-        debug: DebugOptions.Everything
+        debug: DebugOptions.None
     });
 
     const servers = MasterServers.EU[0];
@@ -45,25 +25,25 @@ function format_array(arr: any[]): string {
     await game.me.setColour(Math.floor(Math.random() * 13));
     await game.me.setHat(HatID.Plague);
 
-    game.on("setImposters", imposters => {
-        console.log(get_imposter_names(imposters));
-    });
+    await game.me.awaitSpawn();
+    
+    console.log("Played spawned.");
 
     game.on("start", () => {
-        /*setTimeout(async function () {
-            console.log("Completing all " + game.me.tasks.length + " tasks");
-            for (let i = 0; i < game.me.tasks.length; i++) await game.me.completeTask(i);
-        }, 7500);*/
+        console.log("Game started.");
+
+        setTimeout(function () {
+            if (game.me.PlayerData.name === "strongeyes") game.me.meeting("emergency");
+        }, 8000);
     });
 
-    game.on("startMeeting", (emergency, target) => {
-        setTimeout(async function () {
-            const imposters = get_imposter_names(game.imposters);
-            const arr = format_array(imposters);
+    game.on("meeting", () => {
+        console.log("Meeting started.");
+        game.me.vote(game.host);
+    });
 
-            game.me.chat("Imposter" + (imposters.length === 1 ? " is " : "s are ") + arr + ", but I'm not really sure.");
-
-            game.me.vote(game.imposters[Math.floor(Math.random() * game.imposters.length)]);
-        }, (game.options.discussionTime * 1000) + 5000);
+    game.on("vote", function (voter, suspect) {
+        console.log("Vote.");
+        console.log(voter.PlayerData.name + " voted for " + suspect.PlayerData.name);
     });
 })();

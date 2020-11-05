@@ -37,7 +37,7 @@ export class MeetingHud extends Component {
         for (let playerId = 0; playerId < datalen; playerId++) {
             const flags = reader.byte();
 
-            const state = {
+            const state: VotePlayerState = {
                 flags,
                 playerId,
                 votedFor: flags & PlayerVoteAreaFlags.VotedFor,
@@ -45,6 +45,8 @@ export class MeetingHud extends Component {
                 voted: (flags & PlayerVoteAreaFlags.DidVote) !== 0,
                 dead: (flags & PlayerVoteAreaFlags.IsDead) !== 0
             }
+            
+            state.votedFor = state.votedFor < 10 ? state.votedFor : -1;
 
             this.states.set(playerId, state);
         }
@@ -63,14 +65,22 @@ export class MeetingHud extends Component {
             const flags = reader.byte();
 
             if (((1 << playerId) & updateMask) !== 0) {
-                const state = {
+                const state: VotePlayerState = {
                     flags,
                     playerId,
-                    votedFor: flags & PlayerVoteAreaFlags.VotedFor,
+                    votedFor: (flags & PlayerVoteAreaFlags.VotedFor) - 1,
                     reported: (flags & PlayerVoteAreaFlags.DidReport) !== 0,
                     voted: (flags & PlayerVoteAreaFlags.DidVote) !== 0,
                     dead: (flags & PlayerVoteAreaFlags.IsDead) !== 0
                 };
+
+                state.votedFor = state.votedFor < 10 ? state.votedFor : -1;
+
+                const old_state = this.states.get(playerId);
+
+                if (old_state && state.voted && !old_state.voted) {
+                    this.client.game.emit("vote", this.client.game.getPlayer(state.playerId), this.client.game.getPlayer(state.votedFor));
+                }
 
                 this.states.set(playerId, state);
 

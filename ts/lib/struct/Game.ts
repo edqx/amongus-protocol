@@ -33,9 +33,10 @@ export interface Game {
     on(event: "start", listener: () => void);
     on(event: "finish", listener: () => void);
     on(event: "setImposters", listener: (imposters: PlayerClient[]) => void);
+    on(event: "vote", listener: (voter: PlayerClient, suspect: PlayerClient) => void);
     on(event: "votingComplete", listener: (skipped: boolean, tie: boolean, exiled: PlayerClient, states: Map<number, VotePlayerState>) => void);
     on(event: "murder", listener: (murderer: PlayerClient, target: PlayerClient) => void);
-    on(event: "startMeeting", listener: (emergency: boolean, target: PlayerClient) => void);
+    on(event: "meeting", listener: (emergency: boolean, target: PlayerClient) => void);
     on(event: "sync", listener: (settings: GameOptionsData) => void);
     on(event: "visibility", listener: (visibility: "private"|"public") => void);
     on(event: "sceneChange", listener: (client: PlayerClient, location: SceneChangeLocation) => void);

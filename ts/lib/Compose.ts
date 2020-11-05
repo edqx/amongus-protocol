@@ -206,7 +206,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                             mwrite.string(part.text, true);
                                             break;
                                         case RPCID.StartMeeting:
-                                            mwrite.uint8(part.targetid);
+                                            mwrite.uint8(part.bodyid);
                                             break;
                                         case RPCID.SetScanner:
                                             mwrite.bool(part.scanning);
