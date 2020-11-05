@@ -43,16 +43,16 @@ export function composeGameOptions(options: Partial<GameOptionsData>) {
     bwrite.int32LE(options.votingTime ?? 120);
     bwrite.bool(options.isDefault ?? false);
 
-    if (options.version === 1 || options.version === 2 || options.version === 3) {
+    if (options.version === 2 || options.version === 3 || options.version === 4) {
         bwrite.uint8(options.emergencyCooldown ?? 15);
     }
     
-    if (options.version === 2 || options.version === 3) {
+    if (options.version === 3 || options.version === 4) {
         bwrite.bool(options.confirmEjects ?? true);
         bwrite.bool(options.visualTasks ?? true);
     }
     
-    if (options.version === 3) {
+    if (options.version === 4) {
         bwrite.bool(options.anonymousVoting ?? false);
         bwrite.uint8(options.taskBarUpdates ?? TaskBarUpdate.Always);
     }
