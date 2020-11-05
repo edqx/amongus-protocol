@@ -323,7 +323,7 @@ export enum SpawnID {
 
 export enum SpawnFlag {
     None = 0x00,
-    PlayerControl = 0x01
+    IsClient = 0x01
 }
 
 export enum TaskID {

@@ -3,6 +3,7 @@ import { AmongusClient } from "../../Client.js"
 import { Component } from "./Component.js"
 import { BufferReader } from "../../util/BufferReader.js"
 import { BufferWriter } from "../../util/BufferWriter.js";
+import { write } from "fs";
 
 export interface VoteBanSystem {
     on(event: "update", listener: (votes: Map<number, number[]>) => void);
@@ -66,6 +67,15 @@ export class VoteBanSystem extends Component {
 
     Serialize() {
         const writer = new BufferWriter;
+
+        writer.packed(this.votes.size);
+
+        for (let [clientid, votes] of this.votes) {
+            writer.int32BE(clientid);
+            for (let i = 0; i < 3; i++) {
+                writer.packed(votes[i]);
+            }
+        }
 
         return writer.buffer;
     }

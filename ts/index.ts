@@ -30,3 +30,4 @@ export { parsePacket } from "./lib/Parser.js"
 
 export * as Component from "./components.js"
 export * as GameObject from "./objects.js"
+export * as SystemType from "./systems.js"

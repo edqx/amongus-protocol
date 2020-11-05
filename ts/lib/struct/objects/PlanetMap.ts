@@ -12,6 +12,14 @@ import {
 import { ComponentData } from "../../interfaces/Packets.js"
 import { Game } from "../Game.js"
 
+import { SwitchSystem } from "../systems/SwitchSystem.js";
+import { MedScanSystem } from "../systems/MedScanSystem.js";
+import { ReactorSystem } from "../systems/ReactorSystem.js";
+import { SecuritySystem } from "../systems/SecuritySystem.js";
+import { HudOverrideSystem } from "../systems/HudOverrideSystem.js";
+import { DoorsSystem } from "../systems/DoorsSystem.js";
+import { SabotageSystem } from "../systems/SabotageSystem.js";
+
 export class PlanetMap extends GameObject {
     spawnid: SpawnID.PlanetMap;
     components: [ShipStatus];
@@ -24,6 +32,16 @@ export class PlanetMap extends GameObject {
         this.components = [
             new ShipStatus(client, components[0].netid)
         ];
+
+        this.ShipStatus.systems = {
+            [SystemType.Reactor]: new ReactorSystem,
+            [SystemType.Electrical]: new SwitchSystem,
+            [SystemType.MedBay]: new MedScanSystem,
+            [SystemType.Security]: new SecuritySystem,
+            [SystemType.Communications]: new HudOverrideSystem,
+            [SystemType.Doors]: new DoorsSystem,
+            [SystemType.Sabotage]: new SabotageSystem
+        }
 
         this.ShipStatus.systems[SystemType.Doors].SetDoors(12);
         this.ShipStatus.OnSpawn(components[0].datalen, components[0].data);

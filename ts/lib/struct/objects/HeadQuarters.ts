@@ -12,6 +12,13 @@ import {
 import { ComponentData } from "../../interfaces/Packets.js"
 import { Game } from "../Game.js"
 
+import { SwitchSystem } from "../systems/SwitchSystem.js";
+import { MedScanSystem } from "../systems/MedScanSystem.js";
+import { ReactorSystem } from "../systems/ReactorSystem.js";
+import { LifeSuppSystem } from "../systems/LifeSuppSystem.js";
+import { HQHudOverrideSystem } from "../systems/HQHudOverrideSystem.js";
+import { SabotageSystem } from "../systems/SabotageSystem.js";
+
 export class HeadQuarters extends GameObject {
     spawnid: SpawnID.HeadQuarters;
     components: [ShipStatus];
@@ -25,8 +32,15 @@ export class HeadQuarters extends GameObject {
             new ShipStatus(client, components[0].netid)
         ];
 
-        // TODO: Find out how many doors are in Mira HQ
-        this.ShipStatus.systems[SystemType.Doors].SetDoors(0);
+        this.ShipStatus.systems = {
+            [SystemType.Reactor]: new ReactorSystem,
+            [SystemType.Electrical]: new SwitchSystem,
+            [SystemType.O2]: new LifeSuppSystem,
+            [SystemType.MedBay]: new MedScanSystem,
+            [SystemType.Communications]: new HQHudOverrideSystem,
+            [SystemType.Sabotage]: new SabotageSystem
+        }
+
         this.ShipStatus.OnSpawn(components[0].datalen, components[0].data);
         
         if (parent instanceof GameObject) {

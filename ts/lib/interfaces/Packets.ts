@@ -111,16 +111,16 @@ export interface BaseGameOptionsData {
     isDefault: boolean;
 }
 
-export interface GameOptionsDataV1 extends BaseGameOptionsData {
-    version: 1;
+export interface GameOptionsDataV2 extends BaseGameOptionsData {
+    version: 2;
     /**
      * The cooldown between each emergency call.
      */
     emergencyCooldown: uint8;
 }
 
-export interface GameOptionsDataV2 extends BaseGameOptionsData {
-    version: 2;
+export interface GameOptionsDataV3 extends Omit<GameOptionsDataV2, "version"> {
+    version: 3;
     /**
      * The cooldown between each emergency call.
      */
@@ -135,8 +135,8 @@ export interface GameOptionsDataV2 extends BaseGameOptionsData {
     visualTasks: boolean;
 }
 
-export interface GameOptionsDataV3 extends BaseGameOptionsData {
-    version: 3;
+export interface GameOptionsDataV4 extends BaseGameOptionsData {
+    version: 4;
     /**
      * The cooldown between each emergency call.
      */
@@ -159,7 +159,7 @@ export interface GameOptionsDataV3 extends BaseGameOptionsData {
     taskBarUpdates: TaskBarUpdate;
 }
 
-export type GameOptionsData = GameOptionsDataV1 | GameOptionsDataV2 | GameOptionsDataV3;
+export type GameOptionsData = GameOptionsDataV2 | GameOptionsDataV3 | GameOptionsDataV4;
 
 export interface BasePacket {
     bound?: "server" | "client";

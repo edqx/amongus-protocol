@@ -32,7 +32,7 @@ export function parseGameOptions(reader: BufferReader): GameOptionsData {
     let options: Partial<GameOptionsData> = {}
 
     options.length = reader.packed();
-    options.version = reader.byte() as 1|2|3;
+    options.version = reader.byte() as 2|3|4;
     options.maxPlayers = reader.uint8();
     options.language = reader.uint32LE();
     options.mapID = reader.byte();
@@ -50,16 +50,16 @@ export function parseGameOptions(reader: BufferReader): GameOptionsData {
     options.votingTime = reader.int32LE();
     options.isDefault = reader.bool();
 
-    if ((options.version === 1 || options.version === 2 || options.version === 3) && reader.offset < reader.size) {
+    if ((options.version === 2 || options.version === 3 || options.version === 4) && reader.left >= 1) {
         options.emergencyCooldown = reader.uint8();
     }
 
-    if ((options.version === 2 || options.version === 3 ) && reader.offset < reader.size - 1) {
+    if ((options.version === 3 || options.version === 4 ) && reader.left >= 2) {
         options.confirmEjects = reader.bool();
         options.visualTasks = reader.bool();
     }
 
-    if (options.version === 3 && reader.offset < reader.size - 1) {
+    if (options.version === 4 && reader.left >= 2) {
         options.anonymousVoting = reader.bool();
         options.taskBarUpdates = reader.uint8();
     }

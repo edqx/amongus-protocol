@@ -6,12 +6,12 @@ import {
     SystemType
 } from "../../constants/Enums.js"
 
-import { SystemStatus } from "../systems/SystemStatus.js"
 import { SwitchSystem } from "../systems/SwitchSystem.js";
 import { MedScanSystem } from "../systems/MedScanSystem.js";
 import { ReactorSystem } from "../systems/ReactorSystem.js";
 import { LifeSuppSystem } from "../systems/LifeSuppSystem.js";
 import { SecuritySystem } from "../systems/SecuritySystem.js";
+import { HQHudOverrideSystem } from "../systems/HQHudOverrideSystem.js";
 import { HudOverrideSystem } from "../systems/HudOverrideSystem.js";
 import { DoorsSystem } from "../systems/DoorsSystem.js";
 import { SabotageSystem } from "../systems/SabotageSystem.js";
@@ -28,7 +28,7 @@ export class ShipStatus extends Component {
         [SystemType.O2]: LifeSuppSystem;
         [SystemType.MedBay]: MedScanSystem;
         [SystemType.Security]: SecuritySystem;
-        [SystemType.Communications]: HudOverrideSystem;
+        [SystemType.Communications]: HQHudOverrideSystem|HudOverrideSystem;
         [SystemType.Doors]: DoorsSystem;
         [SystemType.Sabotage]: SabotageSystem;
         [SystemType.Decontamination]: DeconSystem;
@@ -39,18 +39,6 @@ export class ShipStatus extends Component {
 
         this.name = "ShipStatus";
         this.classname = "ShipStatus";
-
-        this.systems = {
-            [SystemType.Reactor]: new ReactorSystem,
-            [SystemType.Electrical]: new SwitchSystem,
-            [SystemType.O2]: new LifeSuppSystem,
-            [SystemType.MedBay]: new MedScanSystem,
-            [SystemType.Security]: new SecuritySystem,
-            [SystemType.Communications]: new HudOverrideSystem,
-            [SystemType.Doors]: new DoorsSystem,
-            [SystemType.Sabotage]: new SabotageSystem,
-            // [SystemType.Decontamination]: new DeconSystem,
-        }
         
         if (typeof datalen !== "undefined" && typeof data !== "undefined") {
             this.OnSpawn(datalen, data);
