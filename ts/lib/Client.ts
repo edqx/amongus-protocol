@@ -327,14 +327,6 @@ export class AmongusClient extends EventEmitter {
                                                                 this.game.emit("votingComplete", false, false, this.game.getPlayer(part.exiled));
                                                             }
                                                             break;
-                                                        case RPCID.CastVote: {
-                                                            const client = this.game.getPlayer(part.voterid);
-                                                            const suspect = this.game.getPlayer(part.suspectid);
-
-                                                            this.game.emit("vote", client, suspect);
-                                                            client.emit("vote", suspect);
-                                                            break;
-                                                        }
                                                         case RPCID.SendChatNote:
                                                             break;
                                                         case RPCID.SetTasks:

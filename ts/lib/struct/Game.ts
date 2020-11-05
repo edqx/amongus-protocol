@@ -21,6 +21,7 @@ import { Component } from "./components/Component.js";
 import { GameData } from "./objects/GameData.js";
 import { GameObject } from "./objects/GameObject.js";
 import { LobbyBehaviour } from "./objects/LobbyBehaviour.js";
+import { MeetingHub } from "./objects/MeetingHub.js";
 
 import { PlayerClient } from "./PlayerClient.js";
 
@@ -32,7 +33,6 @@ export interface Game {
     on(event: "start", listener: () => void);
     on(event: "finish", listener: () => void);
     on(event: "setImposters", listener: (imposters: PlayerClient[]) => void);
-    on(event: "vote", listener: (voter: PlayerClient, suspect: PlayerClient) => void);
     on(event: "votingComplete", listener: (skipped: boolean, tie: boolean, exiled: PlayerClient, states: Map<number, VotePlayerState>) => void);
     on(event: "murder", listener: (murderer: PlayerClient, target: PlayerClient) => void);
     on(event: "startMeeting", listener: (emergency: boolean, target: PlayerClient) => void);
@@ -128,6 +128,10 @@ export class Game extends GameObject {
 
     get GameData(): GameData {
         return this.children.find(child => child instanceof GameData) as GameData;
+    }
+
+    get MeetingHub(): MeetingHub {
+        return this.children.find(child => child instanceof MeetingHub) as MeetingHub;
     }
     
     _syncSettings(options: GameOptionsData) {
