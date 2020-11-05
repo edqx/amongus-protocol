@@ -202,7 +202,6 @@ export class AmongusClient extends EventEmitter {
                                                 break;
                                         }
                                     }
-                                    console.log(payload);
                                     break;
                                 case PayloadID.StartGame:
                                     if (payload.code === this.game.code) {
