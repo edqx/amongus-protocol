@@ -664,7 +664,7 @@ export class AmongusClient extends EventEmitter {
      */
     async host(options: Partial<GameOptionsData> = {}) {
         options = {
-            version: 2,
+            version: 3,
             mapID: MapID.TheSkeld,
             language: LanguageID.Other,
             imposterCount: 1,
