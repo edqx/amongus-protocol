@@ -197,7 +197,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                             mwrite.uint8(part.skin);
                                             break;
                                         case RPCID.ReportDeadBody:
-                                            mwrite.uint8(part.player);
+                                            mwrite.uint8(part.bodyid);
                                             break;
                                         case RPCID.MurderPlayer:
                                             mwrite.packed(part.targetnetid);
@@ -206,7 +206,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                             mwrite.string(part.text, true);
                                             break;
                                         case RPCID.StartMeeting:
-                                            mwrite.uint8(part.bodyid);
+                                            mwrite.uint8(part.targetid);
                                             break;
                                         case RPCID.SetScanner:
                                             mwrite.bool(part.scanning);

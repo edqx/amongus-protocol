@@ -287,10 +287,10 @@ export class AmongusClient extends EventEmitter {
                                                             break;
                                                         }
                                                         case RPCID.StartMeeting:
-                                                            if (part.bodyid === 0xFF) {
+                                                            if (part.targetid === 0xFF) {
                                                                 this.game.emit("meeting", true, null);
                                                             } else {
-                                                                const target = this.game.getPlayer(part.bodyid);
+                                                                const target = this.game.getPlayer(part.targetid);
 
                                                                 this.game.emit("meeting", false, target);
                                                             }

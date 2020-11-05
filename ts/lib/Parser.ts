@@ -252,7 +252,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                                 part.skin = reader.uint8();
                                                 break;
                                             case RPCID.ReportDeadBody:
-                                                part.player = reader.uint8();
+                                                part.bodyid = reader.uint8();
                                                 break;
                                             case RPCID.MurderPlayer:
                                                 part.targetnetid = reader.packed();
@@ -261,7 +261,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                                 part.text = reader.string();
                                                 break;
                                             case RPCID.StartMeeting:
-                                                part.bodyid = reader.uint8();
+                                                part.targetid = reader.uint8();
                                                 break;
                                             case RPCID.SetScanner:
                                                 part.scanning = reader.bool();

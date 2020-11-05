@@ -239,7 +239,7 @@ export class PlayerClient extends GameObject {
         });
     }
 
-    async meeting(bodyid: number|"emergency") {
+    async startMeeting(bodyid: number|"emergency") {
         await this.client.send({
             op: PacketID.Reliable,
             payloads: [
@@ -249,7 +249,7 @@ export class PlayerClient extends GameObject {
                     parts: [
                         {
                             type: MessageID.RPC,
-                            rpcid: RPCID.StartMeeting,
+                            rpcid: RPCID.ReportDeadBody,
                             handlerid: this.Player.PlayerControl.netid,
                             bodyid: bodyid === "emergency" ? 0xFF : bodyid
                         }

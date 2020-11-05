@@ -33,7 +33,7 @@ import {
         console.log("Game started.");
 
         setTimeout(function () {
-            if (game.me.PlayerData.name === "strongeyes") game.me.meeting("emergency");
+            if (game.me.PlayerData.name === "strongeyes") game.me.startMeeting("emergency");
         }, 8000);
     });
 

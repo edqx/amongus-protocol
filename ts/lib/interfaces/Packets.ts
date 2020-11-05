@@ -340,7 +340,7 @@ export interface RPCSetSkin extends RPC {
 
 export interface RPCReportDeadBody extends RPC {
     rpcid: RPCID.ReportDeadBody;
-    player: uint8 | 0xff;
+    bodyid: uint8 | 0xff;
 }
 
 export interface RPCMurderPlayer extends RPC {
@@ -355,7 +355,7 @@ export interface RPCSendChat extends RPC {
 
 export interface RPCStartMeeting extends RPC {
     rpcid: RPCID.StartMeeting;
-    bodyid: uint8;
+    targetid: uint8;
 }
 
 export interface RPCSetScanner extends RPC {
