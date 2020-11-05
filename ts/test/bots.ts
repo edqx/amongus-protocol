@@ -6,22 +6,26 @@ import {
     PlayerClient
 } from "../index.js"
 
-for (let i = 0; i < 8; i++) {
+for (let i = 0; i < 2; i++) {
     (async () => {
-        const client = new AmongusClient({
-            debug: false
-        });
+        const client = new AmongusClient;
 
-        const servers = MasterServers.EU[0];
+        const server = MasterServers.EU[0];
 
-        await client.connect("lolkode.gleeze.com", 22023, "weakeyes");
+        await client.connect(server[0], server[1], "weakeyes");
 
         const game = await client.join(process.argv[2]);
 
         await game.awaitSpawns();
 
-        await game.me.setName(Math.random().toString(36).substr(2, 7));
+        await game.me.setName("pooman2007");
 
-        await game.me.chat("/report hacking anti 'being silly'");
+        console.log(game.GameData.GameData.players);
+
+        const josh = game.findPlayer("Avwrage");
+
+        josh.Player.CustomNetworkTransform.on("move", transform => {
+            game.me.move(transform.position, transform.velocity);
+        });
     })();
 }

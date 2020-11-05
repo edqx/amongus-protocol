@@ -1,14 +1,15 @@
 import {
     AmongusClient,
     MapID,
-    MasterServers
+    MasterServers,
+    DebugOptions
 } from "../index.js"
 
 import { Int2Code } from "../lib/util/Codes.js";
 
 (async () => {
     const client = new AmongusClient({
-        debug: true
+        debug: DebugOptions.Everything
     });
 
     const server = MasterServers.NA[0];

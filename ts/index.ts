@@ -28,6 +28,8 @@ export { ServerInfo, RegionInfo } from "./lib/interfaces/RegionInfo.js"
 export { composePacket } from "./lib/Compose.js"
 export { parsePacket } from "./lib/Parser.js"
 
+export { DebugOptions } from "./lib/constants/DebugOptions.js"
+
 export * as Component from "./components.js"
 export * as GameObject from "./objects.js"
 export * as SystemType from "./systems.js"

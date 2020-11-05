@@ -55,8 +55,6 @@ export class ShipStatus extends Component {
                 system.OnSpawn(reader);
             }
         }
-
-        console.log(this.systems);
     }
 
     OnDeserialize(datalen: number, data: Buffer): void {
@@ -73,7 +71,5 @@ export class ShipStatus extends Component {
                 }
             }
         }
-        
-        console.log(this.systems);
     }
 }

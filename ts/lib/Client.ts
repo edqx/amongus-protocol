@@ -48,6 +48,7 @@ import { PlanetMap } from "./struct/objects/PlanetMap.js"
 import { AprilShipStatus } from "./struct/objects/AprilShipStatus.js"
 
 import { ClientOptions } from "./interfaces/ClientOptions.js"
+import { DebugOptions } from "./constants/DebugOptions.js"
 
 export declare interface AmongusClient {
     on(event: "packet", listener: (packet: Packet) => void);
@@ -108,8 +109,8 @@ export class AmongusClient extends EventEmitter {
     /**
      * Print a debug message if the debug option is enabled.
      */
-    debug(...fmt) {
-        if (this.options.debug) {
+    debug(debugOpt: DebugOptions, ...fmt) {
+        if ((this.options.debug & DebugOptions.Everything) === DebugOptions.Everything || (this.options.debug & debugOpt) === debugOpt) {
             console.log(...fmt);
         }
     }
@@ -170,15 +171,17 @@ export class AmongusClient extends EventEmitter {
 
         this.socket.on("message", async buffer => {
             const format_buffer = [...buffer].map(byte => "0".repeat(2 - byte.toString(16).length) + byte.toString(16)).join(" ");
-            this.debug("Recieved packet", format_buffer);
-
             const packet = parsePacket(buffer);
 
             if (packet.reliable) {
                 await this.ack(packet.nonce);
             }
 
-            this.debug(util.inspect(packet, false, 10, true));
+            if (packet.op === PacketID.Unreliable || packet.op === PacketID.Reliable) {
+                this.debug(DebugOptions.PayloadInbound, "Received packet", format_buffer, util.inspect(packet, false, 10, true));
+            } else {
+                this.debug(DebugOptions.SpecialInbound, "Received packet", format_buffer, util.inspect(packet, false, 10, true));
+            }
 
             if (packet.bound === "client") {
                 switch (packet.op) {
@@ -199,6 +202,7 @@ export class AmongusClient extends EventEmitter {
                                                 break;
                                         }
                                     }
+                                    console.log(payload);
                                     break;
                                 case PayloadID.StartGame:
                                     if (payload.code === this.game.code) {
@@ -396,6 +400,9 @@ export class AmongusClient extends EventEmitter {
                             break;
                         }
                         break;
+                    case PacketID.Acknowledge:
+                        this.debug(DebugOptions.Acknowledgements, "Recieved acknowledege", packet.nonce);
+                        break;
                 }
             }
 
@@ -501,21 +508,24 @@ export class AmongusClient extends EventEmitter {
         await this._send(composed);
         
         const format_buffer = [...composed].map(byte => "0".repeat(2 - byte.toString(16).length) + byte.toString(16)).join(" ");
-        this.debug("Sent packet", format_buffer);
+
+        if (packet.op === PacketID.Reliable || packet.op === PacketID.Unreliable) {
+            this.debug(DebugOptions.PayloadOutbound, "Sent packet", format_buffer);
+        } else {
+            this.debug(DebugOptions.SpecialOutbound, "Sent packet", format_buffer);
+        }
 
         if (packet.reliable) {
             const interval = setInterval(() => {
                 this._send(composed);
             }, this.options.ackInterval || 1500);
 
-            this.debug("Awaiting acknowledege", nonce);
+            this.debug(DebugOptions.Acknowledgements, "Awaiting acknowledege", nonce);
 
             const ack = await this.awaitPacket(packet => {
                 return packet.op === PacketID.Acknowledge
                     && packet.nonce === nonce;
             });
-            
-            this.debug("Recieved acknowledege", nonce);
 
             clearInterval(interval);
 

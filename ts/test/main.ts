@@ -3,7 +3,8 @@ import {
     HatID,
     MasterServers,
     Game,
-    PlayerClient
+    PlayerClient,
+    DebugOptions
 } from "../index.js"
 
 function get_imposter_names(imposters: PlayerClient[]): string[] {
@@ -29,10 +30,10 @@ function format_array(arr: any[]): string {
 
 (async () => {
     const client = new AmongusClient({
-        debug: false
+        debug: DebugOptions.Everything
     });
 
-    const servers = MasterServers.NA[0];
+    const servers = MasterServers.EU[0];
 
     await client.connect(servers[0], servers[1], "weakeyes");
 

@@ -55,6 +55,7 @@ game.me.on("spawn", () => {
 ```
 
 ## Notes
-Recommended node: 
+Recommended node: v12+
+Recommended TS: 4.0+
 
 This repository is licensed under the MIT license, I am not responsible for anything you do using this library.

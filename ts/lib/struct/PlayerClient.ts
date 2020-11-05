@@ -167,7 +167,7 @@ export class PlayerClient extends GameObject {
         });
     }
     
-    async vote(player: PlayerClient) {
+    async vote(player: PlayerClient|"skip") {
         if (this.Player && !this.removed) {
             const meetinghub = this.client.game.findChild(object => object instanceof MeetingHub) as MeetingHub;
 
@@ -185,7 +185,7 @@ export class PlayerClient extends GameObject {
                                     rpcid: RPCID.CastVote,
                                     handlerid: meetinghub.MeetingHud.netid,
                                     voterid: this.Player.PlayerControl.playerId,
-                                    suspectid: player.Player.PlayerControl.playerId
+                                    suspectid: player === "skip" ? 0xFF : player.Player.PlayerControl.playerId
                                 }
                             ]
                         }

@@ -1,14 +1,15 @@
 import {
     AmongusClient,
     MasterServers,
-    ColourID
+    ColourID,
+    DebugOptions
 } from "../index.js"
 
 import { GameData } from "../lib/struct/objects/GameData.js";
 
 (async () => {
     const client = new AmongusClient({
-        debug: false
+        debug: DebugOptions.Everything
     });
 
     const server = MasterServers.NA[0];
