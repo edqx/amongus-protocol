@@ -34,13 +34,13 @@ export class PlanetMap extends GameObject {
         ];
 
         this.ShipStatus.systems = {
-            [SystemType.Reactor]: new ReactorSystem,
             [SystemType.Electrical]: new SwitchSystem,
             [SystemType.MedBay]: new MedScanSystem,
             [SystemType.Security]: new SecuritySystem,
             [SystemType.Communications]: new HudOverrideSystem,
             [SystemType.Doors]: new DoorsSystem,
-            [SystemType.Sabotage]: new SabotageSystem
+            [SystemType.Sabotage]: new SabotageSystem,
+            [SystemType.Laboratory]: new ReactorSystem
         }
 
         this.ShipStatus.systems[SystemType.Doors].SetDoors(12);

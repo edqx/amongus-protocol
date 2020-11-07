@@ -32,6 +32,7 @@ export class ShipStatus extends Component {
         [SystemType.Doors]: DoorsSystem;
         [SystemType.Sabotage]: SabotageSystem;
         [SystemType.Decontamination]: DeconSystem;
+        [SystemType.Laboratory]: ReactorSystem;
     }>;
 
     constructor(client: AmongusClient, netid: number, datalen?: number, data?: Buffer) {
@@ -48,7 +49,7 @@ export class ShipStatus extends Component {
     OnSpawn(datalen: number, data: Buffer): void {
         const reader = new BufferReader(data);
 
-        for (let i = 0; i < 24; i++) {
+        for (let i = 0; i < 30; i++) {
             if (this.systems[i]) {
                 const system = this.systems[i];
 
@@ -62,7 +63,7 @@ export class ShipStatus extends Component {
         
         const updateMask = reader.packed();
 
-        for (let i = 0; i < 24; i++) {
+        for (let i = 0; i < 30; i++) {
             if ((updateMask & (1 << i)) !== 0) {
                 if (this.systems[i]) {
                     const system = this.systems[i];
