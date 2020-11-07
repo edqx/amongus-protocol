@@ -38,6 +38,7 @@ export class PlayerClient extends GameObject {
 
     removed: boolean;
     dead: boolean;
+    is_ready: boolean;
 
     tasks: TaskID[];
 
@@ -46,6 +47,7 @@ export class PlayerClient extends GameObject {
 
         this.removed = false;
         this.dead = false;
+        this.is_ready = false;
 
         this.tasks = [];
 

@@ -354,27 +354,13 @@ export class Game extends GameObject {
     }
 
     registerComponents(object: GameObject) {
-        const components = Object.keys(object.components);
-
-        for (let i = 0; i < components.length; i++) {
-            const component = object.components[components[i]];
+        for (let i = 0; i < object.components.length; i++) {
+            const component = object.components[i];
 
             this.netcomponents.set(component.netid, component);
         }
     }
-
-    getComponentsByClassName(classname: string) {
-        const components: Component[] = [];
-
-        for (let [netid, component] of this.netcomponents) {
-            if (component.classname === classname) {
-                components.push(component);
-            }
-        }
-        
-        return components.length ? components : null;
-    }
-
+    
     /**
      * Find a player by their name.
      */

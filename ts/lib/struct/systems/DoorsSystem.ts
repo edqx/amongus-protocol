@@ -43,6 +43,10 @@ export class DoorsSystem extends SystemStatus {
     Serialize(): Buffer {
         const writer = new BufferWriter;
 
+        for (let i = 0; i < this.doors.length; i++) {
+            writer.bool(this.doors[i]);
+        }
+
         return writer.buffer;
     }
 }

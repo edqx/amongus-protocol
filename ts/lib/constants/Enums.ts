@@ -194,7 +194,12 @@ export enum SystemType {
     Laboratory = 0x15,
     Balcony = 0x16,
     Office = 0x17,
-    Greenhouse = 0x18
+    Greenhouse = 0x18,
+    Dropship = 0x19,
+    Decontamination2 = 0x1a,
+    Outside = 0x1b,
+    Specimens = 0x1c,
+    BoilerRoom = 0x1d
 }
 
 export enum DeconState {

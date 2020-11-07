@@ -10,8 +10,7 @@ export enum DebugOptions {
     PacketInbound = PayloadInbound | SpecialInbound,
     AllPackets = PacketOutbound | PacketInbound,
     SystemData = 0x40,
-    ComponentData = 0x80,
-    Component = 0x100,
+    Component = 0x80,
     ObjectSpawn = 0x100,
     ObjectDespawn = 0x200,
     Object = ObjectSpawn | ObjectDespawn | Component

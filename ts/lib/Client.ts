@@ -376,6 +376,13 @@ export class AmongusClient extends EventEmitter {
                                                 case MessageID.Despawn:
                                                     this.game.netcomponents.delete(part.netid);
                                                     break;
+                                                case MessageID.Ready:
+                                                    const client = this.game.getPlayer(part.clientid);
+
+                                                    if (client) {
+                                                        client.is_ready = true;
+                                                    }
+                                                    break;
                                             }
                                         }
                                     }

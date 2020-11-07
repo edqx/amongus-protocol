@@ -44,6 +44,21 @@ export class GameObject extends EventEmitter {
         });
     }
 
+    getComponentsByClassName(classname: string) {
+        const components: Component[] = [];
+
+        for (let i = 0; i < this.components.length; i++) {
+            const component = this.components[i];
+
+            if (component.classname === classname) {
+                components.push(component);
+            }
+        }
+        
+        return components.length ? components : null;
+    }
+
+
     findChild(filter: (object: GameObject) => boolean): GameObject {
         const child = this.children.find(filter);
 

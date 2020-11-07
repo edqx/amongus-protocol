@@ -38,7 +38,7 @@ export function parseGameOptions(reader: BufferReader): GameOptionsData {
     options.mapID = reader.byte();
     options.playerSpeed = reader.floatLE();
     options.crewVision = reader.floatLE();
-    options.imposterVision = reader.floatLE();
+    options.imposterVision = reader.floatLE();i
     options.killCooldown = reader.floatLE();
     options.commonTasks = reader.uint8();
     options.longTasks = reader.uint8();
