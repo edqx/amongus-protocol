@@ -6,7 +6,7 @@ import {
     PlayerClient
 } from "../index.js"
 
-for (let i = 0; i < 2; i++) {
+for (let i = 0; i < 9; i++) {
     (async () => {
         const client = new AmongusClient;
 
@@ -18,13 +18,12 @@ for (let i = 0; i < 2; i++) {
 
         await game.awaitSpawns();
 
-        await game.me.setName("pooman2007");
+        game.me.setName("thomas");
+        game.me.setHat(HatID.Plague);
 
-        console.log(game.GameData.GameData.players);
+        const foxnews = await game.findPlayer("Fox News");
 
-        const josh = game.findPlayer("Avwrage");
-
-        josh.Player.CustomNetworkTransform.on("move", transform => {
+        foxnews.Player.CustomNetworkTransform.on("move", transform => {
             game.me.move(transform.position, transform.velocity);
         });
     })();
