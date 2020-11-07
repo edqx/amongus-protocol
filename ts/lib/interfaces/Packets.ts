@@ -122,10 +122,6 @@ export interface GameOptionsDataV2 extends BaseGameOptionsData {
 export interface GameOptionsDataV3 extends Omit<GameOptionsDataV2, "version"> {
     version: 3;
     /**
-     * The cooldown between each emergency call.
-     */
-    emergencyCooldown: uint8;
-    /**
      * Whether or not the game tells you if you ejected the imposter.
      */
     confirmEjects: boolean;
@@ -135,20 +131,8 @@ export interface GameOptionsDataV3 extends Omit<GameOptionsDataV2, "version"> {
     visualTasks: boolean;
 }
 
-export interface GameOptionsDataV4 extends BaseGameOptionsData {
+export interface GameOptionsDataV4 extends Omit<GameOptionsDataV3, "version"> {
     version: 4;
-    /**
-     * The cooldown between each emergency call.
-     */
-    emergencyCooldown: uint8;
-    /**
-     * Whether or not the game tells you if you ejected the imposter.
-     */
-    confirmEjects: boolean;
-    /**
-     * Whether or not certain tasks have a visual indicator to show that they are being done.
-     */
-    visualTasks: boolean;
     /**
      * Whether or not votes are tallied completely anonymously.
      */
