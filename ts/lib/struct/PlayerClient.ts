@@ -11,6 +11,7 @@ import {
     PetID,
     RPCID,
     SkinID,
+    SystemType,
     TaskID
 } from "../constants/Enums.js"
 
@@ -259,6 +260,28 @@ export class PlayerClient extends GameObject {
                 }
             ]
         })
+    }
+
+    async sabotageSystem(system: SystemType) {
+        await this.client.send({
+            op: PacketID.Reliable,
+            payloads: [
+                {
+                    payloadid: PayloadID.GameDataTo,
+                    code: this.client.game.code,
+                    recipient: this.client.game.hostid,
+                    parts: [
+                        {
+                            type: MessageID.RPC,
+                            rpcid: RPCID.RepairSystem,
+                            handlerid: this.Player.PlayerControl.netid,
+                            systemtype: SystemType.Sabotage,
+                            amount: system
+                        }
+                    ]
+                }
+            ]
+        });
     }
 
     async setName(name: string) {

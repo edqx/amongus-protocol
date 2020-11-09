@@ -124,6 +124,8 @@ export class Game extends GameObject {
     }
 
     async awaitSpawns() {
+        await this.awaitChild(object => object instanceof GameData);
+
         return await Promise.all([...this.clients.values()].map(client => client.awaitSpawn()));
     }
 
@@ -134,7 +136,7 @@ export class Game extends GameObject {
     get MeetingHub(): MeetingHub {
         return this.children.find(child => child instanceof MeetingHub) as MeetingHub;
     }
-    
+
     _syncSettings(options: GameOptionsData) {
         this.options = options;
         this.emit("sync", this.options);

@@ -21,6 +21,8 @@ export class GameData extends Component {
     num_players: number;
     players: Map<number, ParsedPlayerGameData>;
 
+    dirty_bits: number;
+
     constructor(client: AmongusClient, netid: number, datalen?: number, data?: Buffer) {
         super(client, netid);
         
@@ -51,38 +53,36 @@ export class GameData extends Component {
         }
     }
 
-    Serialize(...players: number[]) {
+    Serialize() {
         const writer = new BufferWriter;
 
-        if (!players.length) {
-            return this.Serialize(...this.players.keys()); 
-        }
-
-        const update_players = new Map([...this.players.entries()].filter(([playerid, player]) => ~players.indexOf(playerid)));
-
-        writer.packed(update_players.size);
-        for (let [playerid, player] of update_players) {
-            const player_writer = new BufferWriter;
-
-            player_writer.uint8(player.playerId);
-            player_writer.string(player.name, true);
-            player_writer.uint8(player.colour);
-            player_writer.packed(player.hat);
-            player_writer.packed(player.pet);
-            player_writer.packed(player.skin);
-            player_writer.byte(player.flags);
-            player_writer.uint8(player.num_tasks);
-
-            for (let i = 0; i < player.tasks.length; i++) {
-                const task = player.tasks[i];
-
-                player_writer.packed(task.taskid);
-                player_writer.bool(task.completed);
+        writer.packed(this.players.size);
+        for (let [playerid, player] of this.players) {
+            if (((1 << playerid) & this.dirty_bits) !== 0x00) {
+                const player_writer = new BufferWriter;
+    
+                player_writer.uint8(player.playerId);
+                player_writer.string(player.name, true);
+                player_writer.uint8(player.colour);
+                player_writer.packed(player.hat);
+                player_writer.packed(player.pet);
+                player_writer.packed(player.skin);
+                player_writer.byte(player.flags);
+                player_writer.uint8(player.num_tasks);
+    
+                for (let i = 0; i < player.tasks.length; i++) {
+                    const task = player.tasks[i];
+    
+                    player_writer.packed(task.taskid);
+                    player_writer.bool(task.completed);
+                }
+    
+                writer.uint16LE(player_writer.size - 1);
+                writer.write(player_writer);
             }
-
-            writer.uint16LE(player_writer.size - 1);
-            writer.write(player_writer);
         }
+
+        this.dirty_bits = 0;
 
         return writer.buffer;
     }

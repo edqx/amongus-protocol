@@ -7,6 +7,7 @@ import {
     DebugOptions,
     GameObject
 } from "../index.js"
+import { SystemType } from "../lib/constants/Enums.js";
 
 (async () => {
     const client = new AmongusClient({
@@ -25,25 +26,11 @@ import {
     await game.me.setColour(Math.floor(Math.random() * 13));
     await game.me.setHat(HatID.Plague);
 
-    await game.me.awaitSpawn();
-    
-    console.log("Played spawned.");
-
     game.on("start", () => {
-        console.log("Game started.");
-
-        setTimeout(function () {
-            if (game.me.PlayerData.name === "strongeyes") game.me.startMeeting("emergency");
-        }, 8000);
-    });
-
-    game.on("meeting", () => {
-        console.log("Meeting started.");
-        game.me.vote(game.host);
-    });
-
-    game.on("vote", function (voter, suspect) {
-        console.log("Vote.");
-        console.log(voter.PlayerData.name + " voted for " + suspect.PlayerData.name);
-    });
+        if (game.me.imposter) {
+            setTimeout(async function () {
+                await game.me.sabotageSystem(SystemType.O2);
+            }, 10000);
+        }
+    })
 })();
