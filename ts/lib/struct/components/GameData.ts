@@ -49,6 +49,8 @@ export class GameData extends Component {
         for (let i = 0; i < this.num_players; i++) {
             const player = parsePlayerData(reader);
 
+            this.emit("playerData", player);
+
             this.players.set(player.playerId, player);
         }
     }
