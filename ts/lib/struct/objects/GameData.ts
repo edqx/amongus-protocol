@@ -20,6 +20,8 @@ export class GameData extends GameObject {
 
     constructor (client: AmongusClient, parent: Game, components: Partial<ComponentData>[]) {
         super(client, parent);
+
+        this.spawnid = SpawnID.GameData;
         
         this.id = null;
         

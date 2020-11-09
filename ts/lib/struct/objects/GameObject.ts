@@ -26,16 +26,18 @@ export class GameObject extends EventEmitter {
         this.components = [];
     }
 
-    awaitChild<T extends GameObject>(filter: (object: T) => boolean): Promise<T> {
+    awaitChild<T extends GameObject>(filter: SpawnID|((object: T) => boolean) = () => true): Promise<T> {
+        const _filter = typeof filter === "number" ? (object => object.spawnid === filter) : filter;
+
         return new Promise(resolve => {
-            const child = this.children.find(filter) as T;
+            const child = this.children.find(_filter) as T;
 
             if (child) {
                 resolve(child);
             }
 
             this.on("spawn", function onObject(object: T) {
-                if (filter(object)) {
+                if (_filter(object)) {
                     this.off("spawn", onObject);
 
                     resolve(object);

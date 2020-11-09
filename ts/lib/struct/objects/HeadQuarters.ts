@@ -26,6 +26,8 @@ export class HeadQuarters extends GameObject {
     constructor (client: AmongusClient, parent: Game, components: Partial<ComponentData>[]) {
         super(client, parent);
 
+        this.spawnid = SpawnID.HeadQuarters;
+
         this.id = null;
 
         this.components = [

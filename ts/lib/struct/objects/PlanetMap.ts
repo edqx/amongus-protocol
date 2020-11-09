@@ -27,6 +27,8 @@ export class PlanetMap extends GameObject {
     constructor (client: AmongusClient, parent: Game, components: Partial<ComponentData>[]) {
         super(client, parent);
 
+        this.spawnid = SpawnID.PlanetMap;
+
         this.id = null;
 
         this.components = [

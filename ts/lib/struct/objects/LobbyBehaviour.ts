@@ -18,6 +18,8 @@ export class LobbyBehaviour extends GameObject {
     constructor (client: AmongusClient, parent: Game, components: Partial<ComponentData>[]) {
         super(client, parent);
 
+        this.spawnid = SpawnID.LobbyBehaviour;
+
         this.id = null;
 
         this.components = [

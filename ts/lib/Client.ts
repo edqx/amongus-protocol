@@ -337,7 +337,7 @@ export class AmongusClient extends EventEmitter {
                                                             }
                                                             break;
                                                         case RPCID.UpdateGameData:
-                                                            await this.game.awaitChild(object => object instanceof GameData);
+                                                            await this.game.awaitChild(SpawnID.GameData);
 
                                                             this.game.GameData.GameData.UpdatePlayers(part.players);
                                                             break;

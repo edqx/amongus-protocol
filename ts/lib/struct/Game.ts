@@ -7,7 +7,8 @@ import {
     MessageID,
     PacketID,
     PayloadID,
-    RPCID
+    RPCID,
+    SpawnID
 } from "../constants/Enums.js";
 
 import {
@@ -124,7 +125,7 @@ export class Game extends GameObject {
     }
 
     async awaitSpawns() {
-        await this.awaitChild(object => object instanceof GameData);
+        await this.awaitChild(SpawnID.GameData);
 
         return await Promise.all([...this.clients.values()].map(client => client.awaitSpawn()));
     }
@@ -282,15 +283,15 @@ export class Game extends GameObject {
 
     async sceneChange(clientid: number, location: SceneChangeLocation) {
         if (this.client.clientid === this.hostid) {
-            const gamedata = await this.awaitChild(object => object instanceof GameData) as GameData;
-            const lobbybehaviour = await this.awaitChild(object => object instanceof LobbyBehaviour) as LobbyBehaviour;
+            const gamedata = await this.awaitChild(SpawnID.GameData) as GameData;
+            const lobbybehaviour = await this.awaitChild(SpawnID.LobbyBehaviour) as LobbyBehaviour;
 
             // Perhaps the worst code I have ever written.
             // V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V-V
             /*const player_objects = (await Promise.allSettled([...this.clients.values()].map(client => {
                 if (client.clientid === clientid) return Promise.resolve();
 
-                return client.awaitChild(object => object instanceof Player);
+                return client.awaitChild(SpawnID.Player);
             }))).map(settled => (settled.status === "fulfilled" ? settled.value : null) as GameObject) // Get all player objects connected, and if they aren't spawned yet, wait for them.
 
             await this.client.send({
