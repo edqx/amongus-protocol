@@ -8,8 +8,8 @@ Documentation is available for preview at http://thechimp.store/amongus-protocol
 
 An implementation of the Among Us protocol made in Typescript
 * Lightweight, 0 external dependencies.
-* Both server & client.
 * Comprehensive coverage of the Among Us protocol.
+* Features full object and component system.
 * Easy to install & use.
 
 Data gathered from

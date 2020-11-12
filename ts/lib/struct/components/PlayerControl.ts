@@ -183,8 +183,7 @@ export class PlayerControl extends Component {
             op: PacketID.Reliable,
             payloads: [
                 {
-                    payloadid: PayloadID.GameDataTo,
-                    recipient: this.client.game.hostid,
+                    payloadid: PayloadID.GameData,
                     code: this.client.game.code,
                     parts: [
                         {
@@ -204,8 +203,7 @@ export class PlayerControl extends Component {
             op: PacketID.Reliable,
             payloads: [
                 {
-                    payloadid: PayloadID.GameDataTo,
-                    recipient: this.client.game.hostid,
+                    payloadid: PayloadID.GameData,
                     code: this.client.game.code,
                     parts: [
                         {
@@ -225,8 +223,7 @@ export class PlayerControl extends Component {
             op: PacketID.Reliable,
             payloads: [
                 {
-                    payloadid: PayloadID.GameDataTo,
-                    recipient: this.client.game.hostid,
+                    payloadid: PayloadID.GameData,
                     code: this.client.game.code,
                     parts: [
                         {
