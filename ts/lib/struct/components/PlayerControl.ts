@@ -67,7 +67,7 @@ export class PlayerControl extends Component {
         return writer.buffer;
     }
 
-    async murderPlayer(playerid: number) {
+    async murderPlayer(netid: number) {
         await this.client.send({
             op: PacketID.Reliable,
             payloads: [
@@ -79,7 +79,7 @@ export class PlayerControl extends Component {
                             type: MessageID.RPC,
                             handlerid: this.netid,
                             rpcid: RPCID.MurderPlayer,
-                            targetnetid: playerid
+                            targetnetid: netid
                         }
                     ]
                 }

@@ -113,7 +113,7 @@ export class PlayerClient extends GameObject {
 
     async murder(target: PlayerClient) {
         if (this.Player && !this.removed) {
-            this.Player.PlayerControl.murderPlayer(target.Player.PlayerControl.playerId);
+            this.Player.PlayerControl.murderPlayer(target.Player.PlayerControl.netid);
         }
     }
 
