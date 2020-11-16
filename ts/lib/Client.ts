@@ -561,7 +561,7 @@ export class AmongusClient extends EventEmitter {
      */
     async join(code: string|number, options: JoinOptions = {}): Promise<Game> {
         if (typeof code === "string") {
-            return this.join(Code2Int(code));
+            return this.join(Code2Int(code), options);
         }
 
         if (this.game) {
@@ -590,7 +590,7 @@ export class AmongusClient extends EventEmitter {
 
             await this.connect(payload.ip, payload.port, this.username);
 
-            return await this.join(code);
+            return await this.join(code, options);
         } else if (payload.payloadid === PayloadID.JoinedGame) {
             if (options.doSpawn ?? true) {
                 await this.spawn();
