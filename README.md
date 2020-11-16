@@ -35,7 +35,7 @@ import {
     MasterServers,
     ColourID,
     HatID,
-} from "../index.js"
+} from "amongus-protocol"
 
 const server = MasterServers.EU[0];
 
@@ -55,7 +55,7 @@ game.me.on("spawn", () => {
 ```
 
 ## Notes
-Recommended node: v12+
+Recommended node: v14+
 Recommended TS: 4.0+
 
 This repository is licensed under the MIT license, I am not responsible for anything you do using this library.
