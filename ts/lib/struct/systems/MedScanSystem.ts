@@ -10,7 +10,6 @@ import { SystemStatus } from "./SystemStatus.js"
 export class MedScanSystem extends SystemStatus {
     type: SystemType.MedBay;
 
-    num_users: number;
     users: number[];
 
     constructor() {
@@ -18,7 +17,6 @@ export class MedScanSystem extends SystemStatus {
         
         this.type = SystemType.MedBay;
 
-        this.num_users = 0;
         this.users = [];
     }
 
@@ -27,14 +25,14 @@ export class MedScanSystem extends SystemStatus {
     }
 
     OnDeserialize(reader: BufferReader) {
-        this.num_users = reader.packed();
-        this.users = reader.bytes(this.num_users);
+        const num_users = reader.packed();
+        this.users = reader.bytes(num_users);
     }
 
     Serialize(): Buffer {
         const writer = new BufferWriter;
 
-        writer.packed(this.num_users);
+        writer.packed(this.users.length);
         writer.bytes(this.users);
 
         return writer.buffer;

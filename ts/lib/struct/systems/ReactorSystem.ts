@@ -11,7 +11,6 @@ export class ReactorSystem extends SystemStatus {
     type: SystemType.Reactor;
 
     countdown: number;
-    num_pairs: number;
     pairs: [number, number][];
 
     constructor() {
@@ -20,7 +19,6 @@ export class ReactorSystem extends SystemStatus {
         this.type = SystemType.Reactor;
 
         this.countdown = 10000;
-        this.num_pairs = 0;
         this.pairs = [];
     }
 
@@ -46,16 +44,16 @@ export class ReactorSystem extends SystemStatus {
 
     OnDeserialize(reader: BufferReader) {
         this.countdown = reader.floatLE();
-        this.num_pairs = reader.packed();
-        this.pairs = reader.list(read => [read.byte(), read.byte()], this.num_pairs);
+        const num_pairs = reader.packed();
+        this.pairs = reader.list(read => [read.byte(), read.byte()], num_pairs);
     }
 
     Serialize(): Buffer {
         const writer = new BufferWriter;
 
         writer.floatLE(this.countdown);
-        writer.packed(this.num_pairs);
-        for (let i = 0; i < this.num_pairs; i++) {
+        writer.packed(this.pairs.length);
+        for (let i = 0; i < this.pairs.length; i++) {
             writer.byte(this.pairs[i][0]);
             writer.byte(this.pairs[i][1]);
         }

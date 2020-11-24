@@ -18,7 +18,6 @@ export class GameData extends Component {
     name: "GameData";
     classname: "GameData";
 
-    num_players: number;
     players: Map<number, ParsedPlayerGameData>;
 
     dirty_bits: number;
@@ -29,7 +28,6 @@ export class GameData extends Component {
         this.name = "GameData";
         this.classname = "GameData";
 
-        this.num_players = null;
         this.players = new Map;
         
         if (typeof datalen !== "undefined" && typeof data !== "undefined") {
@@ -44,9 +42,9 @@ export class GameData extends Component {
     OnDeserialize(datalen: number, data: Buffer): void {
         const reader = new BufferReader(data);
 
-        this.num_players = reader.packed();
+        const num_players = reader.packed();
 
-        for (let i = 0; i < this.num_players; i++) {
+        for (let i = 0; i < num_players; i++) {
             const player = parsePlayerData(reader);
             
             this.emit("playerData", player);

@@ -14,11 +14,6 @@ export class VoteBanSystem extends Component {
     classname: "VoteBanSystem";
 
     /**
-     * The number of clients who have been voted.
-     */
-    num_voted: number;
-
-    /**
      * A map of clients who have been voted, with the value being an array of players who voted.
      */
     votes: Map<number, number[]>
@@ -29,7 +24,6 @@ export class VoteBanSystem extends Component {
         this.name = "GameData";
         this.classname = "VoteBanSystem";
 
-        this.num_voted = 0;
         this.votes = new Map;
         
         if (typeof datalen !== "undefined" && typeof data !== "undefined") {
@@ -44,9 +38,9 @@ export class VoteBanSystem extends Component {
     OnDeserialize(datalen: number, data: Buffer): void {
         const reader = new BufferReader(data);
 
-        this.num_voted = reader.byte();
+        const num_voted = reader.byte();
 
-        for (let i = 0; i < this.num_voted; i++) {
+        for (let i = 0; i < num_voted; i++) {
             const voted = reader.int32LE();
 
             if (voted) {

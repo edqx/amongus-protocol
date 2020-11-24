@@ -11,7 +11,6 @@ export class LifeSuppSystem extends SystemStatus {
     type: SystemType.O2;
 
     countdown: number;
-    num_consoles: number;
     consoles: number[];
 
     constructor() {
@@ -20,7 +19,6 @@ export class LifeSuppSystem extends SystemStatus {
         this.type = SystemType.O2;
 
         this.countdown = 10000;
-        this.num_consoles = 0;
         this.consoles = [];
     }
 
@@ -32,11 +30,9 @@ export class LifeSuppSystem extends SystemStatus {
         this.countdown = reader.floatLE();
         
         if (reader.offset < reader.size) {
-            this.num_consoles = reader.packed();
+            const num_consoles = reader.packed();
 
-            for (let i = 0; i < this.num_consoles; i++) {
-                this.consoles = reader.list(reader => reader.packed(), this.num_consoles);
-            }
+            this.consoles = reader.list(reader => reader.packed(), num_consoles);
         }
     }
 

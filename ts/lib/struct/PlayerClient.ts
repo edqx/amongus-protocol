@@ -75,11 +75,11 @@ export class PlayerClient extends GameObject {
         if (object instanceof Player) this.emit("spawn", object);
     }
 
-    get imposter() {
+    get isImposter() {
         return !!this.client.game.imposters.find(imposter => imposter.Player.PlayerControl.playerId === this.Player.PlayerControl.playerId);
     }
     
-    get impostor() {
+    get isImpostor() {
         return !!this.client.game.imposters.find(imposter => imposter.Player.PlayerControl.playerId === this.Player.PlayerControl.playerId);
     }
 
