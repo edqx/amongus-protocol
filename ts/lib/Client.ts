@@ -273,8 +273,8 @@ export class AmongusClient extends EventEmitter {
                                                             this.game._setImposters(part.infected);
                                                             break;
                                                         case RPCID.MurderPlayer: {
-                                                            const client = this.game.getPlayerByNetID(part.targetnetid);
-                                                            const murderer = this.game.getPlayerByNetID(part.handlerid);
+                                                            const client = this.game.getClientByComponent(part.targetnetid);
+                                                            const murderer = this.game.getClientByComponent(part.handlerid);
                                                             
                                                             if (client && murderer) {
                                                                 client.dead = true;
@@ -290,7 +290,7 @@ export class AmongusClient extends EventEmitter {
                                                             if (part.targetid === 0xFF) {
                                                                 this.game.emit("meeting", true, null);
                                                             } else {
-                                                                const target = this.game.getPlayer(part.targetid);
+                                                                const target = this.game.getClientByPlayerID(part.targetid);
 
                                                                 this.game.emit("meeting", false, target);
                                                             }
@@ -324,13 +324,13 @@ export class AmongusClient extends EventEmitter {
                                                             } else if (part.exiled === 0xFF) {
                                                                 this.game.emit("votingComplete", true, false, null);
                                                             } else {
-                                                                this.game.emit("votingComplete", false, false, this.game.getPlayer(part.exiled));
+                                                                this.game.emit("votingComplete", false, false, this.game.getClientByPlayerID(part.exiled));
                                                             }
                                                             break;
                                                         case RPCID.SendChatNote:
                                                             break;
                                                         case RPCID.SetTasks:
-                                                            const client = this.game.getPlayer(part.playerid);
+                                                            const client = this.game.getClientByPlayerID(part.playerid);
 
                                                             if (client) {
                                                                 client._setTasks(part.tasks);
@@ -377,7 +377,7 @@ export class AmongusClient extends EventEmitter {
                                                     this.game.netcomponents.delete(part.netid);
                                                     break;
                                                 case MessageID.Ready:
-                                                    const client = this.game.getPlayer(part.clientid);
+                                                    const client = this.game.clients.get(part.clientid);
 
                                                     if (client) {
                                                         client.is_ready = true;

@@ -254,6 +254,8 @@ export enum RPCID {
     SetName = 0x06,
     CheckColour = 0x07,
     SetColour = 0x08,
+    CheckColor = 0x07,
+    SetColor = 0x08,
     SetHat = 0x09,
     SetSkin = 0x0a,
     ReportDeadBody = 0x0b,

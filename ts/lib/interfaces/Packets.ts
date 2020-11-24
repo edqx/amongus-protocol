@@ -18,7 +18,8 @@ import {
     TaskBarUpdate,
     MapID,
     LanguageID,
-    SpawnFlag
+    SpawnFlag,
+    ColorID
 } from "../constants/Enums.js"
 
 import {
@@ -305,12 +306,18 @@ export interface RPCSetName extends RPC {
 export interface RPCCheckColour extends RPC {
     rpcid: RPCID.CheckColour;
     colour: ColourID;
+    color?: ColourID;
 }
+
+export type RPCCheckColor = RPCCheckColour;
 
 export interface RPCSetColour extends RPC {
     rpcid: RPCID.SetColour;
     colour: ColourID;
+    color?: ColourID;
 }
+
+export type RPCSetColor = RPCSetColour;
 
 export interface RPCSetHat extends RPC {
     rpcid: RPCID.SetHat;
@@ -424,7 +431,6 @@ export interface RPCRepairSystem extends RPC {
 export interface RPCSetTasks extends RPC {
     rpcid: RPCID.SetTasks;
     playerid: uint8;
-    num_tasks: uint8;
     tasks: uint8[];
 }
 
@@ -436,6 +442,7 @@ export interface PlayerTaskState {
 export enum PlayerDataFlags {
     Disconnected = 1 << 0,
     IsImposter = 1 << 1,
+    IsImpostor = 1 << 1,
     IsDead = 1 << 2
 }
 
@@ -443,14 +450,15 @@ export interface ParsedPlayerGameData {
     playerId: uint8;
     name: string;
     colour: ColourID;
+    color: ColourID;
     hat: HatID;
     pet: PetID;
     skin: SkinID;
     flags: bitfield;
     disconnected: boolean;
     imposter: boolean;
+    impostor: boolean;
     dead: boolean;
-    num_tasks: uint8;
     tasks: PlayerTaskState[];
 }
 
@@ -468,6 +476,8 @@ export type RPCMessage = RPCPlayAnimation
     | RPCSetName
     | RPCCheckColour
     | RPCSetColour
+    | RPCCheckColor
+    | RPCSetColor
     | RPCSetHat
     | RPCSetSkin
     | RPCReportDeadBody
@@ -681,6 +691,7 @@ export interface GameListGame {
     age: packed;
     map: MapID;
     imposters: uint8;
+    impostors: uint8;
     max_players: uint8;
 }
 

@@ -2,10 +2,7 @@ import {
     AmongusClient,
     HatID,
     MasterServers,
-    Game,
-    PlayerClient,
-    DebugOptions,
-    GameObject
+    DebugOptions
 } from "../index.js"
 
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));

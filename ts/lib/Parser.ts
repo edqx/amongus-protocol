@@ -88,6 +88,7 @@ export function parsePlayerData(reader: BufferReader): ParsedPlayerGameData {
     player.playerId = reader.uint8();
     player.name = reader.string();
     player.colour = reader.uint8();
+    player.color = reader.uint8();
     player.hat = reader.packed();
     player.pet = reader.packed();
     player.skin = reader.packed();
@@ -95,7 +96,7 @@ export function parsePlayerData(reader: BufferReader): ParsedPlayerGameData {
     player.disconnected = (player.flags & PlayerDataFlags.Disconnected) !== 0;
     player.imposter = (player.flags & PlayerDataFlags.IsImposter) !== 0;
     player.dead = (player.flags & PlayerDataFlags.IsDead) !== 0;
-    player.num_tasks = reader.uint8();
+    const num_tasks = reader.uint8();
 
     player.tasks = reader.list(reader => { 
         const taskid = reader.packed();
@@ -105,7 +106,7 @@ export function parsePlayerData(reader: BufferReader): ParsedPlayerGameData {
             taskid,
             completed
         }
-    }, player.num_tasks);
+    }, num_tasks);
 
     return player as ParsedPlayerGameData;
 }
@@ -241,9 +242,11 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                                 break;
                                             case RPCID.CheckColour:
                                                 part.colour = reader.uint8();
+                                                part.color = part.colour;
                                                 break;
                                             case RPCID.SetColour:
                                                 part.colour = reader.uint8();
+                                                part.color = part.colour;
                                                 break;
                                             case RPCID.SetHat:
                                                 part.hat = reader.uint8();
@@ -315,8 +318,8 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                                 break;
                                             case RPCID.SetTasks:
                                                 part.playerid = reader.uint8();
-                                                part.num_tasks = reader.packed();
-                                                part.tasks = reader.bytes(part.num_tasks);
+                                                const num_tasks = reader.packed();
+                                                part.tasks = reader.bytes(num_tasks);
                                                 break;
                                             case RPCID.UpdateGameData:
                                                 part.players = [];

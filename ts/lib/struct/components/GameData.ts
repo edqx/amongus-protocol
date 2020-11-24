@@ -70,7 +70,7 @@ export class GameData extends Component {
                 player_writer.packed(player.pet);
                 player_writer.packed(player.skin);
                 player_writer.byte(player.flags);
-                player_writer.uint8(player.num_tasks);
+                player_writer.uint8(player.tasks.length);
     
                 for (let i = 0; i < player.tasks.length; i++) {
                     const task = player.tasks[i];

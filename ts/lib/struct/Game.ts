@@ -18,6 +18,9 @@ import {
 } from "../interfaces/Packets.js";
 
 import { Component } from "./components/Component.js";
+import { PlayerControl } from "./components/PlayerControl.js";
+import { PlayerPhysics } from "./components/PlayerPhysics.js";
+import { CustomNetworkTransform } from "./components/CustomNetworkTransform.js";
 
 import { GameData } from "./objects/GameData.js";
 import { GameObject } from "./objects/GameObject.js";
@@ -34,6 +37,7 @@ export interface Game {
     on(event: "start", listener: () => void);
     on(event: "finish", listener: () => void);
     on(event: "setImposters", listener: (imposters: PlayerClient[]) => void);
+    on(event: "setImpostors", listener: (impostors: PlayerClient[]) => void);
     on(event: "vote", listener: (voter: PlayerClient, suspect: PlayerClient) => void);
     on(event: "votingComplete", listener: (skipped: boolean, tie: boolean, exiled: PlayerClient, states: Map<number, VotePlayerState>) => void);
     on(event: "murder", listener: (murderer: PlayerClient, target: PlayerClient) => void);
@@ -42,6 +46,9 @@ export interface Game {
     on(event: "visibility", listener: (visibility: "private"|"public") => void);
     on(event: "sceneChange", listener: (client: PlayerClient, location: SceneChangeLocation) => void);
 }
+
+export type PlayerClientResolvable = number|PlayerClient|PlayerControl|PlayerPhysics|CustomNetworkTransform;
+export type IDResolvable<T> = number|T;
 
 export class Game extends GameObject {
     ip: string;
@@ -117,6 +124,10 @@ export class Game extends GameObject {
         return Math.floor((Date.now() - this.instantiated) / 1000);
     }
 
+    get impostors() {
+        return this.imposters;
+    }
+
     addChild(object: GameObject) {
         super.addChild(object);
         
@@ -168,8 +179,13 @@ export class Game extends GameObject {
     }
 
     _setImposters(imposters: number[]) {
-        this.imposters = imposters.map(imposter => this.getPlayer(imposter));
+        this.imposters = imposters.map(imposter => this.getClientByPlayerID(imposter));
         this.emit("setImposters", this.imposters);
+        this.emit("setImpostors", this.imposters);
+    }
+
+    _setImpostors(impostors: number[]) {
+        return this._setImposters(impostors);
     }
 
     async setImposters(imposters: number[]) {
@@ -192,9 +208,13 @@ export class Game extends GameObject {
                     }
                 ]
             });
-            
+
             this._setImposters(imposters);
         }
+    }
+
+    async setImpostors(impostors: number[]) {
+        return this.setImposters(impostors);
     }
 
     _setVisibility(visibility: "private"|"public") {
@@ -351,9 +371,11 @@ export class Game extends GameObject {
     }
 
     async finish() {
-        // TODO: Handle finishing games as hosts.
+        if (this.client.clientid === this.hostid) {
+            // TODO: Handle finishing games as host.
 
-        this._finish();
+            this._finish();
+        }
     }
 
     registerComponents(object: GameObject) {
@@ -367,13 +389,13 @@ export class Game extends GameObject {
     /**
      * Find a player by their name.
      */
-    findPlayer(username: string) {
+    getClientByName(name: string) {
         for (let [clientid, client] of this.clients) {
             if (!client.Player || client.removed) continue;
 
             const playerData = this.GameData.GameData.players.get(client.Player.PlayerControl.playerId);
             
-            if (playerData && playerData.name === username) {
+            if (playerData && playerData.name === name) {
                 return client;
             }
         }
@@ -382,9 +404,9 @@ export class Game extends GameObject {
     }
 
     /**
-     * Get a player by their player ID.
+     * Get a player client by their player ID.
      */
-    getPlayer(playerid: number) {
+    getClientByPlayerID(playerid: number) {
         for (let [clientid, client] of this.clients) {
             if (!client.Player || client.removed) continue;
 
@@ -397,18 +419,41 @@ export class Game extends GameObject {
     }
 
     /**
-     * Get a player by their PlayerControl component's network ID.
+     * Get a player client by their PlayerControl, PlayerPhysics or CustomNetworkTransform component's network ID.
      */
-    getPlayerByNetID(netid: number) {
+    getClientByComponent<T extends Component>(component: IDResolvable<T>): PlayerClient {
         for (let [clientid, client] of this.clients) {
             if (!client.Player || client.removed) continue;
 
-            if (client.Player.PlayerControl.netid === netid) {
-                return client;
+            if (typeof component === "number") {
+                if (client.Player.PlayerControl.netid === component ||
+                    client.Player.PlayerPhysics.netid === component ||
+                    client.Player.CustomNetworkTransform.netid === component) {
+                    return client;
+                }
+            } else {
+                if (client.Player.components.some(pc => pc.netid === component.netid)) {
+                    return client;
+                }
             }
         }
 
         return null;
+    }
+    
+    /**
+     * Resolve a player by their clientid, player object or by their playercontrol object.
+     */
+    resolvePlayer(resolvable: PlayerClientResolvable): PlayerClient {
+        if (typeof resolvable === "number") {
+            return this.clients.get(resolvable);
+        }
+
+        if ((resolvable as Component).netid) {
+            return this.getClientByComponent(resolvable as Component);
+        }
+
+        return resolvable as PlayerClient;
     }
 
     get host() {

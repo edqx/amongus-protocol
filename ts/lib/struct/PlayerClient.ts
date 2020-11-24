@@ -78,6 +78,10 @@ export class PlayerClient extends GameObject {
     get imposter() {
         return !!this.client.game.imposters.find(imposter => imposter.Player.PlayerControl.playerId === this.Player.PlayerControl.playerId);
     }
+    
+    get impostor() {
+        return !!this.client.game.imposters.find(imposter => imposter.Player.PlayerControl.playerId === this.Player.PlayerControl.playerId);
+    }
 
     get Player() {
         return this.children[0];
@@ -138,7 +142,6 @@ export class PlayerClient extends GameObject {
                             handlerid: this.client.game.GameData.GameData.netid,
                             rpcid: RPCID.SetTasks,
                             playerid: this.Player.PlayerControl.playerId,
-                            num_tasks: tasks.length,
                             tasks
                         }
                     ]
@@ -293,6 +296,12 @@ export class PlayerClient extends GameObject {
     async setColour(colour: ColourID) {
         if (this.Player && !this.removed) {
             await this.Player.PlayerControl.setColour(colour);
+        }
+    }
+
+    async setColor(color: ColourID) {
+        if (this.Player && !this.removed) {
+            await this.Player.PlayerControl.setColor(color);
         }
     }
 

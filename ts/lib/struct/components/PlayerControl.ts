@@ -131,6 +131,10 @@ export class PlayerControl extends Component {
                     && payload.parts.some(part => part.type === MessageID.RPC && part.rpcid === RPCID.SetColour));
         }
     }
+
+    async setColor(color: ColourID) {
+        return this.setColour(color);
+    }
     
     async setName(name: string) {
         if (this.client.clientid === this.client.game.hostid) {
