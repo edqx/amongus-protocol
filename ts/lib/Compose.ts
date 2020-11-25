@@ -260,7 +260,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                             break;
                                         case RPCID.SetTasks:
                                             mwrite.uint8(part.playerid);
-                                            mwrite.packed(part.num_tasks);
+                                            mwrite.packed(part.tasks.length);
                                             mwrite.bytes(part.tasks);
                                             break;
                                         case RPCID.UpdateGameData:
@@ -275,9 +275,9 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                                 pwrite.packed(player.pet);
                                                 pwrite.packed(player.skin);
                                                 pwrite.byte(player.flags);
-                                                pwrite.uint8(player.num_tasks);
+                                                pwrite.uint8(player.tasks.length);
                                                 
-                                                for (let i = 0; i < player.num_tasks; i++) {
+                                                for (let i = 0; i < player.tasks.length; i++) {
                                                     const task = player.tasks[i];
 
                                                     pwrite.packed(task.taskid);

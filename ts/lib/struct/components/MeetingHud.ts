@@ -79,7 +79,7 @@ export class MeetingHud extends Component {
                 const old_state = this.states.get(playerId);
 
                 if (old_state && state.voted && !old_state.voted) {
-                    this.client.game.emit("vote", this.client.game.getPlayer(state.playerId), this.client.game.getPlayer(state.votedFor));
+                    this.client.game.emit("vote", this.client.game.getClientByPlayerID(state.playerId), this.client.game.getClientByPlayerID(state.votedFor));
                 }
 
                 this.states.set(playerId, state);
