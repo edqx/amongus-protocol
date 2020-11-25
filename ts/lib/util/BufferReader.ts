@@ -315,7 +315,6 @@ export class BufferReader {
 
         for (let i = 0; typeof length === "undefined" ? this.offset < this.size : i < length; i++) {
             const reader = this.slice(this.offset);
-
             const struct: T = fn(reader);
 
             this.offset += reader.offset;

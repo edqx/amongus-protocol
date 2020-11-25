@@ -28,11 +28,14 @@ export class LifeSuppSystem extends SystemStatus {
 
     OnDeserialize(reader: BufferReader) {
         this.countdown = reader.floatLE();
+        this.consoles = [];
         
         if (reader.offset < reader.size) {
             const num_consoles = reader.packed();
 
-            this.consoles = reader.list(reader => reader.packed(), num_consoles);
+            for (let i = 0; i < num_consoles; i++) {
+                this.consoles.push(reader.packed());
+            }
         }
     }
 
