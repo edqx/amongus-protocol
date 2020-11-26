@@ -32,6 +32,7 @@ export interface PlayerClient {
     on(event: "murder", listener: (target: PlayerClient) => void);
     on(event: "murdered", listener: (murderer: PlayerClient) => void);
     on(event: "sceneChange", listener: (location: SceneChangeLocation) => void);
+    on(event: "chat", listener: (text: string) => void);
 }
 
 export class PlayerClient extends GameObject {

@@ -88,7 +88,7 @@ export function parsePlayerData(reader: BufferReader): ParsedPlayerGameData {
     player.playerId = reader.uint8();
     player.name = reader.string();
     player.colour = reader.uint8();
-    player.color = reader.uint8();
+    player.color = player.colour;
     player.hat = reader.packed();
     player.pet = reader.packed();
     player.skin = reader.packed();
@@ -97,7 +97,6 @@ export function parsePlayerData(reader: BufferReader): ParsedPlayerGameData {
     player.imposter = (player.flags & PlayerDataFlags.IsImposter) !== 0;
     player.dead = (player.flags & PlayerDataFlags.IsDead) !== 0;
     const num_tasks = reader.uint8();
-
     player.tasks = reader.list(reader => { 
         const taskid = reader.packed();
         const completed = reader.bool();
@@ -232,7 +231,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                                 part.count = reader.packed();
                                                 part.infected = reader.bytes(part.count);
                                                 break;
-                                            case RPCID.Exiled:
+                                            case RPCID.Ejected:
                                                 break;
                                             case RPCID.CheckName:
                                                 part.name = reader.string();
@@ -296,7 +295,7 @@ export function parsePacket(buffer, bound: "server" | "client" = "client"): Pack
                                             case RPCID.VotingComplete:
                                                 part.num_states = reader.packed();
                                                 part.states = reader.bytes(part.num_states);
-                                                part.exiled = reader.uint8();
+                                                part.ejected = reader.uint8();
                                                 part.tie = reader.bool();
                                                 break;
                                             case RPCID.CastVote:

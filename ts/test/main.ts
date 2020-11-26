@@ -26,4 +26,12 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
     await game.me.setName("strongeyes");
     await game.me.setColour(Math.floor(Math.random() * 13));
     await game.me.setHat(HatID.Plague);
+    
+    game.on("chat", (client, text) => {
+        console.log(text);
+    });
+
+    game.on("finish", reason => {
+        console.log(reason);
+    });
 })();

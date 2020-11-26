@@ -216,7 +216,7 @@ export class AmongusClient extends EventEmitter {
                                     break;
                                 case PayloadID.EndGame:
                                     if (payload.code === this.game.code) {
-                                        this.game._finish();
+                                        this.game._finish(payload.reason, payload.show_ad);
                                     }
                                     break;
                                 case PayloadID.RemovePlayer:
@@ -290,6 +290,15 @@ export class AmongusClient extends EventEmitter {
                                                             }
                                                             break;
                                                         }
+                                                        case RPCID.SendChat: {
+                                                            const client = this.game.getClientByComponent(part.handlerid);
+
+                                                            if (client) {
+                                                                this.game.emit("chat", client, part.text);
+                                                                client.emit("chat", part.text);
+                                                            }
+                                                            break;
+                                                        }
                                                         case RPCID.StartMeeting:
                                                             if (part.targetid === 0xFF) {
                                                                 this.game.emit("meeting", true, null);
@@ -325,10 +334,10 @@ export class AmongusClient extends EventEmitter {
 
                                                             if (part.tie) {
                                                                 this.game.emit("votingComplete", false, true, null);
-                                                            } else if (part.exiled === 0xFF) {
+                                                            } else if (part.ejected === 0xFF) {
                                                                 this.game.emit("votingComplete", true, false, null);
                                                             } else {
-                                                                this.game.emit("votingComplete", false, false, this.game.getClientByPlayerID(part.exiled));
+                                                                this.game.emit("votingComplete", false, false, this.game.getClientByPlayerID(part.ejected));
                                                             }
                                                             break;
                                                         case RPCID.SendChatNote:

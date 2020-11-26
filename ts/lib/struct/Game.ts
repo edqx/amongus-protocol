@@ -4,6 +4,7 @@ import {
 
 import {
     AlterGameTag,
+    GameEndReason,
     MessageID,
     PacketID,
     PayloadID,
@@ -35,11 +36,12 @@ export interface Game {
     on(event: "playerLeave", listener: (client: PlayerClient) => void);
     on(event: "startCount", listener: (count: number) => void);
     on(event: "start", listener: () => void);
-    on(event: "finish", listener: () => void);
+    on(event: "finish", listener: (reason: GameEndReason, show_ad: boolean) => void);
+    on(event: "chat", listener: (client: PlayerClient, text: string) => void);
     on(event: "setImposters", listener: (imposters: PlayerClient[]) => void);
     on(event: "setImpostors", listener: (impostors: PlayerClient[]) => void);
     on(event: "vote", listener: (voter: PlayerClient, suspect: PlayerClient) => void);
-    on(event: "votingComplete", listener: (skipped: boolean, tie: boolean, exiled: PlayerClient, states: Map<number, VotePlayerState>) => void);
+    on(event: "votingComplete", listener: (skipped: boolean, tie: boolean, ejected: PlayerClient, states: Map<number, VotePlayerState>) => void);
     on(event: "murder", listener: (murderer: PlayerClient, target: PlayerClient) => void);
     on(event: "meeting", listener: (emergency: boolean, target: PlayerClient) => void);
     on(event: "sync", listener: (settings: GameOptionsData) => void);
@@ -364,17 +366,17 @@ export class Game extends GameObject {
         this._start();
     }
 
-    _finish() {
+    _finish(reason: GameEndReason, show_ad: boolean) {
         this.started = false;
         
-        this.emit("finish");
+        this.emit("finish", reason, show_ad);
     }
 
-    async finish() {
+    async finish(reason: GameEndReason, show_ad: boolean) {
         if (this.client.clientid === this.hostid) {
             // TODO: Handle finishing games as host.
 
-            this._finish();
+            this._finish(reason, show_ad);
         }
     }
 

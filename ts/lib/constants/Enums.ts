@@ -249,7 +249,7 @@ export enum RPCID {
     CompleteTask = 0x01,
     SyncSettings = 0x02,
     SetInfected = 0x03,
-    Exiled = 0x04,
+    Ejected = 0x04,
     CheckName = 0x05,
     SetName = 0x06,
     CheckColour = 0x07,

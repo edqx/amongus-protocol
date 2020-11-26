@@ -289,8 +289,8 @@ export interface RPCSetInfected extends RPC {
     infected: byte[];
 }
 
-export interface RPCExiled extends RPC {
-    rpcid: RPCID.Exiled;
+export interface RPCEjected extends RPC {
+    rpcid: RPCID.Ejected;
 }
 
 export interface RPCCheckName extends RPC {
@@ -397,7 +397,7 @@ export interface RPCVotingComplete extends RPC {
     rpcid: RPCID.VotingComplete;
     num_states: uint32;
     states: byte[];
-    exiled: uint8;
+    ejected: uint8;
     tie: boolean;
 }
 
@@ -471,7 +471,7 @@ export type RPCMessage = RPCPlayAnimation
     | RPCCompleteTask
     | RPCSyncSettings
     | RPCSetInfected
-    | RPCExiled
+    | RPCEjected
     | RPCCheckName
     | RPCSetName
     | RPCCheckColour

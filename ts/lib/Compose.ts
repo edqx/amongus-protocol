@@ -176,7 +176,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                             mwrite.packed(part.count);
                                             mwrite.bytes(part.infected);
                                             break;
-                                        case RPCID.Exiled:
+                                        case RPCID.Ejected:
                                             break;
                                         case RPCID.CheckName:
                                             mwrite.string(part.name, true);
@@ -238,7 +238,7 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
                                         case RPCID.VotingComplete:
                                             mwrite.packed(part.num_states);
                                             mwrite.bytes(part.states);
-                                            mwrite.uint8(part.exiled);
+                                            mwrite.uint8(part.ejected);
                                             mwrite.bool(part.tie);
                                             break;
                                         case RPCID.CastVote:
