@@ -1,6 +1,6 @@
 {
   "name": "amongus-protocol",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "A recreated Among Us protocol implemented in Typescript.",
   "repository": "https://github.com/edqx/amongus-protocol",
   "main": "js/index.js",
