@@ -392,3 +392,10 @@ export enum GameEndReason {
 export enum AlterGameTag {
     ChangePrivacy = 0x01
 }
+
+export enum GameVersions {
+    V2020_09_09s = 0x46_d2_02_03,
+    V2020_11_04s = 0x80_d9_02_03,
+    V2020_10_22s = 0x80_d9_02_03,
+    V2020_11_17s = 0x4a_e2_02_03
+}

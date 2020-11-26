@@ -22,18 +22,17 @@ import {
     AlterGameTag,
     DisconnectID,
     DistanceID,
+    GameVersions,
     LanguageID,
     MapID,
     MessageID,
     PacketID,
     PayloadID,
     RPCID,
-    SpawnID,
-    TaskBarUpdate
+    SpawnID
 } from "./constants/Enums.js"
 
 import { Game } from "./struct/Game.js"
-import { PlayerClient } from "./struct/PlayerClient.js"
 
 import { bitfield } from "./interfaces/Types.js"
 import { JoinOptions } from "./interfaces/JoinOptions.js"
@@ -84,6 +83,11 @@ export class AmongusClient extends EventEmitter {
      * The username of the client.
      */
     username: string;
+    
+    /**
+     * The version of the client.
+     */
+    version: number;
 
     /**
      * The current game of the client.
@@ -411,15 +415,16 @@ export class AmongusClient extends EventEmitter {
     /**
      * Connect to a server IP and port.
      * @param username The username to connect with.
+     * @param version The client version to connect with. (see the GameVersions enum)
      */
-    async connect(ip: string, port: number, username: string): Promise<boolean|number> {
+    async connect(ip: string, port: number, username: string, version: number = GameVersions.V2020_11_17s): Promise<boolean|number> {
         if (this.socket) {
             await this.disconnect();
         }
 
         this._connect(ip, port);
 
-        if (await this.hello(username)) {
+        if (await this.hello(username, version)) {
             this.emit("connected");
 
             return true;
@@ -543,12 +548,15 @@ export class AmongusClient extends EventEmitter {
     /**
      * Say hello to the server.
      */
-    async hello(username: string): Promise<boolean> {
+    async hello(username: string, version: number = GameVersions.V2020_11_17s): Promise<boolean> {
         if (await this.send({
             op: PacketID.Hello,
-            username: username
+            username: username,
+            clientver: version,
+            hazelver: 0
         })) {
             this.username = username;
+            this.version = version;
             
             return true;
         }

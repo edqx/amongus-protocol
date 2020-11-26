@@ -161,8 +161,8 @@ export interface Unreliable extends BasePacket {
 
 export interface HelloPacket extends Reliable {
     op: PacketID.Hello;
-    hazelver?: number;
-    clientver?: number;
+    hazelver: number;
+    clientver: number;
     username: string;
 }
 

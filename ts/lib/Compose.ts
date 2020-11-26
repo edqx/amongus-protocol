@@ -424,8 +424,8 @@ export function composePacket(packet: Packet, bound: "server"|"client" = "server
             break;
         case PacketID.Hello:
             writer.uint16BE(packet.nonce);
-            writer.byte(packet.hazelver || 0x00);
-            writer.int32BE(packet.clientver || 0x4ae20203);
+            writer.byte(packet.hazelver);
+            writer.int32BE(packet.clientver);
             writer.string(packet.username, true);
             break;
         case PacketID.Disconnect:
