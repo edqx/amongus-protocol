@@ -127,6 +127,7 @@ export class AmongusClient extends EventEmitter {
         this.socket = null;
         this.ip = null;
         this.port = null;
+        this.game = null;
 
         this.nonce = 1;
     }
@@ -217,6 +218,7 @@ export class AmongusClient extends EventEmitter {
                                 case PayloadID.EndGame:
                                     if (payload.code === this.game.code) {
                                         this.game._finish(payload.reason, payload.show_ad);
+                                        this.game = null;
                                     }
                                     break;
                                 case PayloadID.RemovePlayer:
@@ -339,8 +341,6 @@ export class AmongusClient extends EventEmitter {
                                                             } else {
                                                                 this.game.emit("votingComplete", false, false, this.game.getClientByPlayerID(part.ejected));
                                                             }
-                                                            break;
-                                                        case RPCID.SendChatNote:
                                                             break;
                                                         case RPCID.SetTasks:
                                                             const client = this.game.getClientByPlayerID(part.playerid);
