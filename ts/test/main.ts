@@ -9,7 +9,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
 (async () => {
     const client = new AmongusClient({
-        debug: DebugOptions.None
+        debug: DebugOptions.Everything
     });
 
     const servers = MasterServers.EU[0];
