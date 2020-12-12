@@ -28,7 +28,7 @@ export function FormatVersion(version: VersionInfo|number) {
     return version.year + "." + version.month + "." + version.day;
 }
 
-export function ParseVersion(v: string) {
+export function ParseVersion(v: string): VersionInfo {
     v = v.toLowerCase();
 
     if(v.startsWith("v")) v = v.slice(1);
@@ -40,6 +40,7 @@ export function ParseVersion(v: string) {
     return {
         year,
         month,
-        day
+        day,
+        build: 0
     }
 }
