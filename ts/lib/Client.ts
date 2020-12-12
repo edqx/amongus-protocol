@@ -7,6 +7,7 @@ import { parsePacket } from "./Parser.js"
 import { composePacket } from "./Compose.js"
 
 import { Code2Int } from "./util/Codes.js"
+import { ParseVersion, EncodeVersion } from "./util/Versions.js"
 
 import {
     GameListGame,
@@ -426,7 +427,9 @@ export class AmongusClient extends EventEmitter {
      * @param username The username to connect with.
      * @param version The client version to connect with. (see the GameVersions enum)
      */
-    async connect(ip: string, port: number, username: string, version: number = GameVersions.V2020_11_17s): Promise<boolean|number> {
+    async connect(ip: string, port: number, username: string, version: number | string = GameVersions.V2020_11_17s): Promise<boolean|number> {
+        if(typeof version === "string") version = EncodeVersion(ParseVersion(version));
+        
         if (this.socket) {
             await this.disconnect();
         }
