@@ -35,7 +35,7 @@ export function ParseVersion(v: string): VersionInfo {
     
     if(v.endsWith("s")) v = v.slice(0, -1);
 
-    let [year, month, day] = v.split("_").map(x => +x);
+    let [year, month, day] = v.split(".").map(x => +x);
     
     return {
         year,
