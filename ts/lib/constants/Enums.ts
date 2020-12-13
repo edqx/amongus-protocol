@@ -295,7 +295,9 @@ export enum PetID {
     UFO = 0x07,
     Ellie = 0x08,
     Squig = 0x09,
-    Bedcrab = 0x0a
+    Bedcrab = 0x0a,
+    Twitch = 0x0b,
+    Glitch = 0x0b
 }
 
 export enum SkinID {
