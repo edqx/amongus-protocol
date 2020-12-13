@@ -27,3 +27,20 @@ export function FormatVersion(version: VersionInfo|number) {
 
     return version.year + "." + version.month + "." + version.day;
 }
+
+export function ParseVersion(v: string): VersionInfo {
+    v = v.toLowerCase();
+
+    if(v.startsWith("v")) v = v.slice(1);
+    
+    if(v.endsWith("s")) v = v.slice(0, -1);
+
+    let [year, month, day] = v.split(".").map(x => +x);
+    
+    return {
+        year,
+        month,
+        day,
+        build: 0
+    }
+}
