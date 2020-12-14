@@ -33,14 +33,14 @@ export function ParseVersion(v: string): VersionInfo {
 
     if(v.startsWith("v")) v = v.slice(1);
     
-    if(v.endsWith("s")) v = v.slice(0, -1);
+    if(v.endsWith("s") || v.endsWith("i")) v = v.slice(0, -1); // s stands for steam and i stands for itch
 
-    let [year, month, day] = v.split(".").map(x => +x);
+    let [year, month, day] = v.split(".");
     
     return {
-        year,
-        month,
-        day,
+        year: +year,
+        month: +month,
+        day: +day || 1,
         build: 0
     }
 }
