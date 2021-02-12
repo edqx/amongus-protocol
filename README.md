@@ -1,5 +1,7 @@
 # AmongUs-Protocol
 
+This project is discontinued, please see [SkeldJS/SkeldJS](https://github.com/skeldjs/SkeldJS) for more updates.
+
 ![Alt text](asset/logo.png "Amongus Protocol")
 
 See the [wiki](https://github.com/edqx/amongus-protocol/wiki) for more information on the protocol.
